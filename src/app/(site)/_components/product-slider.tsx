@@ -22,15 +22,15 @@ interface ProductSliderProps {
 
 export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) => {
     return (
-        <div className="my-10 w-full px-10">
-            <h5 className=" text-[2rem] font-[700] exo mb-5">{carouselTitle}</h5>
+        <div className="my-10 w-full lg:px-10 px-5">
+            <h5 className=" md:text-[2rem] text-[1.5rem] font-[700] exo mb-5">{carouselTitle}</h5>
             <div className="w-full">
 
                 <Carousel>
                     <CarouselContent>
                         {
                             products.map((item, index) => (
-                                <CarouselItem className="basis-[300px] pl-4" key={index}>
+                                <CarouselItem className="md:basis-[300px] basis-[250px] pl-4" key={index}>
                                     <ProductCard
                                         images={item.images}
                                         id={item.id}

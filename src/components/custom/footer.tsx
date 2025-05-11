@@ -6,11 +6,11 @@ import Link from "next/link";
 export const Footer = () => { 
    return (
      <footer >
-        <div className="w-full grid grid-cols-4 gap-16 p-10 bg-indigo-200">
+        <div className="w-full grid lg:grid-cols-4 grid-cols-2 md:gap-16 gap-8 md:p-10 p-5 bg-indigo-200">
             <div className="w-full">
                <div>
-                <h4 className="text-2xl font-[700] raleway">Register with us</h4>
-                <ul className=" mt-5 flex gap-2 flex-col exo font-[300]">
+                <h4 className="md:text-2xl text-xl font-[700] raleway">Register with us</h4>
+                <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
                         <Link href="/sign-up">
                         Create an account
@@ -27,8 +27,8 @@ export const Footer = () => {
                </div>
 
                 <div className="mt-10">
-                <h4 className="text-2xl font-[700] raleway">Contact Us</h4>
-                <ul className=" mt-5 flex gap-2 flex-col exo font-[300]">
+                <h4 className="md:text-2xl text-xl font-[700] raleway">Contact Us</h4>
+                <ul className="md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
                         <Link href="mailto:connect@beaze.in" target="_blank">
                         demo@gmail.com
@@ -49,8 +49,8 @@ export const Footer = () => {
             </div>
 
             <div className="w-full">
-             <h4 className="text-2xl font-[700] raleway">Shop</h4>
-             <ul className=" mt-5 flex gap-2 flex-col exo font-[300]">
+             <h4 className="md:text-2xl text-xl font-[700] raleway">Shop</h4>
+             <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
                         <Link href="/">
                         Baloons
@@ -95,8 +95,8 @@ export const Footer = () => {
             </div>
 
              <div className="w-full">
-             <h4 className="text-2xl font-[700] raleway">About & Help</h4>
-             <ul className=" mt-5 flex gap-2 flex-col exo font-[300]">
+             <h4 className="md:text-2xl text-xl font-[700] raleway">About & Help</h4>
+             <ul className="md:mt-5 mt-2 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
                         <Link href="/">
                         About us
@@ -131,8 +131,8 @@ export const Footer = () => {
                 </ul>
             </div>
              <div className="w-full">
-             <h4 className="text-2xl font-[700] raleway">We Offers</h4>
-             <ul className=" mt-5 flex gap-2 flex-col exo font-[300]">
+             <h4 className="md:text-2xl text-xl font-[700] raleway">We Offers</h4>
+             <ul className="md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                 <li className="transition flex gap-4">
                        <p>
                            <span className="font-semibold">
@@ -149,15 +149,16 @@ export const Footer = () => {
                         </p>
                        
                     </li>
-                    <li className="transition flex gap-4 mt-5">
+                    <li className="transition md:flex gap-4 mt-5 hidden">
                     <img src="/images/web/icons/acceptcard.svg" alt="acceptcard" className="size-auto" />
                        
                     </li>
                 </ul>
             </div>
         </div>
+
         <div className=" bg-rose-600 p-2 w-full text-center">
-          <h5 className="font-semibold raleway text-white">© Copyright 2024. GiftBox. All Rights Reserved.</h5>
+          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">© Copyright 2024. GiftBox. All Rights Reserved.</h5>
         </div>
     </footer>
    )

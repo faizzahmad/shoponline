@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
 import { getLatestCategories } from "@/actions/category";
+import MobileSidebar from "./mobile-sidebar";
 
  export const SiteNavbar = async() => {
     const externalUser = await currentUser(); 
@@ -20,10 +21,11 @@ import { getLatestCategories } from "@/actions/category";
       };
     return (
         <>
-         <nav className=" bg-indigo-50 py-4 px-10 flex items-center justify-between raleway">
-            <div className="flex gap-16 items-center">
+         <nav className=" bg-indigo-50 py-4 xl:px-10 px-5  raleway lg:border-b-0  border-b-[5px] border-rose-600">
+            <div className="hidden lg:flex items-center justify-between">
+                <div className="flex xl:gap-16 gap-6 items-center">
             <Image src={'/images/web/logo.svg'} alt="Logo" height={40} width={100}></Image>
-            <ul className=" flex gap-x-10 font-semibold uppercase text-rose-600">
+            <ul className=" xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-rose-600 hidden">
                 <li>
                     <Link href={'/'}>Offres</Link>
                 </li>
@@ -32,7 +34,7 @@ import { getLatestCategories } from "@/actions/category";
                 </li>
                
             </ul>
-            <form className="w-[500px] flex bg-white h-12 items-center rounded-full shadow-sm border">
+            <form className="xl:w-[500px] w-[400px] flex bg-white h-12 items-center rounded-full shadow-sm border">
             <Button variant={'icon'} className=" bg-transparent ">
                     <SearchIcon className="size-5"/>
                 </Button>
@@ -94,8 +96,12 @@ import { getLatestCategories } from "@/actions/category";
                     <span className="text-xs font-semibold">Cart</span>
             </div>
             </div>
+            </div>
+            <div className="lg:hidden">
+                <MobileSidebar/>
+            </div>
          </nav>
-         <div className="w-full h-8 bg-rose-600 text-lg flex items-center justify-center gap-8 text-white font-[500] raleway">
+         <div className="w-full h-8 bg-rose-600 xl:text-lg text-[1rem] hidden lg:flex items-center justify-center xl:gap-8 gap-5 text-white font-[500] raleway">
                   
         {
             categories.map((category) => (

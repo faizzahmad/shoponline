@@ -10,7 +10,7 @@ interface CategoriesSliderProps {
 
 export const CategoriesSlider = ({categories} : CategoriesSliderProps) => {
     return (
-        <div className="w-full py-5 px-16 flex flex-wrap gap-5 justify-between border-t-[5px] border-rose-500">
+        <div className="w-full py-5 lg:px-16 px-5 flex flex-wrap gap-5 lg:justify-between justify-center border-t-[5px] border-rose-500">
         {
             categories.map((item) => (
                   <Link href={'/'} className="flex flex-col  gap-2 items-center" key={item.id}>
