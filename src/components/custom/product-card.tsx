@@ -18,7 +18,6 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({
-    id,
     title,
     images,
     price,
