@@ -8,6 +8,7 @@ import { SocialLinks } from "./_components/social-links";
 import { getLatestCategories } from "@/actions/category";
 
 
+
 export default async function Home() {
 const categories = await getLatestCategories(10);
  const categoriesData = categories.map((category) => ({

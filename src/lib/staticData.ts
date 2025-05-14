@@ -419,8 +419,24 @@ export const demoNewArrivals = [
         ],
         id: 'slice-cake'
     },
-   
-    
-   
-     
+       
+]
+
+export const sortItems = [
+    {
+        name : 'New',
+        value : 'new'
+    },
+    {
+        name : 'Best Seller',
+        value : 'best-seller'
+    },
+    {
+        name : 'Price: Low to High',
+        value : 'lowToHigh'
+    },
+    {
+        name : 'Price: High to Low',
+        value : 'highToLow'
+    }
 ]

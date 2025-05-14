@@ -37,6 +37,7 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
                                         title={item.title}
                                         price={item.price}
                                         discountedPrice={item.discountedPrice}
+                                        imageContainerClassName="relative md:h-[250px] h-[200px] w-full"
                                     />
                                 </CarouselItem>
                             ))

@@ -4,6 +4,8 @@ import {
   ClerkProvider
 } from '@clerk/nextjs';
 import NextTopLoader from 'nextjs-toploader';
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { Toaster } from "sonner";
 
 
 export const metadata: Metadata = {
@@ -21,7 +23,10 @@ export default function RootLayout({
       <body>
         <NextTopLoader color="#F43F5E" />
         <ClerkProvider appearance={{ layout: { unsafe_disableDevelopmentModeWarnings: true } }}>
-          {children}
+          <NuqsAdapter>
+            <Toaster/>
+            {children}
+          </NuqsAdapter>
         </ClerkProvider>
       </body>
     </html>

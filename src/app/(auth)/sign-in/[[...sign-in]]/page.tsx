@@ -1,7 +1,15 @@
-import { SignIn } from '@clerk/nextjs'
 import Image from 'next/image';
 import Link from 'next/link';
-const Signin = () => {
+import { redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
+import { SignInPage } from '../../_components/sign-in-page';
+const Signin = async() => {
+  const { userId } = await auth();
+  
+ if(userId){
+    redirect('/');
+ }
+
     return (  
         <div className="w-full h-screen flex items-center justify-center exo">
             <div className=" h-full lg:w-[60%] mid:w-[50%] relative signin-bg hidden mid:block">
@@ -19,7 +27,8 @@ const Signin = () => {
                     <p className=' px-10 mid:text-sm text-xs text-center raleway'>Welcome back, busy bee! Log in now to continue your
                     bee-autiful shopping journey with us</p>
                 </div>
-                <SignIn afterSignUpUrl={'/'}/>
+               
+                <SignInPage/>
                 <div>
                     <p className='mid:text-sm text-xs text-center '>Don’t have an account</p>
                    <p className='mid:text-sm text-xs raleway font-semibold text-center mt-2'>

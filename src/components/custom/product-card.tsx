@@ -9,12 +9,14 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { cn } from "@/lib/utils";
 interface ProductCardProps {
     id: string;
     title: string;
     images: string[];
     price: number;
     discountedPrice?: number;
+    imageContainerClassName : string;
 }
 
 export const ProductCard = ({
@@ -22,6 +24,7 @@ export const ProductCard = ({
     images,
     price,
     discountedPrice,
+    imageContainerClassName
 } : ProductCardProps) => {
     return (
         <div className="w-full p-4 shadow-sm rounded-xl bg-indigo-50">
@@ -37,7 +40,7 @@ export const ProductCard = ({
                        {
                         images.map((item,index) => (
                              <CarouselItem key={index}>
-                            <div className="relative md:h-[250px] h-[200px] w-full">
+                            <div className={cn(imageContainerClassName)}>
                                 <Image src={item} alt="productImage" className=" rounded-xl w-full h-full object-cover" fill />
                             </div>
                         </CarouselItem>

@@ -1,8 +1,14 @@
-import { SignUp } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { SignUnPage } from "../../_components/sign-up-Page";
 
-const SignupPage = () => {
+const SignupPage = async() => {
+    const externalUser = await currentUser();
+     if(externalUser){
+        redirect('/');
+     }
     return ( 
         <div className="w-full h-screen flex items-center justify-center exo">
         <div className=" h-full lg:w-[60%] mid:w-[50%] relative signup-bg hidden mid:block">
@@ -18,7 +24,8 @@ const SignupPage = () => {
                                 </Link>
                 <h2 className=' mid:text-[2.5rem] text-[1.5rem] font-bold'>Sign Up</h2>
             </div>
-            <SignUp afterSignUpUrl={'/'}/>
+         
+           <SignUnPage/>
             <div>
                 <p className='mid:text-sm text-xs text-center '>
                     Already have an account ? 
