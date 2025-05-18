@@ -3,12 +3,11 @@ import mongoose from "mongoose";
 const subCategorySchema = new mongoose.Schema({
     title : {
         type: String,
-        required: true,
-        unique: true,
+        required: false,
     },
     image : {
         type: String,
-        required: true,
+        required: false,
     }
 }, { timestamps: true });
 
