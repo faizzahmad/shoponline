@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
-import { SignInPage } from '../../_components/sign-in-page';
+import {SignInPage} from '@/app/(auth)/_components/sign-in-page';
 const Signin = async() => {
   const { userId } = await auth();
   

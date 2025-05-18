@@ -2,7 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { SignUnPage } from "../../_components/sign-up-Page";
+import { SignUnPage } from "@/app/(auth)/_components/sign-up-page";
 
 const SignupPage = async() => {
     const externalUser = await currentUser();
