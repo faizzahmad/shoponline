@@ -15,7 +15,9 @@ export async function POST(req: Request) {
             subCategories
         });
         await newCategory.save();
-        return new Response(JSON.stringify(newCategory), {
+        return new Response(JSON.stringify({
+            message : "Category created successfully",
+        }), {
             status: 201,
         });
     } catch (error) {
@@ -66,7 +68,9 @@ export async function DELETE(req: Request) {
                 status: 404,
             });
         }
-        return new Response(JSON.stringify(deletedCategory), {
+        return new Response(JSON.stringify(
+            { message: "Category deleted successfully" } // Return a success message
+        ), {
             status: 200,
         });
     } catch (error) {
@@ -95,7 +99,9 @@ export async function PUT(req: Request) {
                 status: 404,
             });
         }
-        return new Response(JSON.stringify(updatedCategory), {
+        return new Response(JSON.stringify({
+            message: "Category updated successfully",
+        }), {
             status: 200,
         });
     } catch (error) {

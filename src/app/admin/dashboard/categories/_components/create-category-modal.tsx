@@ -11,12 +11,17 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { postData, updateDatawithData } from "@/utils/apiCall";
+import { postData, updateDataWithData } from "@/utils/apiCall";
 import { useAlertDialog } from "../hooks/user-alert-dialog";
 
 interface CreateCategoryModalProps {
     handelGetCategories: () => void;
 }
+interface ApiCategoryProps {
+    message : string;
+}
+
+
 export const CreateCategoryModal = ({ handelGetCategories }: CreateCategoryModalProps) => {
     const { isOpen, setIsOpen, close } = useCreateCategoryModal();
     const { setCategoryId, categoryId } = useAlertDialog();
@@ -50,12 +55,13 @@ export const CreateCategoryModal = ({ handelGetCategories }: CreateCategoryModal
             return;
         } else if (!categoryId || !isOpen) {
             setLoader(true);
-            try {
-                const response = await postData('category', {
-                    title: categoryName,
+            const data = {
+                 title: categoryName,
                     image: uploadedImageUrl,
                     subCategories: [{}]
-                })
+            }
+            try {
+                const response = await postData<typeof data, ApiCategoryProps>('category', data)
                 if (response) {
                     toast.success("Category created successfully")
                     setUploadedImageUrl("");
@@ -75,11 +81,12 @@ export const CreateCategoryModal = ({ handelGetCategories }: CreateCategoryModal
         } else {
             setLoader(true);
             try {
-                const response = await updateDatawithData(`category?id=${categoryId}`, {
+                const data  = {
                     title: categoryName,
                     image: uploadedImageUrl,
-                    subCategories: [{}]
-                })
+                    
+                }
+                const response = await updateDataWithData<typeof data, ApiCategoryProps>(`category?id=${categoryId}`,data )
                 if (response) {
                     toast.success("Category updated successfully")
                     setUploadedImageUrl("");

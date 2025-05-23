@@ -11,6 +11,13 @@ import { toast } from "sonner";
 import { DeleteAlert } from "./delete-alert";
 import { useAlertDialog } from "../hooks/user-alert-dialog";
 
+interface CategoryProps{
+   _id : string;
+   title : string;
+image : string;
+    createdAt : string;
+    
+}
 
 export const CategoriesTab = () => {
     const {open} = useCreateCategoryModal();

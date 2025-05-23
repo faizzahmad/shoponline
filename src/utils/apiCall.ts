@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
+// Axios instance
 const axiosInstance = () => {
   const instance = axios.create({
     headers: {
@@ -11,48 +12,57 @@ const axiosInstance = () => {
   return instance;
 };
 
-export const fetchData = async (endpoint: string) => {
+// Fetch data (GET)
+export const fetchData = async <T>(endpoint: string): Promise<T> => {
   try {
     const response = await axiosInstance().get(`${BASE_URL}/${endpoint}`);
-    return response.data;
+    return response.data as T;
   } catch (error) {
     throw error;
   }
 };
 
-
-export const postData = async (endpoint: string, data: any) => {
+// Post data (POST)
+export const postData = async <TRequest, TResponse>(
+  endpoint: string,
+  data: TRequest
+): Promise<TResponse> => {
   try {
     const response = await axiosInstance().post(`${BASE_URL}/${endpoint}`, data);
-    return response.data;
+    return response.data as TResponse;
   } catch (error) {
     throw error;
   }
 };
 
-
-export const deleteData = async (endpoint: string) => {
+// Delete data (DELETE)
+export const deleteData = async <T>(endpoint: string): Promise<T> => {
   try {
     const response = await axiosInstance().delete(`${BASE_URL}/${endpoint}`);
-    return response.data;
+    return response.data as T;
   } catch (error) {
     throw error;
   }
 };
 
-export const updateData = async (endpoint: string) => {
+// Update data without body (PUT)
+export const updateData = async <T>(endpoint: string): Promise<T> => {
   try {
     const response = await axiosInstance().put(`${BASE_URL}/${endpoint}`);
-    return response.data;
+    return response.data as T;
   } catch (error) {
     throw error;
   }
 };
 
-export const updateDatawithData = async (endpoint: string, data: any) => {
+// Update data with body (PUT)
+export const updateDataWithData = async <TRequest, TResponse>(
+  endpoint: string,
+  data: TRequest
+): Promise<TResponse> => {
   try {
     const response = await axiosInstance().put(`${BASE_URL}/${endpoint}`, data);
-    return response.data;
+    return response.data as TResponse;
   } catch (error) {
     throw error;
   }
