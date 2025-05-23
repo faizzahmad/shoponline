@@ -16,7 +16,10 @@ interface CategoryProps{
    title : string;
 image : string;
     createdAt : string;
-    
+}
+
+interface DeleteCategoryProps{
+    message : string;
 }
 
 export const CategoriesTab = () => {
@@ -27,7 +30,7 @@ export const CategoriesTab = () => {
     const handelGetCategories = async () => {
         setIsCategoryLoading(true);
         try{
-            const response = await fetchData('category');
+            const response = await fetchData<CategoryProps>('category');
        
            if (response && Array.isArray(response)) {
            setCategories(response as Category[]);
@@ -48,7 +51,7 @@ export const CategoriesTab = () => {
     const handelDelete = async () => {
          setIsCategoryLoading(true);
          try{
-            const response = await deleteData(`category?id=${categoryId}`);
+            const response = await deleteData<DeleteCategoryProps>(`category?id=${categoryId}`);
             if(response){
                 toast.success("Category deleted successfully")
                 setIsOpenAlert(false);
