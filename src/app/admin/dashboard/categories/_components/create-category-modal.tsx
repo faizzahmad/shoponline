@@ -28,20 +28,22 @@ export const CreateCategoryModal = ({ handelGetCategories }: CreateCategoryModal
     const [uploadedImageUrl, setUploadedImageUrl] = useState("");
     const [categoryName, setCategoryName] = useState("");
     const [loader, setLoader] = useState(false);
-    const [isPending, startTransition] = useTransition();
+    const [isPending, setIsPending] = useState(false);
 
     useEffect(() => {
         if (!categoryId || !isOpen) return;
-
-        startTransition(() => {
-            fetch(`/api/category/${categoryId}`)
+        setIsPending(true);
+        fetch(`/api/category/${categoryId}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setCategoryName(data.title);
                     setUploadedImageUrl(data.image)
                 })
-                .catch((err) => console.error(err));
-        });
+                .catch((err) => console.error(err)).finally(() => {
+                    setIsPending(false);
+                }
+                )
+      
     }, [categoryId, isOpen]);
 
 
@@ -110,6 +112,8 @@ export const CreateCategoryModal = ({ handelGetCategories }: CreateCategoryModal
         <CustomModal open={isOpen} onOpenChange={() => {
             setIsOpen(false);
             setCategoryId('');
+            setCategoryName("");
+            setUploadedImageUrl("");
         }}>
             <DialogHeader>
                 <DialogTitle asChild>
