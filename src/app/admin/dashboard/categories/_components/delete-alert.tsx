@@ -16,10 +16,10 @@ import {
 import { useAlertDialog } from "../hooks/user-alert-dialog";
 
 export const DeleteAlert =  ({title,description,handelDelete} :DeleteAlertProps ) => {
-   const {isOpen,setIsOpen,setCategoryId} = useAlertDialog();
+   const {isOpen,setIsOpenAlert,setCategoryId} = useAlertDialog();
 return (
         <AlertDialog open={isOpen} onOpenChange={() => {
-          setIsOpen(false);
+          setIsOpenAlert(false);
           setCategoryId('');
         }} >
   <AlertDialogContent className="raleway">

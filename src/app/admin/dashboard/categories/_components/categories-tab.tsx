@@ -11,9 +11,10 @@ import { toast } from "sonner";
 import { DeleteAlert } from "./delete-alert";
 import { useAlertDialog } from "../hooks/user-alert-dialog";
 
+
 export const CategoriesTab = () => {
     const {open} = useCreateCategoryModal();
-    const {categoryId,setIsOpen,setCategoryId} = useAlertDialog();
+    const {categoryId,setIsOpenAlert,setCategoryId} = useAlertDialog();
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const handelGetCategories = async () => {
@@ -43,7 +44,7 @@ export const CategoriesTab = () => {
             const response = await deleteData(`category?id=${categoryId}`);
             if(response){
                 toast.success("Category deleted successfully")
-                setIsOpen(false);
+                setIsOpenAlert(false);
                 setCategoryId('');
                 handelGetCategories();
             }
@@ -58,7 +59,7 @@ export const CategoriesTab = () => {
 
     return (
         <>
-        <CreateCategoryModal handelGetCategories={handelGetCategories}/>
+        <CreateCategoryModal handelGetCategories={handelGetCategories} />
         <DeleteAlert title={"Are you sure you want to delete this category?"} description={
             "This action cannot be undone. This will delete all the subcategories and products under this category."
         } 

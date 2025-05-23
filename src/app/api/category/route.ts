@@ -3,9 +3,9 @@ import { connectToDb } from "@/lib/connectToDb";
 import { verifyAuth } from "@/utils/verifyToken";
 
 export async function POST(req: Request) {
-     const isVrefied = await verifyAuth();
-     if(!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-   
+    const isVrefied = await verifyAuth();
+    if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+
     await connectToDb();
     const { title, image, subCategories } = await req.json();
     try {
@@ -29,14 +29,14 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-     const isVrefied = await verifyAuth();
-     if(!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-   
+    const isVrefied = await verifyAuth();
+    if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+
     await connectToDb();
     try {
-        
+
         const categories = await Category.find({}, '_id title image createdAt').sort({ createdAt: -1 });
-        
+
         return new Response(JSON.stringify(categories), {
             status: 200,
         });
@@ -50,13 +50,13 @@ export async function GET() {
 
 export async function DELETE(req: Request) {
     const isVrefied = await verifyAuth();
-    if(!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     await connectToDb();
-      const url = new URL(req.url);
-  const id = url.searchParams.get("id");
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
     if (!id) {
         return new Response(JSON.stringify({ error: "ID is required" }), {
-        status: 400,
+            status: 400,
         });
     }
     try {
@@ -75,4 +75,34 @@ export async function DELETE(req: Request) {
             status: 500,
         });
     }
+}
+export async function PUT(req: Request) {
+    const isVrefied = await verifyAuth();
+    if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    await connectToDb();
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+    const { title, image } = await req.json();
+    if (!id) {
+        return new Response(JSON.stringify({ error: "ID is required" }), {
+            status: 400,
+        });
+    }
+    try {
+        const updatedCategory = await Category.findByIdAndUpdate(id, { title, image }, { new: true });
+        if (!updatedCategory) {
+            return new Response(JSON.stringify({ error: "Category not found" }), {
+                status: 404,
+            });
+        }
+        return new Response(JSON.stringify(updatedCategory), {
+            status: 200,
+        });
+    } catch (error) {
+        console.error("Error updating category:", error);
+        return new Response(JSON.stringify({ error: "Error updating category" }), {
+            status: 500,
+        });
+    }
+
 }

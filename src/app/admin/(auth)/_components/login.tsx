@@ -41,6 +41,7 @@ export const Login = () => {
                 duration: 3000,
                 position: "bottom-center",
             });
+            console.log(err);
 
         } finally {
             setLoader(false);

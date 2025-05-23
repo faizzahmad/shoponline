@@ -3,7 +3,7 @@
 import { useQueryState, parseAsBoolean, parseAsString } from 'nuqs';
 
 export const useAlertDialog = () => {
-    const [isOpen, setIsOpen] = useQueryState(
+    const [isOpen, setIsOpenAlert] = useQueryState(
         'delete-category-modal',
         parseAsBoolean.withDefault(false).withOptions({ clearOnDefault: true })
     );
@@ -15,11 +15,11 @@ export const useAlertDialog = () => {
 
     const open = (id: string) => {
         setCategoryId(id);
-        setIsOpen(true);
+        setIsOpenAlert(true);
     };
 
     const close = () => {
-        setIsOpen(false);
+        setIsOpenAlert(false);
         setCategoryId(''); 
     };
 
@@ -28,7 +28,7 @@ export const useAlertDialog = () => {
         categoryId,
         open,
         close,
-        setIsOpen,
+        setIsOpenAlert,
         setCategoryId,
     };
 };

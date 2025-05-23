@@ -12,3 +12,5 @@ export const getLatestCategories = async (limit : number) => {
         throw new Error("Error fetching categories");
     }
 }
+
+
