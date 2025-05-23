@@ -4,7 +4,7 @@ import { useCreateCategoryModal } from "../hooks/use-create-category-modal";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { DialogHeader } from "@/components/ui/dialog";
 import { UploadDropzone } from "@/utils/uploadthing";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
