@@ -66,6 +66,7 @@ export async function POST(request: Request) {
         });
 
     } catch (error) {
+      console.error("Error creating admin:", error);
         return new Response("Internal Server Error", { status: 500 });
     }
 
