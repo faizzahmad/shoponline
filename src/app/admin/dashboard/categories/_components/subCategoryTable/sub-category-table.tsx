@@ -24,15 +24,15 @@ import {
 import { Button } from "@/components/ui/button";
 
 
-interface CategoryDataTableProps<TData, TValue> {
+interface SubCategoryDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
 }
 
-export function CategoryDataTable<TData, TValue>({
+export function SubCategoryDataTable<TData, TValue>({
   columns,
   data,
-}: CategoryDataTableProps<TData, TValue>) {
+}: SubCategoryDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -54,7 +54,7 @@ export function CategoryDataTable<TData, TValue>({
   })
 
   return (
-    <div className="exo">
+    <div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Search by Name..."

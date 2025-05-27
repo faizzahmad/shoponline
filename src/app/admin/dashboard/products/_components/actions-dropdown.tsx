@@ -1,17 +1,15 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useAlertDialog } from "../../hooks/user-alert-dialog";
-import { Category } from "./columns";
-import { useCreateCategoryModal } from "../../hooks/use-create-category-modal";
+import { Product } from "./columns";
+import { useProductDialog } from "../hooks/use-product-alert";
 
 interface ActionsDropdownProps {
-    category: Category;
+   product : Product
 }
 
-export function ActionsDropdown({ category }:ActionsDropdownProps) {
-  const { setIsOpenAlert,setCategoryId } = useAlertDialog();
-   const {setIsOpen} = useCreateCategoryModal();
+export function ActionsDropdown({ product }:ActionsDropdownProps) {
+  const { setIsOpenAlert,setProductId } = useProductDialog();
   
   return (
     <DropdownMenu>
@@ -27,18 +25,18 @@ export function ActionsDropdown({ category }:ActionsDropdownProps) {
         className="flex gap-2 items-center"
         onClick={() => {
             setIsOpenAlert(true);
-            setCategoryId(category._id);
+            setProductId(product._id);
         }}>
           <Trash/>
           Delete</DropdownMenuItem>
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
         className="flex gap-2 items-center"
         onClick={() => {
           setIsOpen(true);
           setCategoryId(category._id);
         }}>
           <Edit/>
-          Edit</DropdownMenuItem>
+          Edit</DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CategoriesTab } from "./_components/categories-tab";
 import { verifyAuth } from "@/utils/verifyToken";
 import { redirect } from "next/navigation";
+import { SubCategoryTab } from "./_components/sub-category-tab";
 
 const Categories = async () => {
     const isVrefied = await verifyAuth();
@@ -9,13 +10,15 @@ const Categories = async () => {
     return (
         <Tabs defaultValue="category" className="w-full exo p-3">
             <TabsList className="w-full flex h-[60px] bg-transparent gap-3">
-                <TabsTrigger value="category" className="w-[50%] py-3 text-lg  data-[state=active]:bg-gray-50 border rounded data-[state=active]:shadow-none bg-white">Category</TabsTrigger>
-                <TabsTrigger value="subcategory" className="w-[50%] py-3 text-lg  data-[state=active]:bg-gray-50 border rounded data-[state=active]:shadow-none bg-white">Sub Category</TabsTrigger>
+                <TabsTrigger value="category" className="w-[50%] py-3 text-lg  data-[state=active]:bg-white border rounded data-[state=active]:shadow-none bg-gray-50">Category</TabsTrigger>
+                <TabsTrigger value="subcategory" className="w-[50%] py-3 text-lg  data-[state=active]:bg-white border rounded data-[state=active]:shadow-none bg-gray-50">Sub Category</TabsTrigger>
             </TabsList>
             <TabsContent value="category">
                 <CategoriesTab />
             </TabsContent>
-            <TabsContent value="subcategory">subcategory</TabsContent>
+            <TabsContent value="subcategory">
+                <SubCategoryTab/>
+            </TabsContent>
         </Tabs>
     );
 }

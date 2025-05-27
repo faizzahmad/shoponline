@@ -17,6 +17,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+interface LoginRespose {
+ message: string;
+ token : string;
+}
+
 export const Login = () => {
     const [loader, setLoader] = useState(false);
     const router = useRouter();
@@ -27,7 +32,7 @@ export const Login = () => {
         const email = formData.get("email");
         const password = formData.get("password");
         try {
-            const response = await fetchData(`admin-login?email=${email}&password=${password}`);
+            const response = await fetchData<LoginRespose>(`admin-login?email=${email}&password=${password}`);
             if (response) {
                 toast.success("Login successful", {
                     position: "bottom-center",

@@ -24,15 +24,15 @@ import {
 import { Button } from "@/components/ui/button";
 
 
-interface CategoryDataTableProps<TData, TValue> {
+interface ProductDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
 }
 
-export function CategoryDataTable<TData, TValue>({
+export function ProductDataTable<TData, TValue>({
   columns,
   data,
-}: CategoryDataTableProps<TData, TValue>) {
+}: ProductDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -54,18 +54,18 @@ export function CategoryDataTable<TData, TValue>({
   })
 
   return (
-    <div className="exo">
+    <div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Search by Name..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("productName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
+            table.getColumn("productName")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm bg-white"
+          className="max-w-sm"
         />
       </div>
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

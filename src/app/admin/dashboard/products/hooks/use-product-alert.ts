@@ -2,41 +2,34 @@
 
 import { useQueryState, parseAsBoolean, parseAsString } from 'nuqs';
 
-export const useAlertDialog = () => {
+export const useProductDialog = () => {
     const [isOpen, setIsOpenAlert] = useQueryState(
-        'delete-category-modal',
+        'delete-product-modal',
         parseAsBoolean.withDefault(false).withOptions({ clearOnDefault: true })
     );
 
-    const [categoryId, setCategoryId] = useQueryState(
-        'category-id',
-        parseAsString.withDefault('').withOptions({ clearOnDefault: true })
-    );
-
-    const [subCategoryId, setSubCategoryId] = useQueryState(
-        'subCategory-id',
+    const [productId, setProductId] = useQueryState(
+        'product-id',
         parseAsString.withDefault('').withOptions({ clearOnDefault: true })
     );
 
 
     const open = (id: string) => {
-        setCategoryId(id);
+        setProductId(id);
         setIsOpenAlert(true);
     };
 
     const close = () => {
         setIsOpenAlert(false);
-        setCategoryId(''); 
+        setProductId(''); 
     };
 
     return {
         isOpen,
-        categoryId,
+        productId,
         open,
         close,
         setIsOpenAlert,
-        setCategoryId,
-        subCategoryId,
-        setSubCategoryId,
+        setProductId,
     };
 };

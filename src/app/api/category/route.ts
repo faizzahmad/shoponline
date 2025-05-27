@@ -80,6 +80,7 @@ export async function DELETE(req: Request) {
         });
     }
 }
+
 export async function PUT(req: Request) {
     const isVrefied = await verifyAuth();
     if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
