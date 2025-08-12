@@ -269,7 +269,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             </h5>
             <h6>
               <span className="text-gray-500 exo">
-                ₹ {
+                {"\u20B9"} {
                   orderDetails?.items.reduce((total, item) => total + (item.originalPrice * item.quantity), 0).toFixed(2)
                 }
               </span>
@@ -297,7 +297,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             orderDetails?.totalAmount && (
                <h6>
               <span className="text-rose-500 exo">
-                ₹ {
+                {"\u20B9"} {
                  (orderDetails?.items.reduce((total, item) => total + (item.originalPrice * item.quantity), 0) - orderDetails?.totalAmount ).toFixed(2)
                 }
               </span>
@@ -312,7 +312,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             </h5>
             <h6>
               <span className="text-black font-semibold exo text-lg">
-                ₹ {
+                {"\u20B9"} {
                   (orderDetails?.totalAmount)?.toFixed(2)
                 }
               </span>
@@ -337,14 +337,14 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             <dl className="grid sm:grid-cols-5 gap-x-3">
               <dt className="col-span-3 font-semibold text-gray-800">Discount Price
 </dt>
-              <dd className="col-span-2 text-gray-500 first-letter exo"> ₹ 39.00</dd>
+              <dd className="col-span-2 text-gray-500 first-letter exo"> {"\u20B9"} 39.00</dd>
             </dl>
 
            
 
             <dl className="grid sm:grid-cols-5 gap-x-3">
               <dt className="col-span-3 font-semibold text-gray-800">Subtotal </dt>
-              <dd className="col-span-2 text-gray-500 exo">₹ 0.00</dd>
+              <dd className="col-span-2 text-gray-500 exo">{"\u20B9"} 0.00</dd>
             </dl>
           </div> */}
           {/* End Grid */}
@@ -361,7 +361,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
         </div>
       </div>
 
-      <p className="mt-5 text-sm text-gray-500">© 2025 The gift box</p>
+      <p className="mt-5 text-sm text-gray-500">{"\u00A9"} 2025 The gift box</p>
     </div>
     
   </div>

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     
 }   
 
-export async function GET(request: Request) {
+export async function GET() {
     const isVrefied = await verifyAuth();
     if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     await connectToDb();

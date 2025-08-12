@@ -76,10 +76,10 @@ export const ProductCard = ({
                 <h5 className="md:text-[1.2rem] text-[1rem] font-[600] exo">{title}</h5>
                 <p className="md:text-sm text-xs font-[500] raleway truncate w-full text-neutral-600">{description} </p>
                 <div className="flex items-center gap-3">
-                    <p className="text-rose-600 font-[700] md:text-[1rem] text-sm exo my-2">₹ {price}</p>
+                    <p className="text-rose-600 font-[700] md:text-[1rem] text-sm exo my-2">{"\u20B9"} {price}</p>
                     {
                         discountedPrice && (
-                            <p className=" line-through text-muted-foreground md:text-[1rem] text-sm">₹ {discountedPrice}</p>
+                            <p className=" line-through text-muted-foreground md:text-[1rem] text-sm">{"\u20B9"} {discountedPrice}</p>
                         )
                     }
                 </div>

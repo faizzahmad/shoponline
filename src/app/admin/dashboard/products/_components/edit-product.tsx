@@ -41,19 +41,19 @@ export const EditProduct = () => {
         longDescription: '',
         varients : []
     })
-const [colorVarient, setColorVarient] = useState(
-    {
-        type: 'color',
-        products: [] as { value: string; productId: string; image : string }[]
-    }
-);
+// const [colorVarient, setColorVarient] = useState(
+//     {
+//         type: 'color',
+//         products: [] as { value: string; productId: string; image : string }[]
+//     }
+// );
 
-const [sizeVarient, setSizeVarient] = useState(
-    {
-        type: 'size',
-        products: [] as { size: string; productId: string; image : string }[]
-    }
-);
+// const [sizeVarient, setSizeVarient] = useState(
+//     {
+//         type: 'size',
+//         products: [] as { size: string; productId: string; image : string }[]
+//     }
+// );
 
 
     return (

@@ -105,7 +105,7 @@ export const SearchBar = () => {
                                                             <p className="md:text-sm text-xs text-gray-500 line-clamp-2">{product.shortDescription}</p>
 
 
-                                                            <span className="md:text-sm text-xs exo font-[500]">₹ {product.originalPrice}</span>
+                                                            <span className="md:text-sm text-xs exo font-[500]">{"\u20B9"} {product.originalPrice}</span>
                                                             <Button variant={'link'} className="float-right md:text-xs text-[10px] text-rose-600 mt-3">View Details <ChevronRight /></Button>
                                                         </div>
                                                     </Link>

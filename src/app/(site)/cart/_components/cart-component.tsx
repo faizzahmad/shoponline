@@ -639,7 +639,7 @@ export const CartComponent = () => {
                                         Total Price
                                     </span>
                                     <span className="exo font-semibold">
-                                        ₹ {totalPrice}
+                                        {"\u20B9"} {totalPrice}
                                     </span>
                                 </div>
 
@@ -658,7 +658,7 @@ export const CartComponent = () => {
                                         Discount Price
                                     </span>
                                     <span className="exo  text-green-500">
-                                        ₹ {totalDiscountPrice}
+                                        {"\u20B9"} {totalDiscountPrice}
                                     </span>
                                 </div>
 
@@ -667,7 +667,7 @@ export const CartComponent = () => {
                                         Subtotal
                                     </span>
                                     <span className="exo font-semibold text-rose-500">
-                                        ₹ {subtotal}
+                                        {"\u20B9"} {subtotal}
                                     </span>
                                 </div>
 
@@ -675,7 +675,7 @@ export const CartComponent = () => {
                                     {
                                         orderData.paymentMode === "onlinePayment" ? (
                                             <Button variant={'cart'} className="w-full raleway rounded-none exo" disabled={loading} onClick={handelPlaceOrderWithrazorpay}>
-                                                Continue to Payment ₹ {subtotal}
+                                                Continue to Payment {"\u20B9"} {subtotal}
                                                 {
                                                     loading && <Loader className="size-3 animate-spin ml-2" />
                                                 }
@@ -715,10 +715,10 @@ export const CartComponent = () => {
                                                 item.shortDescription
                                             }</p>
                                             <div className="flex items-center gap-3 mt-2">
-                                                <p className="text-rose-600 font-[600] text-sm exo">₹ {
+                                                <p className="text-rose-600 font-[600] text-sm exo">{"\u20B9"} {
                                                     item.originalPrice * item.quantity
                                                 }</p>
-                                                <p className="text-neutral-500 font-[300] text-xs exo line-through">₹
+                                                <p className="text-neutral-500 font-[300] text-xs exo line-through">{"\u20B9"}
                                                     {
                                                         item.discountPrice * item.quantity
                                                     }

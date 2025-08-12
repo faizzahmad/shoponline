@@ -1,20 +1,20 @@
 import Order from "@/lib/models/order-model";
 import { connectToDb } from "@/lib/connectToDb";
 import Cart from "@/lib/models/cart-model";
-type OrderItem = {
-    productId: string;
-    quantity: number;
-    originalPrice: number;
-    discountPrice: number;
-    productName: string;
-    images: string[];
-    productCategory: string;
-    productCategoryId: string;
-    productSubCategory: string;
-    productSubCategoryId: string;
-    shortDescription: string;  
-    longDescription: string;
-};
+// type OrderItem = {
+//     productId: string;
+//     quantity: number;
+//     originalPrice: number;
+//     discountPrice: number;
+//     productName: string;
+//     images: string[];
+//     productCategory: string;
+//     productCategoryId: string;
+//     productSubCategory: string;
+//     productSubCategoryId: string;
+//     shortDescription: string;  
+//     longDescription: string;
+// };
 
 
 export async function POST(req: Request) {

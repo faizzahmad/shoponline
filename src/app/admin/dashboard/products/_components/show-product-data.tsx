@@ -16,7 +16,7 @@ type DeleteProductProps = {
 
 export const ShowProductData = () => {
        const {setDescriptionPage} = useProductAdmin();
-       const { setIsOpenAlert, isOpen,productId } = useProductDialog();
+       const { setIsOpenAlert,productId } = useProductDialog();
        const [isLoading, setIsLoading] = useState(false);
          const [products, setProducts] = useState<Product[]>([]);
 

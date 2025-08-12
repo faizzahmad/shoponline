@@ -45,22 +45,22 @@ type GetProductDataprops = {
     varients: any[];
 };
 
-interface ProductDescriptionProps {
-    allCategory: {
-        _id: string;
-        title: string;
-        image: string;
-        createdAt: string;
-        updatedAt: string;
-        subCategories: {
-            _id: string;
-            title: string;
-            image: string;
-            createdAt: string;
-            updatedAt: string;
-        }[];
-    }[];
-}
+// interface ProductDescriptionProps {
+//     allCategory: {
+//         _id: string;
+//         title: string;
+//         image: string;
+//         createdAt: string;
+//         updatedAt: string;
+//         subCategories: {
+//             _id: string;
+//             title: string;
+//             image: string;
+//             createdAt: string;
+//             updatedAt: string;
+//         }[];
+//     }[];
+// }
 
 type subCategoryProps = {
     _id: string;
@@ -192,6 +192,7 @@ export const ProductDescription = () => {
             } catch (err) {
 
                 toast.error("Error adding product");
+                console.log("Error adding product:", err);
             } finally {
                 setLoader(false);
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Script from "next/script";
 declare global {
     interface Window {
@@ -42,7 +42,7 @@ export const PaymentComponent = ({amount,orderId} : PaymentComponentProsp) => {
       name: "The Gift Box",
       description: "Payment for your order",
       order_id: data.id,
-      handler: async (response: any) => {
+      handler: async () => {
         const absoluteUrl = `${process.env.NEXT_PUBLIC_API_URL}/invoice/${orderId}`;
         window.location.href = absoluteUrl;
       },

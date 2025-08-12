@@ -88,7 +88,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
     const message = `
 ${productInfo?.productName}
 
-Price: ₹${productInfo?.originalPrice}
+Price: {"\u20B9"}${productInfo?.originalPrice}
 
 Description: ${productInfo?.shortDescription}
 
@@ -312,12 +312,12 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                         <div className="mt-4">
                             <div className="flex items-center gap-3 mt-2">
-                                <p className="text-rose-600 font-[600] text-lg exo">₹
+                                <p className="text-rose-600 font-[600] text-lg exo">{"\u20B9"}
                                     {
                                         productInfo.originalPrice
                                     }
                                 </p>
-                                <p className="text-neutral-500 font-[300] text-base exo line-through">₹
+                                <p className="text-neutral-500 font-[300] text-base exo line-through">{"\u20B9"}
                                     {
                                         productInfo.discountPrice
                                     }

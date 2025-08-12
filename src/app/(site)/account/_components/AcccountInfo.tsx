@@ -22,7 +22,7 @@ return (
         <div>
             <h1 className="lg:text-3xl md:text-2xl text-xl font-bold raleway">Account Information</h1>
             <p className="text-rose-600 exo sm:text-xs text-[10px] font-[600] mt-2">Note : 
-                To chnage your phone no and name click in the user button on the top right corner and then click on "Profile" to edit your details
+                To chnage your phone no and name click in the user button on the top right corner and then click on &quot;Profile&quot; to edit your details
             </p>
         </div>
        <UserButton appearance={userButtonAppearance} />
@@ -53,7 +53,7 @@ return (
                 <div>
                     <h6 className="md:text-lg text-base md:font-semibold font-[500] raleway">Total Amount:</h6>
                     <p className="text-gray-600 font-[300] exo">
-                       ₹ {order.totalAmount}
+                       {"\u20B9"} {order.totalAmount}
                     </p>
                 </div>
               </div>

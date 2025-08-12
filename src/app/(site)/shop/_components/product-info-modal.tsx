@@ -21,7 +21,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { FaFacebook, FaWhatsapp } from "react-icons/fa";
@@ -87,7 +86,7 @@ export const ProductInfoModal = () => {
     const message = `
 ${data?.productName}
 
-Price: ₹${data?.originalPrice}
+Price: {"\u20B9"}${data?.originalPrice}
 
 Description: ${data?.shortDescription}
 
@@ -185,7 +184,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                                 </div>
-                                <h5 className="lg:text-xl sm:text-lg text-base font-semibold text-rose-600 flex gap-4 mt-3">₹ {data?.originalPrice}  <span className="line-through text-muted-foreground !font-[300]">₹ {data?.discountPrice}</span></h5>
+                                <h5 className="lg:text-xl sm:text-lg text-base font-semibold text-rose-600 flex gap-4 mt-3">{"\u20B9"} {data?.originalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {data?.discountPrice}</span></h5>
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>
 
                                 <p  className="raleway text-base mb-1">Product Quantity</p>

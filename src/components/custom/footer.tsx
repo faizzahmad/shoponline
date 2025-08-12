@@ -3,7 +3,7 @@
 import { getLatestCategories } from "@/actions/category";
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { use } from "react";
+
 
 
 
@@ -151,7 +151,7 @@ export const Footer = async() => {
         </div>
 
         <div className=" bg-rose-600 p-2 w-full text-center">
-          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">© Copyright 2024. GiftBox. All Rights Reserved.</h5>
+          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2024. GiftBox. All Rights Reserved.</h5>
         </div>
     </footer>
    )
