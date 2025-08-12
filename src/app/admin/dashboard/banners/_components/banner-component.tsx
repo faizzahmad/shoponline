@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react"
 import { useBannerAdmin } from "../hooks/user-banner";
 import { BannerModal } from "./banner-modal";
+import { FixedLoader } from "@/components/custom/fixed-loader";
 
 
 type Banner = {
@@ -46,8 +47,13 @@ handelFetchDetails();
 
 return(
    <>
-   <BannerModal/>
-    <div className="w-full h-full p-5">
+   {
+    isLoading && (
+        <FixedLoader/>
+    )
+   }
+   <BannerModal handelGetData={handelFetchDetails}/>
+    <div className="w-full p-5">
     <h5 className="text-2xl font-semibold exo">Banners</h5>
     <div className="w-full grid mt-10 grid-cols-3 gap-8">
        {

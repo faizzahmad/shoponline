@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useAlertDialog } from "../../hooks/user-alert-dialog";
 import { SubCategory } from "./columns";
-import { useCreateCategoryModal } from "../../hooks/use-create-category-modal";
 import { useCreateSubCategoryModal } from "../../hooks/use-subcategory-modal";
 
 interface SubCatActionsDropdownProps {

@@ -27,7 +27,6 @@ export async function POST(request: Request) {
         await product.save();
         return new Response(JSON.stringify({
             message: "Product created successfully",
-            productId: product._id
         }), {
             status: 201,
         });
@@ -47,7 +46,7 @@ export async function GET() {
     if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     await connectToDb();
     try {
-        const products = await Product.find({});
+        const products = await Product.find({}).sort({ createdAt: -1 }).select("-__v");
         return new Response(JSON.stringify(products), {
             status: 200,
         });

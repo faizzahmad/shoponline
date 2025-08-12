@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SignUnPage } from "@/app/(auth)/_components/sign-up-page";
+import { RedirectLink } from "../../_components/redirect-link";
 
 const SignupPage = async() => {
     const externalUser = await currentUser();
@@ -31,7 +32,7 @@ const SignupPage = async() => {
                     Already have an account ? 
                 </p>
                 <p className='mid:text-sm text-xs raleway font-semibold text-center mt-1'>
-                   <Link href={'/sign-in'} className=' underline text-rose-500' >Log-in</Link>
+                  <RedirectLink href='sign-in' text='Login'/>
                    </p>
                
             </div>

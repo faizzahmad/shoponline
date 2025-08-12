@@ -1,4 +1,4 @@
-import { useQueryState, parseAsString, parseAsArrayOf } from 'nuqs';
+import { useQueryState, parseAsString, parseAsArrayOf,parseAsInteger } from 'nuqs';
 
 export const useCategoryDropdown = () => {
     const [category, setCategory] = useQueryState(
@@ -11,10 +11,27 @@ export const useCategoryDropdown = () => {
         parseAsArrayOf(parseAsString).withDefault([]).withOptions({ clearOnDefault: true })
     );
 
+    const [sortBy, setSortBy] = useQueryState(
+        'sortBy',
+        parseAsString.withDefault('recommended').withOptions({ clearOnDefault: true })
+    );
+
+
+    const [page, setPage] = useQueryState(
+        'page',
+        parseAsInteger.withDefault(1).withOptions({ clearOnDefault: true })
+    );
+
+   
+    // Function to reset filters
     return {
         category,
         subcategory,
         setCategory,
         setSubcategory,
+        sortBy,
+        setSortBy,
+        page,
+        setPage,
     };
 };

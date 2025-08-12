@@ -23,7 +23,7 @@ const categoriesData = categories.map((category) => ({
 }));
     return ( 
         <div className="w-full flex gap-5">
-           <div className="w-64 h-screen border-r p-5 overflow-y-auto">
+           <div className="w-64 h-screen border-r p-5 overflow-y-auto hidden md:block">
             <ShopSidebar categories={categoriesData}/>
            </div>
            <div className="flex-1 h-screen overflow-y-auto p-5">

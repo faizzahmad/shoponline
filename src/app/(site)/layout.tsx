@@ -1,5 +1,6 @@
 import { Footer } from "@/components/custom/footer"
 import { SiteNavbar } from "./_components/site-navbar"
+import { BottomNavigation } from "./_components/bottom-navigation"
 
 interface SiteLayoutProps {
     children: React.ReactNode
@@ -10,7 +11,10 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
        <main className="w-full h-screen overflow-y-auto">
             <SiteNavbar/>
          {children}
-         <Footer/>
+         <BottomNavigation/>
+        <div className="md:mb-0 mb-16">
+             <Footer/>
+        </div>
        </main>
     )
 }

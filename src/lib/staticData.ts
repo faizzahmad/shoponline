@@ -428,8 +428,8 @@ export const sortItems = [
         value : 'new'
     },
     {
-        name : 'Best Seller',
-        value : 'best-seller'
+        name : 'Top Seller',
+        value : 'top-selling'
     },
     {
         name : 'Price: Low to High',

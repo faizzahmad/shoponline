@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import {SignInPage} from '@/app/(auth)/_components/sign-in-page';
+import { RedirectLink } from '../../_components/redirect-link';
 const Signin = async() => {
   const { userId } = await auth();
   
@@ -32,7 +33,7 @@ const Signin = async() => {
                 <div>
                     <p className='mid:text-sm text-xs text-center '>Don’t have an account</p>
                    <p className='mid:text-sm text-xs raleway font-semibold text-center mt-2'>
-                   <Link href={'/sign-up'} className=' underline text-rose-500' >Create an account</Link>
+                   <RedirectLink href='sign-up' text='Create an account'/>
                    </p>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/carousel";
 import { ProductCard } from "@/components/custom/product-card";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface productsProps {
     id: string;
@@ -12,7 +13,6 @@ interface productsProps {
     images: string[];
     price: number;
     discountedPrice?: number;
-
 }
 
 interface ProductSliderProps {
@@ -37,6 +37,7 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
                                         title={item.title}
                                         price={item.price}
                                         discountedPrice={item.discountedPrice}
+                                        divCalssName="sm:w-full w-full"
                                         imageContainerClassName="relative md:h-[250px] h-[200px] w-full"
                                     />
                                 </CarouselItem>
@@ -45,11 +46,13 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
                         }
 
                         <CarouselItem className="h-auto basis-[300px] pl-4">
+                           <Link href={carouselTitle === "New Arrivals" ? "/shop?sortBy=new" : "/shop?sortBy=top-selling"}>
                             <div className="w-full p-4 shadow-sm rounded-xl bg-indigo-50 flex gap-2 items-center justify-center h-full text-rose-600 text-2xl font-semibold raleway">
                               
                                 View All
                                  <ArrowRight/>
                             </div>
+                            </Link>
                         </CarouselItem>
 
                     </CarouselContent>

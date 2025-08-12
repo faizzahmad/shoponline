@@ -32,12 +32,11 @@ export async function PUT(req: Request) {
  const isVerified = await verifyAuth();
     if (!isVerified.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     await connectToDb();
-    const { id, type, link, image } = await req.json();
+    const { id, link, image } = await req.json();
     try {
         const updatedBanner = await Banner.findByIdAndUpdate(id, {
-            type,
             link,
-            image
+            image,
         }, { new: true });
         
         if (!updatedBanner) {
@@ -46,7 +45,6 @@ export async function PUT(req: Request) {
         
         return new Response(JSON.stringify({
             message: "Banner updated successfully",
-            banner: updatedBanner,
         }), {
             status: 200,
         });

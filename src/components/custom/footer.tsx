@@ -1,16 +1,37 @@
 
+
+import { getLatestCategories } from "@/actions/category";
+import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
+import { use } from "react";
 
 
 
-export const Footer = () => { 
+export const Footer = async() => { 
+        const user = await currentUser();
+        const categories = await getLatestCategories(10);
    return (
      <footer >
         <div className="w-full grid lg:grid-cols-4 grid-cols-2 md:gap-16 gap-8 md:p-10 p-5 bg-indigo-200">
             <div className="w-full">
                <div>
-                <h4 className="md:text-2xl text-xl font-[700] raleway">Register with us</h4>
-                <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
+                <h4 className="md:text-2xl text-xl font-[700] raleway">
+                    {
+                        user ? 'Account page' : 'Register with us'
+                    }
+                </h4>
+                {
+                    user ? (
+                        <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
+                    <li className="transition hover:text-rose-600">
+                        <Link href="/sign-up">
+                        Account Page
+                        </Link>
+                    </li>
+                   
+                </ul>
+                    ) : (
+                        <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
                         <Link href="/sign-up">
                         Create an account
@@ -23,6 +44,8 @@ export const Footer = () => {
                         </Link>
                     </li>
                 </ul>
+                    )
+                }
 
                </div>
 
@@ -51,46 +74,16 @@ export const Footer = () => {
             <div className="w-full">
              <h4 className="md:text-2xl text-xl font-[700] raleway">Shop</h4>
              <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
-                    <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Baloons
+{
+    categories.map((category) => (
+                            <li className="transition hover:text-rose-600" key={category._id}>
+                        <Link href={`/shop?category=${category._id}`}>
+                       {category.title}
                         </Link>
                     </li>
-                     <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Cake
-                        </Link>
-                    </li>
-                     <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Cap
-                        </Link>
-                    </li>
-                     <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Candels
-                        </Link>
-                    </li>
-                    <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Chocolates
-                        </Link>
-                    </li>
-                    <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Flowers
-                        </Link>
-                    </li>
-                    <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Gifts
-                        </Link>
-                    </li>
-                    <li className="transition hover:text-rose-600">
-                        <Link href="/">
-                        Party Items
-                        </Link>
-                    </li>
+    ))
+}
+                    
                 </ul>
             </div>
 

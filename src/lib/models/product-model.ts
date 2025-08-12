@@ -14,8 +14,10 @@ const varientsSchema = new mongoose.Schema({
             },
             image :{
                 type: String,
-            }
-
+            },
+            pname : {
+                type: String,
+            },
 
         }
     ]
@@ -66,6 +68,10 @@ const productSchema = new mongoose.Schema({
         },
         longDescription: {
             type: String,
+        },
+        totalSales : {
+            type: Number,
+            default: 0,
         },
         varients : [varientsSchema]
 },{timestamps: true});
