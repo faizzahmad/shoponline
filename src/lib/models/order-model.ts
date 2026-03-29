@@ -33,6 +33,7 @@ const orderSchema = new mongoose.Schema({
     orderStatus: { type: String, default: "Pending" },
     deliveryStatus: { type: String, default: "Pending" },
     razorpayOrderId: { type: String, default: null },
+    razorpayPaymentId: { type: String, default: null },
     paymentStatus: { type: String, default: "Pending" }
 },{
     timestamps: true

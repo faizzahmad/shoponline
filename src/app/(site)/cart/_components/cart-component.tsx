@@ -41,6 +41,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { PaymentComponent } from "../../_components/payenment-comp";
+import { FixedLoader } from "@/components/custom/fixed-loader";
 import { validateDeliveryAddressParts } from "@/lib/delivery-address";
 
 type OrderFormData = {
@@ -92,6 +93,7 @@ export const CartComponent = () => {
     const [couponError, setCouponError] = useState("");
     const router = useRouter();
     const [showpaymentComponent, setShowPaymentComponent] = useState(false);
+    const [completingOrderRedirect, setCompletingOrderRedirect] = useState(false);
     
     // const [buyNowproductId, setBuyNowProductId] = useState<string | null>(params.get('productId') || null);
    const buyNowproductId = params.get('productId') || null;
@@ -385,12 +387,14 @@ export const CartComponent = () => {
 
     return (
         <>
-       
+        {completingOrderRedirect && <FixedLoader />}
         {
             showpaymentComponent && (
                  <PaymentComponent
                  amount={Math.round(subtotal)}
-                 orderId = {orderId ? orderId : ""}  
+                 orderId={orderId ? orderId : ""}
+                 onPaymentRedirecting={() => setCompletingOrderRedirect(true)}
+                 onPaymentVerifyFailed={() => setCompletingOrderRedirect(false)}
                  />
             )
         }
