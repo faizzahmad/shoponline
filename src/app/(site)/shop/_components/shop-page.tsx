@@ -82,7 +82,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
         setPage(1);
         setHasMore(true);
         setResetFilter(true);
-    }, [sortBy, JSON.stringify(subcategory), JSON.stringify(category), search]);
+    }, [sortBy, JSON.stringify(subcategory), search]);
 
     useEffect(() => {
         if (resetFilter) {

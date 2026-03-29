@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { useCategoryDropdown } from "./hooks/use-category-dropdown";
@@ -25,8 +26,17 @@ export const CategoryFilterList = ({
     categories,
     className,
 }: CategoryFilterListProps) => {
-    const { category, subcategory, setCategory, setSubcategory } =
-        useCategoryDropdown();
+    const { category, subcategory, setSubcategory } = useCategoryDropdown();
+    const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>(
+        [],
+    );
+
+    useEffect(() => {
+        if (category.length === 0) return;
+        setExpandedCategoryIds((prev) =>
+            Array.from(new Set([...prev, ...category])),
+        );
+    }, [category.join(",")]);
 
     return (
         <div
@@ -46,18 +56,18 @@ export const CategoryFilterList = ({
                     <div
                         className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-rose-600 raleway"
                         onClick={() => {
-                            if (category.includes(items.id)) {
-                                setCategory(category.filter((id) => id !== items.id));
-                            } else {
-                                setCategory([...category, items.id]);
-                            }
+                            setExpandedCategoryIds((prev) =>
+                                prev.includes(items.id)
+                                    ? prev.filter((id) => id !== items.id)
+                                    : [...prev, items.id],
+                            );
                         }}
                     >
                         <span className="text-lg">{items.name}</span>
                         <ChevronDown
                             className={cn(
                                 "size-5 transition",
-                                category.includes(items.id)
+                                expandedCategoryIds.includes(items.id)
                                     ? "rotate-180"
                                     : "rotate-0",
                             )}
@@ -67,7 +77,7 @@ export const CategoryFilterList = ({
                     <div
                         className={cn(
                             "mt-4",
-                            category.includes(items.id)
+                            expandedCategoryIds.includes(items.id)
                                 ? "flex flex-col gap-2"
                                 : "hidden",
                         )}

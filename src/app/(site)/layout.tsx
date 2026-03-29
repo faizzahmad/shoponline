@@ -8,7 +8,7 @@ interface SiteLayoutProps {
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
     return (
-       <main className="w-full h-screen overflow-y-auto">
+       <main className="w-full h-screen overflow-y-auto overflow-x-hidden">
             <SiteNavbar/>
          {children}
          <BottomNavigation/>
