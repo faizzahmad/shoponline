@@ -27,7 +27,7 @@ const categoriesData = categories.map((category) => ({
             <ShopSidebar categories={categoriesData}/>
            </div>
            <div className="flex-1 h-screen overflow-y-auto p-5">
-            <ShopPage/>
+            <ShopPage categories={categoriesData} />
            </div>
         </div>
      );

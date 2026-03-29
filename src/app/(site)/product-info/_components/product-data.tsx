@@ -145,8 +145,8 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                 loader && (
                     <div className="w-full  xl:px-36 lg:px-28 md:px-16 sm:px-10 px-10 md:py-16 py-8">
                         <div className="w-full lg:flex items-center gap-8">
-                            <div className="sm:w-[500px] w-[300px]">
-                                <div className="sm:size-[500px] size-[300px]">
+                            <div className="w-full max-w-[500px]">
+                                <div className="w-full aspect-square max-w-[500px] rounded-lg overflow-hidden">
                                     <Skeleton className="w-full h-full" />
                                 </div>
 
@@ -195,11 +195,17 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
             <div className="w-full xl:px-36 lg:px-28 md:px-16 sm:px-10 px-10 md:py-16 py-8">
 
                 <div className="w-full lg:flex gap-10 items-center ">
-                    <div className="sm:w-[500px] w-[300px]">
+                    <div className="w-full max-w-[500px] shrink-0">
                         {
                             productInfo.images && productInfo.images.length > 0 && (
-                                <div className="sm:size-[500px] size-[300px] relative rounded-lg overflow-hidden">
-                                    <Image src={productInfo?.images[selectedImageIndex]} alt="productImage" className="w-full h-full object-cover" fill />
+                                <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                                    <Image
+                                        src={productInfo?.images[selectedImageIndex]}
+                                        alt="productImage"
+                                        className="object-cover object-center"
+                                        fill
+                                        sizes="(max-width: 1024px) 100vw, 500px"
+                                    />
                                 </div>
                             )
                         }
@@ -217,8 +223,8 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                         {
                                             productInfo.images && productInfo.images.length > 0 && productInfo?.images.map((image, index) => (
                                                 <CarouselItem className="lg:basis-[100px] basis-[80px]" key={index} onClick={() => setSelectedImageIndex(index)}>
-                                                    <div className={"lg:size-[90px] size-[70px] overflow-hidden relative"}>
-                                                        <Image src={image} alt="productImage" className=" rounded-lg w-full h-full object-cover" fill />
+                                                    <div className={"lg:size-[90px] size-[70px] overflow-hidden relative rounded-lg"}>
+                                                        <Image src={image} alt="productImage" className="rounded-lg object-cover object-center" fill sizes="90px" />
                                                     </div>
                                                 </CarouselItem>
                                             ))
@@ -293,8 +299,9 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                                         <Image
                                                             src={product.image}
                                                             alt={product.pname}
-                                                            className="w-full h-full object-cover rounded-sm"
+                                                            className="object-cover object-center rounded-sm"
                                                             fill
+                                                            sizes="60px"
                                                         />
                                                     </div>
                                                 </div>

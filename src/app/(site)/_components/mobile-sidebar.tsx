@@ -12,7 +12,7 @@ const MobileSidebar = async() => {
     <div>
         <div className="flex justify-between">
         <Link href={'/'}>
-         <Image src={'/images/logo.png'} alt="Logo" height={30} width={60}></Image>
+         <Image src={'/images/web/logo.svg'} alt="Logo" height={30} width={60}></Image>
         </Link>
             <div className="flex gap-4 items-center text-neutral-500">
                                 <Link href={'/search'} className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-red-600 transition">

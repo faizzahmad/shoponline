@@ -51,7 +51,13 @@ export const ProductCard = ({
                         images.map((item,index) => (
                              <CarouselItem key={index}>
                             <div className={cn(imageContainerClassName)}>
-                                <Image src={item} alt="productImage" className=" rounded-xl w-full h-full object-cover" fill />
+                                <Image
+                                    src={item}
+                                    alt="productImage"
+                                    className="rounded-xl object-cover object-center"
+                                    fill
+                                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 33vw, 280px"
+                                />
                             </div>
                         </CarouselItem>
                         ))

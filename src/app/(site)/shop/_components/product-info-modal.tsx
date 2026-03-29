@@ -113,13 +113,14 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                     <div className="w-full lg:flex gap-10">
 
                         <div className="lg:w-[400px] grid grid-cols-1 gap-y-5">
-                            <div className="w-full lg:h-[400px] lg:block hidden overflow-hidden relative">
+                            <div className="w-full aspect-square max-w-[400px] lg:block hidden overflow-hidden relative rounded-xl">
                                 {data?.images?.[seletedImageIndex] && (
                                     <Image
                                         src={data.images[seletedImageIndex]}
                                         alt="productImage"
-                                        className="rounded-xl w-full h-full object-cover"
+                                        className="rounded-xl object-cover object-center"
                                         fill
+                                        sizes="400px"
                                     />
                                 )}
                             </div>
@@ -136,8 +137,8 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                         {
                                             data?.images?.map((image, index) => (
                                                 <CarouselItem className="lg:basis-[100px] basis-[80px]" key={index} onClick={() => setSelectedImageIndex(index)}>
-                                                    <div className={"lg:size-[100px] size-[70px] overflow-hidden relative"}>
-                                                        <Image src={image} alt="productImage" className=" rounded-xl w-full h-full object-cover" fill />
+                                                    <div className={"lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl"}>
+                                                        <Image src={image} alt="productImage" className="rounded-xl object-cover object-center" fill sizes="100px" />
                                                     </div>
                                                 </CarouselItem>
                                             ))
@@ -223,8 +224,9 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                                                 <Image
                                                                     src={product.image}
                                                                     alt={product.pname}
-                                                                    className="w-full h-full object-cover rounded-sm"
+                                                                    className="object-cover object-center rounded-sm"
                                                                     fill
+                                                                    sizes="60px"
                                                                 />
                                                             </div>
                                                         </div>

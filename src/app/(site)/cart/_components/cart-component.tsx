@@ -483,12 +483,13 @@ export const CartComponent = () => {
 
                         <div className="text-sm text-muted-foreground mt-4">
                             <div className="w-full flex gap-3 mt-2">
-                                <div className="size-16 relative">
+                                <div className="size-16 relative rounded-md overflow-hidden">
                                     <Image
                                         src={productIdToDelete.image}
                                         alt="productImage"
-                                        className="w-full h-full object-cover rounded-md"
+                                        className="object-cover object-center rounded-md"
                                         fill
+                                        sizes="64px"
                                     />
                                 </div>
                                 <p className="raleway text-neutral-600">
@@ -706,8 +707,14 @@ export const CartComponent = () => {
                             {
                                 cartdata.map((item, index) => (
                                     <div className="w-full sm:flex gap-3 border-b last:border-b-0" key={index}>
-                                        <div className="sm:size-[120px] size-[100px] relative rounded-xl overflow-hidden">
-                                            <Image src={item.images[0]} alt="productImage" className="w-full h-full object-cover" fill />
+                                        <div className="sm:size-[120px] size-[100px] relative rounded-xl overflow-hidden shrink-0">
+                                            <Image
+                                                src={item.images[0]}
+                                                alt="productImage"
+                                                className="object-cover object-center"
+                                                fill
+                                                sizes="(max-width: 640px) 100px, 120px"
+                                            />
                                         </div>
                                         <div className="flex-1 p-2">
                                             <h5 className="text-lg font-[500] exo">{item.productName}</h5>

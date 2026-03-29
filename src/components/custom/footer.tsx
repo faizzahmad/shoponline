@@ -54,17 +54,20 @@ export const Footer = async() => {
                 <ul className="md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
                         <Link href="mailto:connect@beaze.in" target="_blank">
-                        demo@gmail.com
+                       john.doe@example.com
                         </Link>
                     </li>
                      <li className="transition hover:text-rose-600">
                         <Link href="telto:+919876543210" target="_blank">
-                        +91 9876543210
+                       +1 202-555-0143
                         </Link>
                     </li>
 
                      <li className="transition">
-                        Lal bagh purnea city near sadar thana, <br /> Purnea,Bihar 854302
+                        123 Main Street
+Apt 4B
+New York, NY 10001
+United States
                     </li>
                 </ul>
 
@@ -151,7 +154,7 @@ export const Footer = async() => {
         </div>
 
         <div className=" bg-rose-600 p-2 w-full text-center">
-          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2024. GiftBox. All Rights Reserved.</h5>
+          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2025. GiftBox. All Rights Reserved.</h5>
         </div>
     </footer>
    )

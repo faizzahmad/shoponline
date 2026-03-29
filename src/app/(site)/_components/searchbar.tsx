@@ -98,7 +98,13 @@ export const SearchBar = () => {
                                                 searchResults.map((product) => (
                                                     <Link href={`/product-info/${product._id}`} className="w-full flex gap-5 items-center py-3 border-b border-dashed last:border-b-0" key={product._id} >
                                                         <div className="size-[90px] relative rounded overflow-hidden">
-                                                            <Image src={product.images[0]} className="w-full h-full" alt="productImage" fill objectFit="cover" />
+                                                            <Image
+                                                                src={product.images[0]}
+                                                                className="object-cover object-center"
+                                                                alt="productImage"
+                                                                fill
+                                                                sizes="90px"
+                                                            />
                                                         </div>
                                                         <div className="flex-1 raleway">
                                                             <h3 className="md:text-base text-sm font-semibold ">{product.productName}</h3>

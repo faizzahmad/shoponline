@@ -30,7 +30,7 @@ export const SiteNavbar = async () => {
                 <div className="hidden lg:flex items-center justify-between">
                     <div className="flex xl:gap-16 gap-6 items-center">
                         <Link href={'/'}>
-                            <Image src={'/images/logo.png'} alt="Logo" height={40} width={80}></Image></Link>
+                            <Image src={'/images/web/logo.svg'} alt="Logo" height={40} width={80}></Image></Link>
                         <ul className=" xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-rose-600 hidden">
                             <li>
                                 <Link href={'/shop'}>Shop</Link>
