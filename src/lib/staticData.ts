@@ -220,18 +220,26 @@ export const demoCategories = [
 
 export const demoBanners = [
     {
-        img : 'https://firebasestorage.googleapis.com/v0/b/reactchatapp-58a4d.appspot.com/o/partyweb%2Fpexels-george-dolgikh-551816-1303082.jpg?alt=media&token=f0dd88b5-799f-4f81-bb1d-e1e59feb58e6',
-        urlLink : '/'
+        img: "https://3903pqvnfg.ufs.sh/f/z0RMgQlNXvIcPHSc9OKgzjS45exYiMcvyGp2XmIu9ahkZtLb",
+        urlLink: "/shop",
+        title: "Celebrate every moment",
+        subtitle: "Curated party essentials, delivered with care.",
+        ctaLabel: "Shop the collection",
     },
     {
-        img : 'https://firebasestorage.googleapis.com/v0/b/reactchatapp-58a4d.appspot.com/o/partyweb%2Fpexels-george-dolgikh-551816-2072153.jpg?alt=media&token=db84f386-b5e6-4ca3-966f-48e6f3b8c0d3',
-        urlLink : '/'
+        img: "https://3903pqvnfg.ufs.sh/f/z0RMgQlNXvIct10uwrpBNn0tkTl1prZxDmiGaIq8QvjSybeK",
+        urlLink: "/shop",
+        title: "New arrivals are here",
+        subtitle: "Fresh decor, balloons, and gifts for your next event.",
+        ctaLabel: "Explore new in",
     },
     {
-        img : 'https://firebasestorage.googleapis.com/v0/b/reactchatapp-58a4d.appspot.com/o/partyweb%2Fpexels-mattycphoto-1701531.jpg?alt=media&token=6d5b634f-aa61-48b9-9515-85b4f7bbea1c',
-        urlLink : '/'
-    }
-    
+        img: "https://3903pqvnfg.ufs.sh/f/z0RMgQlNXvIcBX8qo4Emc7r0xE68sKqDf5JHTPCYyn1MbOWi",
+        urlLink: "/shop",
+        title: "Party-ready in one click",
+        subtitle: "Quality picks at friendly prices — browse bestsellers.",
+        ctaLabel: "View bestsellers",
+    },
 ]
 
 export const demoCatgoriesSlider = [
