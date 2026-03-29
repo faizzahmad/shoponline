@@ -1,21 +1,11 @@
 import Order from "@/lib/models/order-model";
 import { connectToDb } from "@/lib/connectToDb";
 import Cart from "@/lib/models/cart-model";
-// type OrderItem = {
-//     productId: string;
-//     quantity: number;
-//     originalPrice: number;
-//     discountPrice: number;
-//     productName: string;
-//     images: string[];
-//     productCategory: string;
-//     productCategoryId: string;
-//     productSubCategory: string;
-//     productSubCategoryId: string;
-//     shortDescription: string;  
-//     longDescription: string;
-// };
-
+import {
+    formatDeliveryAddress,
+    validateDeliveryAddressParts,
+    type DeliveryAddressParts,
+} from "@/lib/delivery-address";
 
 export async function POST(req: Request) {
     const body = await req.json();
@@ -26,16 +16,35 @@ export async function POST(req: Request) {
         totalAmount,
         orderDateTime,
         couponCode,
-        deliveryAddress,
         paymentMethod,
-        razorpayOrderId
+        razorpayOrderId,
+        streetAddress,
+        city,
+        state,
+        zipCode,
     } = body;
 
-    if (!userPhone || !username || !items || !totalAmount || !deliveryAddress || !paymentMethod) {
+    if (!userPhone || !username || !items || !totalAmount || !paymentMethod) {
         return new Response(JSON.stringify({ error: "All fields are required" }), {
             status: 400,
         });
     }
+
+    const addressParts: DeliveryAddressParts = {
+        streetAddress: typeof streetAddress === "string" ? streetAddress : "",
+        city: typeof city === "string" ? city : "",
+        state: typeof state === "string" ? state : "",
+        zipCode: typeof zipCode === "string" ? zipCode : "",
+    };
+
+    const addressError = validateDeliveryAddressParts(addressParts);
+    if (addressError) {
+        return new Response(JSON.stringify({ error: addressError }), {
+            status: 400,
+        });
+    }
+
+    const deliveryAddress = formatDeliveryAddress(addressParts);
 
     await connectToDb();
 
@@ -48,29 +57,33 @@ export async function POST(req: Request) {
             orderDateTime: orderDateTime || new Date(),
             couponCode: couponCode || null,
             deliveryAddress,
+            streetAddress: addressParts.streetAddress.trim(),
+            city: addressParts.city.trim(),
+            state: addressParts.state.trim(),
+            zipCode: addressParts.zipCode.trim(),
             paymentMethod,
-            razorpayOrderId: razorpayOrderId || null
+            razorpayOrderId: razorpayOrderId || null,
         });
 
         await newOrder.save();
-        // find the cart for the user and clear it after placing the order
         const cart = await Cart.findOne({ userPhone });
-      cart.items = cart.items.filter((item: any) =>
-  !items.some((orderedItem: any) => String(orderedItem.productId) === String(item.productId))
-);
-await cart.save();
+        if (cart) {
+            cart.items = cart.items.filter(
+                (item: { productId: unknown }) =>
+                    !items.some(
+                        (orderedItem: { productId: unknown }) =>
+                            String(orderedItem.productId) === String(item.productId)
+                    )
+            );
+            await cart.save();
+        }
 
-
-        // Optionally, you can revalidate paths or perform other actions here
-        // revalidatePath("/cart");
-        // revalidatePath("/");
-
-        // Return a success response        
-
-        return new Response(JSON.stringify({ message: "Order placed successfully", orderId: newOrder._id }),
+        return new Response(
+            JSON.stringify({ message: "Order placed successfully", orderId: newOrder._id }),
             {
                 status: 201,
-            });
+            }
+        );
     } catch (error) {
         console.error("Error placing order:", error);
         return new Response(JSON.stringify({ error: "Error placing order" }), {

@@ -23,7 +23,12 @@ const orderSchema = new mongoose.Schema({
     totalAmount: { type: Number, required: true },
     orderDateTime: { type: Date, default: Date.now },
     couponCode: { type: String, default: null },
+    /** Full formatted address (invoice, search); built from structured fields on create */
     deliveryAddress: { type: String, required: true },
+    streetAddress: { type: String, default: "" },
+    city: { type: String, default: "" },
+    state: { type: String, default: "" },
+    zipCode: { type: String, default: "" },
     paymentMethod: { type: String, required: true },
     orderStatus: { type: String, default: "Pending" },
     deliveryStatus: { type: String, default: "Pending" },

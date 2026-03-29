@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useIsChanged } from "@/store/use-ischnaged";
 import { useUser } from "@clerk/nextjs";
-import { Loader,ShoppingBag, X } from "lucide-react";
+import { Loader, MapPin, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -33,7 +33,23 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { PaymentComponent } from "../../_components/payenment-comp";
+import { validateDeliveryAddressParts } from "@/lib/delivery-address";
+
+type OrderFormData = {
+    shippingAddress: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    paymentMode: "onlinePayment" | "cod";
+};
 type productItem = {
     productId: string;
     quantity: number;
@@ -80,10 +96,27 @@ export const CartComponent = () => {
     // const [buyNowproductId, setBuyNowProductId] = useState<string | null>(params.get('productId') || null);
    const buyNowproductId = params.get('productId') || null;
 
-    const [orderData, setOrderData] = useState({
+    const [orderData, setOrderData] = useState<OrderFormData>({
         shippingAddress: "",
+        city: "",
+        state: "",
+        zipCode: "",
         paymentMode: "onlinePayment",
     });
+
+    const validateDeliveryDetails = (): boolean => {
+        const err = validateDeliveryAddressParts({
+            streetAddress: orderData.shippingAddress,
+            city: orderData.city,
+            state: orderData.state,
+            zipCode: orderData.zipCode,
+        });
+        if (err) {
+            toast.error(err);
+            return false;
+        }
+        return true;
+    };
 
     const handelFetchCart = async () => {
         setLoading(true);
@@ -225,19 +258,14 @@ export const CartComponent = () => {
             toast.error("Your cart is empty. Please add some products to proceed.");
             return;
         }
-        if (!orderData.shippingAddress) {
-            toast.error("Please enter your shipping address.");
-            return;
-        }
-        if(orderData.shippingAddress.length < 10){
-            toast.error("Address must be at least 10 characters long.");
+        if (!validateDeliveryDetails()) {
             return;
         }
         if (!orderData.paymentMode) {
             toast.error("Please select a payment mode.");
             return;
         }
-        
+
         setLoading(true);
         const res = await fetch(`/api/order`, { 
             method: "POST",
@@ -264,7 +292,10 @@ export const CartComponent = () => {
                 totalAmount: Math.round(subtotal),
                 orderDateTime: new Date(),
                 couponCode: couponCode || null,
-                deliveryAddress: orderData.shippingAddress,
+                streetAddress: orderData.shippingAddress,
+                city: orderData.city,
+                state: orderData.state,
+                zipCode: orderData.zipCode,
                 paymentMethod: orderData.paymentMode,
             }),
         });
@@ -292,19 +323,15 @@ export const CartComponent = () => {
             toast.error("Your cart is empty. Please add some products to proceed.");
             return;
         }
-        if (!orderData.shippingAddress) {
-            toast.error("Please enter your shipping address.");
-            return;
-        }
-        if(orderData.shippingAddress.length < 10){
-            toast.error("Address must be at least 10 characters long.");
+        if (!validateDeliveryDetails()) {
             return;
         }
         if (!orderData.paymentMode) {
             toast.error("Please select a payment mode.");
             return;
-        }else{
-            setLoading(true);
+        }
+
+        setLoading(true);
         const res = await fetch(`/api/order`, { 
             method: "POST",
             headers: {
@@ -330,7 +357,10 @@ export const CartComponent = () => {
                 totalAmount: Math.round(subtotal),
                 orderDateTime: new Date(),
                 couponCode: couponCode || null,
-                deliveryAddress: orderData.shippingAddress,
+                streetAddress: orderData.shippingAddress,
+                city: orderData.city,
+                state: orderData.state,
+                zipCode: orderData.zipCode,
                 paymentMethod: orderData.paymentMode,
             }),
         });
@@ -349,7 +379,6 @@ export const CartComponent = () => {
             console.error("Failed to place order:", errorData);
         }
         setLoading(false);
-        }
         // Optionally, you can redirect the user to a different page after placing the order
         // router.push('/order-confirmation');
     }
@@ -522,183 +551,243 @@ export const CartComponent = () => {
                 )
             }
 
-            <div className={cn("w-full  lg:flex justify-center gap-10 py-6  xl:px-32 lg:px-24 md:px-10 px-5 bg-gray-50", cartdata.length === 0 && 'hidden')}>
-               
-                <div className="lg:w-[35%] order-2">
+            <div className={cn("w-full lg:flex lg:items-start justify-center gap-8 lg:gap-10 py-8 xl:px-32 lg:px-24 md:px-10 px-5 bg-gray-50", cartdata.length === 0 && 'hidden')}>
 
-                    <div className="mb-5 p-5 rounded-md shadow-sm border bg-indigo-50 raleway">
-                        <h5
-                            className="text-lg font-[600] flex items-center gap-2">
-                            Select Payenment Mode</h5>
+                <div className="w-full lg:w-[38%] xl:max-w-md order-2 space-y-5 min-w-0">
 
-                        <div className="w-full flex gap-2 items-center mt-3">
-                            <Checkbox id="onlinePayement"
-                                value={orderData.paymentMode === "onlinePayment" ? "onlinePayment" : ""}
-                                onCheckedChange={(checked) => {
-                                    setOrderData({
-                                        ...orderData,
-                                        paymentMode: checked ? "onlinePayment" : "cod",
-                                    });
-                                }
-                                }
-                                className="data-[state=checked]:bg-rose-600 data-[state=checked]:border-rose-600"
-                                checked={orderData.paymentMode === "onlinePayment"}
-                            />
-                            <Label htmlFor="onlinePayement">Pay with Online Payment</Label>
-                        </div>
-                        <div className="w-full flex gap-2 items-center mt-3">
-                            <Checkbox id="cod"
-                                value={orderData.paymentMode === "cod" ? "cod" : ""}
-                                onCheckedChange={(checked) => {
-                                    setOrderData({
-                                        ...orderData,
-                                        paymentMode: checked ? "cod" : "onlinePayment",
-                                    });
-                                }
-                                }
-                                className="data-[state=checked]:bg-rose-600 data-[state=checked]:border-rose-600"
-                                checked={orderData.paymentMode === "cod"}
-                            />
-                            <Label htmlFor="cod">Cash on Delivery</Label>
-                        </div>
-                        <p className="text-xs text-neutral-500 mt-2 raleway">
-                            Please select a payment mode to proceed with the order.
-                        </p>
-                    </div>
-                    <div className="w-full p-5 bg-indigo-50 rounded-xl grid grid-cols-1 gap-5 shadow-sm border">
-                        {
-                            discountPercentage <= 0 ? (
-                                <div>
-                                    <div className="w-full flex gap-2 ">
-                                        <div className="flex-1 raleway">
-                                            <Input className="bg-white" placeholder="Add a coupon code" value={couponCode} onChange={(e) => {
-                                                setCouponCode(e.target.value.toLocaleUpperCase())
-                                            }} />
-                                        </div>
-                                        <Button className="raleway" onClick={handelApplyCoupon} disabled={couponLodaer}>
-                                            Apply Code
-                                            {
-                                                couponLodaer && <Loader className="size-3 animate-spin" />
-                                            }
-                                        </Button>
-                                    </div>
-                                    <p className="text-xs text-red-600 exo mt-1">
-                                        {couponError}
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="bg-rose-600 text-white exo p-3 relative">
-                                    <h5 className="font-[500] text-sm">
-                                        Coupon Applied
-                                    </h5>
-                                    <p className="mt-2 text-xs raleway">
-                                        {couponCode}  has been applied successfully with a discount of {discountPercentage}%.
-                                    </p>
-
-                                    <button className="text-white font-[500] text-xs raleway mt-2 float-right" onClick={() => {
-
-                                        resetCouponCode();
-                                        setDiscountPercentage(0);
-                                        toast.success("Coupon removed successfully");
-                                    }}
-                                        ref={buttonRef}
-                                    >
-                                        Remove Coupon
-                                    </button>
-
-                                    <X className="size-4 absolute right-2 top-2 cursor-pointer"
-                                        onClick={() => buttonRef.current?.click()}
-                                    />
-                                </div>
-                            )
-                        }
-
-
-
-                        <form className="w-full">
-                            <div className="w-full grid grid-cols-1 gap-3">
-                                <div>
-                                    <Label className="raleway text-sm font-semibold mb-2">Shipping Address</Label>
-                                    <Textarea className="bg-white raleway" placeholder="Enter your address" value={orderData.shippingAddress} onChange={(e) => {
+                    <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                        <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
+                            <CardTitle className="text-base font-semibold">Payment method</CardTitle>
+                            <CardDescription className="text-xs">
+                                Choose how you would like to pay for this order.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 sm:p-5 pt-2 space-y-3">
+                            <div className="flex gap-3 items-start">
+                                <Checkbox id="onlinePayment"
+                                    value={orderData.paymentMode === "onlinePayment" ? "onlinePayment" : ""}
+                                    onCheckedChange={(checked) => {
                                         setOrderData({
                                             ...orderData,
-                                            shippingAddress: e.target.value,
+                                            paymentMode: checked ? "onlinePayment" : "cod",
                                         });
-                                    }} />
-                                </div>
-
-
+                                    }}
+                                    className="data-[state=checked]:bg-rose-600 data-[state=checked]:border-rose-600 mt-0.5"
+                                    checked={orderData.paymentMode === "onlinePayment"}
+                                />
+                                <Label htmlFor="onlinePayment" className="text-sm font-normal leading-snug cursor-pointer">
+                                    Pay online (card, UPI, netbanking)
+                                </Label>
                             </div>
-                        </form>
+                            <div className="flex gap-3 items-start">
+                                <Checkbox id="cod"
+                                    value={orderData.paymentMode === "cod" ? "cod" : ""}
+                                    onCheckedChange={(checked) => {
+                                        setOrderData({
+                                            ...orderData,
+                                            paymentMode: checked ? "cod" : "onlinePayment",
+                                        });
+                                    }}
+                                    className="data-[state=checked]:bg-rose-600 data-[state=checked]:border-rose-600 mt-0.5"
+                                    checked={orderData.paymentMode === "cod"}
+                                />
+                                <Label htmlFor="cod" className="text-sm font-normal leading-snug cursor-pointer">
+                                    Cash on delivery
+                                </Label>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                        <div className="w-full py-3 raleway">
-                            <h5 className="text-sm font-semibold mb-5">Product Details</h5>
-
-                            <div className="w-full grid grid-cols-1 gap-4">
-                                <div className="flex items-center w-full justify-between text-sm">
-                                    <span>
-                                        Total Price
-                                    </span>
-                                    <span className="exo font-semibold">
-                                        {"\u20B9"} {totalPrice}
-                                    </span>
+                    <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                        <CardHeader className="p-4 sm:p-5 pb-2">
+                            <CardTitle className="text-base font-semibold">Promo code</CardTitle>
+                            <CardDescription className="text-xs">Have a coupon? Apply it here.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 sm:p-5 pt-0">
+                            {discountPercentage <= 0 ? (
+                                <div className="space-y-2">
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <Input
+                                                className="bg-white"
+                                                placeholder="Enter coupon code"
+                                                value={couponCode}
+                                                onChange={(e) => {
+                                                    setCouponCode(e.target.value.toLocaleUpperCase());
+                                                }}
+                                            />
+                                        </div>
+                                        <Button className="raleway shrink-0" onClick={handelApplyCoupon} disabled={couponLodaer}>
+                                            Apply
+                                            {couponLodaer && <Loader className="size-3 animate-spin ml-1" />}
+                                        </Button>
+                                    </div>
+                                    {couponError ? (
+                                        <p className="text-xs text-red-600 exo">{couponError}</p>
+                                    ) : null}
                                 </div>
-
-                                <div className="flex items-center w-full justify-between text-sm">
-                                    <span>
-                                        Shipping Fee
-                                    </span>
-                                    <span className="exo  text-green-500">
-                                        Free
-                                    </span>
+                            ) : (
+                                <div className="bg-rose-600 text-white exo p-4 rounded-lg relative">
+                                    <h5 className="font-[500] text-sm">Coupon applied</h5>
+                                    <p className="mt-2 text-xs raleway pr-6">
+                                        {couponCode} is applied — {discountPercentage}% off your order.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        className="text-white font-[500] text-xs raleway mt-3 underline-offset-2 hover:underline"
+                                        onClick={() => {
+                                            resetCouponCode();
+                                            setDiscountPercentage(0);
+                                            toast.success("Coupon removed successfully");
+                                        }}
+                                        ref={buttonRef}
+                                    >
+                                        Remove coupon
+                                    </button>
+                                    <X
+                                        className="size-4 absolute right-3 top-3 cursor-pointer opacity-90 hover:opacity-100"
+                                        onClick={() => buttonRef.current?.click()}
+                                        aria-label="Remove coupon"
+                                    />
                                 </div>
+                            )}
+                        </CardContent>
+                    </Card>
 
-
-                                <div className="flex items-center w-full justify-between text-sm">
-                                    <span>
-                                        Discount Price
-                                    </span>
-                                    <span className="exo  text-green-500">
-                                        {"\u20B9"} {totalDiscountPrice}
-                                    </span>
+                    <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                        <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
+                            <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                <MapPin className="size-4 text-rose-600 shrink-0" aria-hidden />
+                                Delivery details
+                            </CardTitle>
+                            <CardDescription className="text-xs">
+                                We will ship your order to this address.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 sm:p-5 pt-0">
+                            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                                <div className="space-y-2">
+                                    <Label htmlFor="cart-street" className="text-sm font-medium">
+                                        Street address
+                                    </Label>
+                                    <Textarea
+                                        id="cart-street"
+                                        className="bg-white min-h-[88px] resize-y"
+                                        placeholder="House / flat, building name, street, area"
+                                        value={orderData.shippingAddress}
+                                        onChange={(e) => {
+                                            setOrderData({
+                                                ...orderData,
+                                                shippingAddress: e.target.value,
+                                            });
+                                        }}
+                                    />
                                 </div>
-
-                                <div className="flex items-center w-full justify-between text-sm py-2 border-y border-dashed border-gray-700">
-                                    <span className=" font-semibold">
-                                        Subtotal
-                                    </span>
-                                    <span className="exo font-semibold text-rose-500">
-                                        {"\u20B9"} {subtotal}
-                                    </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="cart-city" className="text-sm font-medium">City</Label>
+                                        <Input
+                                            id="cart-city"
+                                            className="bg-white"
+                                            placeholder="City"
+                                            autoComplete="address-level2"
+                                            value={orderData.city}
+                                            onChange={(e) =>
+                                                setOrderData({ ...orderData, city: e.target.value })
+                                            }
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="cart-state" className="text-sm font-medium">State</Label>
+                                        <Input
+                                            id="cart-state"
+                                            className="bg-white"
+                                            placeholder="State"
+                                            autoComplete="address-level1"
+                                            value={orderData.state}
+                                            onChange={(e) =>
+                                                setOrderData({ ...orderData, state: e.target.value })
+                                            }
+                                        />
+                                    </div>
                                 </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2 sm:max-w-full">
+                                        <Label htmlFor="cart-zip" className="text-sm font-medium">PIN / ZIP code</Label>
+                                        <Input
+                                            id="cart-zip"
+                                            className="bg-white"
+                                            inputMode="numeric"
+                                            autoComplete="postal-code"
+                                            placeholder="e.g. 110001"
+                                            maxLength={8}
+                                            value={orderData.zipCode}
+                                            onChange={(e) =>
+                                                setOrderData({
+                                                    ...orderData,
+                                                    zipCode: e.target.value.replace(/\D/g, "").slice(0, 8),
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
 
-                                <div className="w-full">
-                                    {
-                                        orderData.paymentMode === "onlinePayment" ? (
-                                            <Button variant={'cart'} className="w-full raleway rounded-none exo" disabled={loading} onClick={handelPlaceOrderWithrazorpay}>
-                                                Continue to Payment {"\u20B9"} {subtotal}
-                                                {
-                                                    loading && <Loader className="size-3 animate-spin ml-2" />
-                                                }
-                                            </Button>
-                                        ) : (
-                                            <Button variant={'cart'} className="w-full rounded-none"  onClick={handelPlaceOrder}>
-                                        Place Order (Cash on Delivery)
-                                        {
-                                            loading && <Loader className="size-3 animate-spin ml-2" />
-                                        }
+                    <Card className="border-neutral-200/90 bg-white shadow-sm overflow-hidden raleway">
+                        <CardHeader className="p-4 sm:p-5 pb-2">
+                            <CardTitle className="text-base font-semibold">Order summary</CardTitle>
+                            <CardDescription className="text-xs">Prices include applied discounts.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between gap-4">
+                                    <span className="text-neutral-600">Item total</span>
+                                    <span className="exo font-semibold tabular-nums">{"\u20B9"} {totalPrice}</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                    <span className="text-neutral-600">Shipping</span>
+                                    <span className="exo text-green-600 font-medium">Free</span>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                    <span className="text-neutral-600">Discount</span>
+                                    <span className="exo text-green-600 font-medium tabular-nums">−{"\u20B9"} {totalDiscountPrice}</span>
+                                </div>
+                                <div className="flex justify-between gap-4 pt-3 border-t border-dashed border-neutral-300 text-base">
+                                    <span className="font-semibold">Subtotal</span>
+                                    <span className="exo font-semibold text-rose-600 tabular-nums">{"\u20B9"} {subtotal}</span>
+                                </div>
+                            </div>
+                            <div className="w-full pt-1">
+                                {orderData.paymentMode === "onlinePayment" ? (
+                                    <Button
+                                        variant="cart"
+                                        className="w-full raleway rounded-md exo h-11"
+                                        disabled={loading}
+                                        onClick={handelPlaceOrderWithrazorpay}
+                                    >
+                                        Continue to payment · {"\u20B9"} {subtotal}
+                                        {loading && <Loader className="size-3 animate-spin ml-2" />}
                                     </Button>
-                                        )
-                                    }
-                                </div>
+                                ) : (
+                                    <Button
+                                        variant="cart"
+                                        className="w-full rounded-md h-11"
+                                        onClick={handelPlaceOrder}
+                                    >
+                                        Place order (cash on delivery)
+                                        {loading && <Loader className="size-3 animate-spin ml-2" />}
+                                    </Button>
+                                )}
                             </div>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
 
 
-                 <div className="lg:w-[65%] lg:mt-0 mt-5 order-1 lg:min-h-[50vh] min-h-[20vh] max-h-[100vh] overflow-y-auto px-5  bg-white border shadow-sm rounded-md">
+                 <div className="w-full lg:flex-1 lg:min-w-0 lg:mt-0 mt-5 order-1 lg:min-h-[50vh] min-h-[20vh] max-h-[100vh] overflow-y-auto px-5 sm:px-6 bg-white border shadow-sm rounded-xl">
 
 
                     <div className="w-full">

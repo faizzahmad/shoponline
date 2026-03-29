@@ -94,32 +94,32 @@ United States
              <h4 className="md:text-2xl text-xl font-[700] raleway">About & Help</h4>
              <ul className="md:mt-5 mt-2 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                     <li className="transition hover:text-rose-600">
-                        <Link href="/">
+                        <Link href="/about">
                         About us
                         </Link>
                     </li>
                      <li className="transition hover:text-rose-600">
-                        <Link href="/">
+                        <Link href="/about#reviews-heading">
                         Reviews
                         </Link>
                     </li>
                      <li className="transition hover:text-rose-600">
-                        <Link href="/">
+                        <Link href="/terms">
                         Terms and Conditions
                         </Link>
                     </li>
                      <li className="transition hover:text-rose-600">
-                        <Link href="/">
+                        <Link href="/policies#return-refund-policy">
                       Return & Refund Policy
                         </Link>
                     </li>
                     <li className="transition hover:text-rose-600">
-                        <Link href="/">
+                        <Link href="/policies#privacy-policy">
                        Privacy Policy
                         </Link>
                     </li>
                     <li className="transition hover:text-rose-600">
-                        <Link href="/">
+                        <Link href="/policies#shipping-policy">
                         Shipping Policy
                         </Link>
                     </li>
@@ -154,7 +154,7 @@ United States
         </div>
 
         <div className=" bg-rose-600 p-2 w-full text-center">
-          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2025. GiftBox. All Rights Reserved.</h5>
+          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2026. Buyora. All Rights Reserved.</h5>
         </div>
     </footer>
    )

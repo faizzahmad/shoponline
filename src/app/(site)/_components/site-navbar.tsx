@@ -26,11 +26,11 @@ export const SiteNavbar = async () => {
   
     return (
         <header>
-            <nav className=" bg-indigo-50 py-4 xl:px-10 px-5  raleway lg:border-b-0  border-b-[5px] border-rose-600">
+            <nav className=" bg-indigo-50 py-2 xl:px-10 px-5  raleway lg:border-b-0  border-b-[5px] border-rose-600">
                 <div className="hidden lg:flex items-center justify-between">
                     <div className="flex xl:gap-16 gap-6 items-center">
                         <Link href={'/'}>
-                            <Image src={'/images/web/logo.svg'} alt="Logo" height={40} width={80}></Image></Link>
+                            <Image src={'/images/web/logo.svg'} alt="Logo" height={40} width={50}></Image></Link>
                         <ul className=" xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-rose-600 hidden">
                             <li>
                                 <Link href={'/shop'}>Shop</Link>

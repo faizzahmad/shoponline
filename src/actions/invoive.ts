@@ -26,6 +26,10 @@ type OrdersDetails = {
     orderDateTime : Date;
     couponCode? : string;
     deliveryAddress : string;
+    streetAddress?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
     paymentMethod : string;
    orderStatus : string;
    deliveryStatus : string;
