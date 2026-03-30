@@ -15,7 +15,7 @@ type DeleteProductProps = {
 }
 
 export const ShowProductData = () => {
-       const {setDescriptionPage} = useProductAdmin();
+       const { setDescriptionPage, setEditProductId } = useProductAdmin();
        const { setIsOpenAlert,productId } = useProductDialog();
        const [isLoading, setIsLoading] = useState(false);
          const [products, setProducts] = useState<Product[]>([]);
@@ -70,6 +70,7 @@ export const ShowProductData = () => {
                 <div className="w-full flex exo">
                 <h1 className="text-2xl font-bold">Products</h1>
                 <Button className="ms-auto" variant={'outline'} onClick={() => {
+                    setEditProductId(null);
                     setDescriptionPage(true);
                 }}>
                  <Plus/>   Add New Product

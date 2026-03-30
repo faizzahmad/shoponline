@@ -6,12 +6,11 @@ import { ShowProductData } from "./show-product-data";
 
 
 export const ProductHome = () => {
-    const {descriptionPage} = useProductAdmin();
-     return(
+    const { descriptionPage, editProductId } = useProductAdmin();
+    const showForm = descriptionPage || !!editProductId;
+    return (
         <div>
-            {
-                descriptionPage ? (<ProductDescription/>) : (<ShowProductData/>)
-            }
+            {showForm ? <ProductDescription /> : <ShowProductData />}
         </div>
-    )
-}
+    );
+};

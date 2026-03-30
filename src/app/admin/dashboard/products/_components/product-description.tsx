@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useState } from "react";
-import { fetchData, postData } from "@/utils/apiCall";
+import { fetchData, postData, updateDataWithData } from "@/utils/apiCall";
 import { FixedLoader } from "@/components/custom/fixed-loader";
 import { cn } from "@/lib/utils";
 
@@ -80,11 +80,26 @@ type CatgegoryProps = {
 
 type AddProductProps = {
     message: string;
-}
+};
+
+const emptyProductData = (): ProductData => ({
+    productName: "",
+    images: [],
+    productStock: "",
+    productCategory: "",
+    productCategoryId: "",
+    productSubCategory: "",
+    productSubCategoryId: "",
+    discountPrice: "",
+    originalPrice: "",
+    shortDescription: "",
+    longDescription: "",
+    varients: [],
+});
 
 export const ProductDescription = () => {
 
-    const { setDescriptionPage } = useProductAdmin();
+    const { descriptionPage, setDescriptionPage, editProductId, setEditProductId } = useProductAdmin();
     const [categories, setCategories] = useState<CatgegoryProps[]>([]);
     const [subCategories, setSubCategories] = useState<subCategoryProps[]>([]);
     const [varientdata, setVarientData] = useState({
@@ -95,20 +110,7 @@ export const ProductDescription = () => {
     })
     const [loader, setLoader] = useState<boolean>(false);
     const [products, setProducts] = useState<GetProductDataprops[]>([]); // Assuming products is an array of objects
-    const [productData, setProductData] = useState<ProductData>({
-        productName: '',
-        images: [],
-        productStock: '',
-        productCategory: '',
-        productCategoryId: '',
-        productSubCategory: '',
-        productSubCategoryId: '',
-        discountPrice: '',
-        originalPrice: '',
-        shortDescription: '',
-        longDescription: '',
-        varients: []
-    });
+    const [productData, setProductData] = useState<ProductData>(emptyProductData());
 
     // 'color' or 'size'
     const [colorVarient, setColorVarient] = useState(
@@ -152,55 +154,159 @@ export const ProductDescription = () => {
     useEffect(() => {
         handelGetCategories();
         handelGetAllProducts();
-    }, [])
+    }, []);
 
+    useEffect(() => {
+        if (editProductId) return;
+        if (!descriptionPage) return;
+        setProductData(emptyProductData());
+        setColorVarient({ type: "color", products: [] });
+        setSizeVarient({ type: "size", products: [] });
+        setSubCategories([]);
+    }, [descriptionPage, editProductId]);
 
+    useEffect(() => {
+        if (!editProductId) return;
 
+        let cancelled = false;
+        (async () => {
+            setLoader(true);
+            try {
+                const p = await fetchData<GetProductDataprops>(`products/${editProductId}`);
+                if (cancelled) return;
+
+                setProductData({
+                    productName: p.productName ?? "",
+                    images: Array.isArray(p.images) ? p.images : [],
+                    productStock: String(p.productStock ?? ""),
+                    productCategory: p.productCategory ?? "",
+                    productCategoryId: p.productCategoryId ?? "",
+                    productSubCategory: p.productSubCategory ?? "",
+                    productSubCategoryId: p.productSubCategoryId ?? "",
+                    discountPrice: String(p.discountPrice ?? ""),
+                    originalPrice: String(p.originalPrice ?? ""),
+                    shortDescription: p.shortDescription ?? "",
+                    longDescription: p.longDescription ?? "",
+                    varients: p.varients ?? [],
+                });
+
+                const raw = (p.varients ?? []) as {
+                    type?: string;
+                    products?: unknown[];
+                }[];
+                const colorDoc = raw.find((v) => v?.type === "color") ?? {
+                    type: "color",
+                    products: [],
+                };
+                const sizeDoc = raw.find((v) => v?.type === "size") ?? {
+                    type: "size",
+                    products: [],
+                };
+                setColorVarient({
+                    type: "color",
+                    products: Array.isArray(colorDoc.products)
+                        ? (colorDoc.products as {
+                              value: string;
+                              productId: string;
+                              pname: string;
+                              image: string;
+                          }[])
+                        : [],
+                });
+                setSizeVarient({
+                    type: "size",
+                    products: Array.isArray(sizeDoc.products)
+                        ? (sizeDoc.products as {
+                              size: string;
+                              productId: string;
+                              pname: string;
+                              image: string;
+                          }[])
+                        : [],
+                });
+            } catch {
+                toast.error("Could not load product for editing");
+                setEditProductId(null);
+            } finally {
+                if (!cancelled) setLoader(false);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [editProductId, setEditProductId]);
+
+    useEffect(() => {
+        if (!editProductId || !productData.productCategoryId || categories.length === 0) return;
+        const selectedCategory = categories.find((c) => c._id === productData.productCategoryId);
+        if (selectedCategory) {
+            setSubCategories(selectedCategory.subCategories);
+        }
+    }, [editProductId, productData.productCategoryId, categories]);
 
     const handelAddProduct = async () => {
-        if (!productData.productName || !productData.productStock || !productData.productCategoryId || !productData.productSubCategoryId || !productData.discountPrice || !productData.originalPrice || !productData.shortDescription || !productData.longDescription || productData.images.length === 0) {
+        if (
+            !productData.productName ||
+            !productData.productStock ||
+            !productData.productCategoryId ||
+            !productData.productSubCategoryId ||
+            !productData.discountPrice ||
+            !productData.originalPrice ||
+            !productData.shortDescription ||
+            !productData.longDescription ||
+            productData.images.length === 0
+        ) {
             toast.error("Please fill all the fields");
             return;
-        } else if (Number(productData.discountPrice) < Number(productData.originalPrice)) {
-            toast.error("Discount price should be greater than  original price");
         }
-        else {
-            setLoader(true);
+        if (Number(productData.discountPrice) < Number(productData.originalPrice)) {
+            toast.error("Discount price should be greater than original price");
+            return;
+        }
 
-            const data = {
-                productName: productData.productName,
-                images: productData.images,
-                productStock: productData.productStock,
-                productCategory: productData.productCategory,
-                productCategoryId: productData.productCategoryId,
-                productSubCategory: productData.productSubCategory,
-                productSubCategoryId: productData.productSubCategoryId,
-                discountPrice: productData.discountPrice,
-                originalPrice: productData.originalPrice,
-                shortDescription: productData.shortDescription,
-                longDescription: productData.longDescription,
-                varients: [colorVarient,sizeVarient]
-            }
-           
-            try {
-                const response = await postData<typeof data, AddProductProps>('products', data);
+        setLoader(true);
+
+        const payload = {
+            productName: productData.productName,
+            images: productData.images,
+            productStock: productData.productStock,
+            productCategory: productData.productCategory,
+            productCategoryId: productData.productCategoryId,
+            productSubCategory: productData.productSubCategory,
+            productSubCategoryId: productData.productSubCategoryId,
+            discountPrice: productData.discountPrice,
+            originalPrice: productData.originalPrice,
+            shortDescription: productData.shortDescription,
+            longDescription: productData.longDescription,
+            varients: [colorVarient, sizeVarient],
+        };
+
+        try {
+            if (editProductId) {
+                const response = await updateDataWithData<
+                    typeof payload & { _id: string },
+                    AddProductProps
+                >("products", { _id: editProductId, ...payload });
+                if (response?.message) {
+                    toast.success(response.message);
+                }
+                setEditProductId(null);
+                setDescriptionPage(false);
+            } else {
+                const response = await postData<typeof payload, AddProductProps>("products", payload);
                 if (response && response.message) {
                     toast.success(response.message);
                 }
                 setDescriptionPage(false);
-
-            } catch (err) {
-
-                toast.error("Error adding product");
-                console.log("Error adding product:", err);
-            } finally {
-                setLoader(false);
-
             }
-
+        } catch (err) {
+            toast.error(editProductId ? "Error updating product" : "Error adding product");
+            console.error(err);
+        } finally {
+            setLoader(false);
         }
-
-    }
+    };
 
 
     const handelAddVarient = () => {
@@ -233,8 +339,7 @@ export const ProductDescription = () => {
     }
 
 
-    console.log({sizeVarient});
-
+    const isEditMode = Boolean(editProductId);
 
     return (
         <>
@@ -246,13 +351,17 @@ export const ProductDescription = () => {
 
                     <Button className="text-lg font-semibold hover:no-underline" variant={'link'} onClick={() => {
                         setDescriptionPage(false);
+                        setEditProductId(null);
                     }}>
                         <ArrowLeft />  Back to Products
                     </Button>
 
-                    <div className="ms-auto flex gap-4 exo">
+                    <div className="ms-auto flex items-center gap-4 exo">
+                        <span className="text-sm text-muted-foreground hidden sm:inline">
+                            {isEditMode ? "Editing product" : "New product"}
+                        </span>
                         <Button className="font-[500] text-base" variant={'link'} onClick={handelAddProduct}>
-                            Save Changes
+                            {isEditMode ? "Save changes" : "Save product"}
                         </Button>
 
 

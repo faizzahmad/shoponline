@@ -59,6 +59,71 @@ export async function GET() {
 }
 
 
+export async function PUT(request: Request) {
+    const isVrefied = await verifyAuth();
+    if (!isVrefied.isValid) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+    await connectToDb();
+    const body = await request.json();
+    const {
+        _id,
+        productName,
+        images,
+        productStock,
+        productCategory,
+        productCategoryId,
+        productSubCategory,
+        productSubCategoryId,
+        discountPrice,
+        originalPrice,
+        shortDescription,
+        longDescription,
+        varients,
+    } = body;
+
+    if (!_id || typeof _id !== "string") {
+        return new Response(JSON.stringify({ error: "Missing product id" }), { status: 400 });
+    }
+    if (!productName || !images || productStock === undefined || productStock === null) {
+        return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+    }
+
+    try {
+        const productIdSlug = String(productName).replace(/\s+/g, "-").toLowerCase();
+        const updated = await Product.findByIdAndUpdate(
+            _id,
+            {
+                $set: {
+                    productName,
+                    productId: productIdSlug,
+                    images,
+                    productStock: Number(productStock),
+                    productCategory,
+                    productCategoryId,
+                    productSubCategory,
+                    productSubCategoryId,
+                    discountPrice: Number(discountPrice),
+                    originalPrice: Number(originalPrice),
+                    shortDescription,
+                    longDescription,
+                    varients: varients ?? [],
+                },
+            },
+            { new: true }
+        );
+        if (!updated) {
+            return new Response(JSON.stringify({ error: "Product not found" }), { status: 404 });
+        }
+        return new Response(JSON.stringify({ message: "Product updated successfully" }), {
+            status: 200,
+        });
+    } catch (error) {
+        console.error("Error updating product:", error);
+        return new Response(JSON.stringify({ error: "Error updating product" }), { status: 500 });
+    }
+}
+
 export async function DELETE(request: Request) {
     const isVrefied = await verifyAuth();
     if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
