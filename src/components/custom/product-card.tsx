@@ -18,9 +18,11 @@ interface ProductCardProps {
     images: string[];
     price: number;
     discountedPrice?: number;
-    description?:string;
-    imageContainerClassName : string;
-    divCalssName : string;
+    description?: string;
+    imageContainerClassName: string;
+    divCalssName: string;
+    /** When set and below 1, Quick Buy / Add to cart are disabled */
+    productStock?: number | string;
 }
 
 export const ProductCard = ({
@@ -31,13 +33,22 @@ export const ProductCard = ({
     discountedPrice,
     description,
     imageContainerClassName,
-    divCalssName
-} : ProductCardProps) => {
-     const {setProductId,setIsOpen,setIsQuickBuy} = useProductInfoModal();
-   
+    divCalssName,
+    productStock,
+}: ProductCardProps) => {
+    const { setProductId, setIsOpen, setIsQuickBuy } = useProductInfoModal();
+    const stockNum = productStock === undefined ? 1 : Number(productStock);
+    const isOutOfStock = !Number.isFinite(stockNum) || stockNum < 1;
 
     return (
-        <div className={cn("p-4 shadow-sm rounded-xl bg-indigo-50",divCalssName)}>
+        <div
+            className={cn(
+                "p-4 shadow-sm rounded-xl bg-indigo-50",
+                divCalssName,
+                isOutOfStock && "opacity-[0.88] saturate-[0.85]"
+            )}
+            aria-disabled={isOutOfStock}
+        >
             <div className="w-full relative">
                 <Carousel
                     plugins={[
@@ -67,14 +78,24 @@ export const ProductCard = ({
                     <CarouselPrevious className="left-2 size-4 text-xs" />
                     <CarouselNext className="right-2 size-4 text-xs" />
                 </Carousel>
-                <div className="absolute bottom-3 w-full left-0 flex justify-center">
-                    <button className="text-rose-500 md:py-1 py-[2px] px-10 bg-indigo-50 rounded-full md:text-xs text-[10px]" onClick={() => {
-                     setProductId(id);
-                        setIsOpen(true);
-                        setIsQuickBuy(true);
-                    }}>
-                        Quick Buy
-                    </button>
+                <div className="absolute bottom-3 w-full left-0 flex justify-center px-2">
+                    {isOutOfStock ? (
+                        <span className="text-neutral-600 md:py-1 py-[2px] px-6 bg-white/95 border border-neutral-200 rounded-full md:text-xs text-[10px] font-medium raleway">
+                            Out of stock
+                        </span>
+                    ) : (
+                        <button
+                            type="button"
+                            className="text-rose-500 md:py-1 py-[2px] px-10 bg-indigo-50 rounded-full md:text-xs text-[10px]"
+                            onClick={() => {
+                                setProductId(id);
+                                setIsOpen(true);
+                                setIsQuickBuy(true);
+                            }}
+                        >
+                            Quick Buy
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="mt-3 flex flex-col gap-y-1">
@@ -90,11 +111,17 @@ export const ProductCard = ({
                     }
                 </div>
                </Link>
-                <Button variant={'cart'} className="md:mt-3 mt-2 raleway" onClick={() => {
-                     setProductId(id);
+                <Button
+                    variant="cart"
+                    className="md:mt-3 mt-2 raleway"
+                    disabled={isOutOfStock}
+                    onClick={() => {
+                        if (isOutOfStock) return;
+                        setProductId(id);
                         setIsOpen(true);
-                }}>
-                   Add to Cart
+                    }}
+                >
+                    {isOutOfStock ? "Out of stock" : "Add to Cart"}
                 </Button>
             </div>
         </div>

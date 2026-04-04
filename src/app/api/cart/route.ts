@@ -1,5 +1,12 @@
 import { connectToDb } from "@/lib/connectToDb";
-import { AddtoCart,handelgetCart,handelRemoveItemFromcart,chnageCount } from "@/actions/cart";
+import {
+    AddtoCart,
+    handelRemoveItemFromcart,
+    chnageCount,
+} from "@/actions/cart";
+import { syncCartWithProducts } from "@/actions/cart-sync";
+import Cart from "@/lib/models/cart-model";
+import Product from "@/lib/models/product-model";
 
 export async function POST(req: Request) {
     const body = await req.json();
@@ -17,17 +24,18 @@ export async function POST(req: Request) {
         });
     } catch (error) {
         console.error("Error adding to cart:", error);
-        return new Response(JSON.stringify({ error: "Error adding to cart" }), {
-            status: 500,
+        const msg = error instanceof Error ? error.message : "Error adding to cart";
+        const client = msg !== "Error adding to cart";
+        return new Response(JSON.stringify({ error: msg }), {
+            status: client ? 400 : 500,
         });
-    }       
+    }
 }
 
 
 export async function GET(req: Request) {
     const url = new URL(req.url);
     const phone = url.searchParams.get("phone");
-    console.log("Phone number:", phone);
     if (!phone) {
         return new Response(JSON.stringify({ error: "Phone number is required" }), {
             status: 400,
@@ -35,16 +43,42 @@ export async function GET(req: Request) {
     }
     await connectToDb();
     try {
-        const cart = await handelgetCart(phone);
-        return new Response(JSON.stringify(cart), {
+        const warnings = await syncCartWithProducts(phone);
+        const cart = (await Cart.findOne({ userPhone: phone }).lean()) as {
+            items?: Array<Record<string, unknown>>;
+        } | null;
+        if (!cart || !cart.items?.length) {
+            return new Response(JSON.stringify({ items: [], warnings }), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+
+        const items = await Promise.all(
+            cart.items.map(async (item: Record<string, unknown>) => {
+                const pid = String(item.productId);
+                const p = (await Product.findById(pid).select("productStock").lean()) as {
+                    productStock?: number;
+                } | null;
+                const availableStock = p ? Number(p.productStock ?? 0) : 0;
+                return {
+                    ...item,
+                    productId: pid,
+                    availableStock,
+                };
+            })
+        );
+
+        return new Response(JSON.stringify({ items, warnings }), {
             status: 200,
+            headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
         console.error("Error fetching cart:", error);
         return new Response(JSON.stringify({ error: "Error fetching cart" }), {
             status: 500,
         });
-    }   
+    }
 }
 
 export async function DELETE(req: Request) {
@@ -85,9 +119,10 @@ export async function PUT(req: Request) {
         });
     } catch (error) {
         console.error("Error changing item count:", error);
-        return new Response(JSON.stringify({ error: "Error changing item count" }), {
-            status: 500,
+        const msg = error instanceof Error ? error.message : "Error changing item count";
+        const client = msg !== "Error changing item count";
+        return new Response(JSON.stringify({ error: msg }), {
+            status: client ? 400 : 500,
         });
-    }   
-
+    }
 }

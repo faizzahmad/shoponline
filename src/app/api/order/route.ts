@@ -1,12 +1,36 @@
 import Order from "@/lib/models/order-model";
 import { connectToDb } from "@/lib/connectToDb";
 import Cart from "@/lib/models/cart-model";
+import Coupon from "@/lib/models/coupon-model";
 import { verifyAuth } from "@/utils/verifyToken";
 import {
     formatDeliveryAddress,
     validateDeliveryAddressParts,
     type DeliveryAddressParts,
 } from "@/lib/delivery-address";
+import {
+    validateAndNormalizeOrderItems,
+    decrementStockForOrderItems,
+    type ClientOrderLine,
+} from "@/lib/inventory";
+
+function totalsMatchClient(
+    clientTotal: number,
+    serverSubtotal: number,
+    coupon: { discountPercentage: number } | null
+): boolean {
+    const c = Math.round(Number(clientTotal));
+    if (!coupon) {
+        return Math.abs(c - Math.round(serverSubtotal)) <= 1;
+    }
+    const totalPrice = serverSubtotal;
+    const totalDiscountPrice = parseFloat(
+        ((totalPrice * coupon.discountPercentage) / 100).toFixed(2)
+    );
+    const subtotalAfter = parseFloat((totalPrice - totalDiscountPrice).toFixed(2));
+    const expected = Math.round(subtotalAfter);
+    return Math.abs(c - expected) <= 1;
+}
 
 export async function POST(req: Request) {
     const body = await req.json();
@@ -50,13 +74,95 @@ export async function POST(req: Request) {
     await connectToDb();
 
     try {
+        const rawItems = items as ClientOrderLine[];
+        const validated = await validateAndNormalizeOrderItems(rawItems);
+        if (!validated.ok) {
+            return new Response(JSON.stringify({ error: validated.error }), {
+                status: 400,
+            });
+        }
+
+        const serverSubtotal = validated.totalAmount;
+        const code =
+            typeof couponCode === "string" && couponCode.trim()
+                ? couponCode.trim().toUpperCase()
+                : null;
+
+        let couponDoc: { discountPercentage: number; validFrom: Date; validTo: Date } | null =
+            null;
+        if (code) {
+            const found = (await Coupon.findOne({ couponCode: code }).lean()) as {
+                discountPercentage: number;
+                validFrom: Date;
+                validTo: Date;
+            } | null;
+            if (!found) {
+                return new Response(JSON.stringify({ error: "Invalid or expired coupon" }), {
+                    status: 400,
+                });
+            }
+            const now = new Date();
+            if (now < new Date(found.validFrom) || now > new Date(found.validTo)) {
+                return new Response(JSON.stringify({ error: "Coupon is not valid at this time" }), {
+                    status: 400,
+                });
+            }
+            couponDoc = {
+                discountPercentage: found.discountPercentage,
+                validFrom: found.validFrom,
+                validTo: found.validTo,
+            };
+        }
+
+        if (!totalsMatchClient(Number(totalAmount), serverSubtotal, couponDoc)) {
+            return new Response(
+                JSON.stringify({
+                    error:
+                        "Order total does not match current prices. Refresh your cart and try again.",
+                }),
+                { status: 400 }
+            );
+        }
+
+        const normalizedItems = validated.items;
+        const stockLines = normalizedItems.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+        }));
+
+        const isCod = paymentMethod === "cod";
+
+        if (isCod) {
+            const dec = await decrementStockForOrderItems(stockLines);
+            if (!dec.ok) {
+                return new Response(
+                    JSON.stringify({
+                        error:
+                            dec.message ||
+                            "Could not complete order due to stock. Refresh your cart and try again.",
+                    }),
+                    { status: 409 }
+                );
+            }
+        }
+
+        const totalPrice = serverSubtotal;
+        let storedTotal = Math.round(totalPrice);
+        if (couponDoc) {
+            const totalDiscountPrice = parseFloat(
+                ((totalPrice * couponDoc.discountPercentage) / 100).toFixed(2)
+            );
+            const subtotalAfter = parseFloat((totalPrice - totalDiscountPrice).toFixed(2));
+            storedTotal = Math.round(subtotalAfter);
+        }
+
         const newOrder = new Order({
             userPhone,
             username,
-            items,
-            totalAmount,
+            items: normalizedItems,
+            totalAmount: storedTotal,
             orderDateTime: orderDateTime || new Date(),
-            couponCode: couponCode || null,
+            couponCode: code,
             deliveryAddress,
             streetAddress: addressParts.streetAddress.trim(),
             city: addressParts.city.trim(),
@@ -64,17 +170,18 @@ export async function POST(req: Request) {
             zipCode: addressParts.zipCode.trim(),
             paymentMethod,
             razorpayOrderId: razorpayOrderId || null,
+            inventoryAdjusted: isCod,
         });
 
         await newOrder.save();
+
         const cart = await Cart.findOne({ userPhone });
         if (cart) {
+            const orderedIds = new Set(
+                normalizedItems.map((i) => String(i.productId))
+            );
             cart.items = cart.items.filter(
-                (item: { productId: unknown }) =>
-                    !items.some(
-                        (orderedItem: { productId: unknown }) =>
-                            String(orderedItem.productId) === String(item.productId)
-                    )
+                (item: { productId: unknown }) => !orderedIds.has(String(item.productId))
             );
             await cart.save();
         }

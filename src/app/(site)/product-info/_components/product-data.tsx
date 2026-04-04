@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FaFacebook, FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner";
+import { ProductReviewsSection } from "./product-reviews-section";
+import { RelatedProductsSlider } from "./related-products-slider";
 
 
 type Variant = {
@@ -85,6 +87,14 @@ export const ProductData = ({ slug }: ProductDataProps) => {
         }
     }, [slug]);
 
+    useEffect(() => {
+        const s = Number(productInfo?.productStock ?? 0);
+        if (s >= 1) {
+            const cap = Math.min(10, s);
+            setSelectedQunatity((q) => Math.min(q, cap));
+        }
+    }, [productInfo?.productStock, productInfo?._id]);
+
     const message = `
 ${productInfo?.productName}
 
@@ -98,9 +108,15 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.NEXT_PUBLIC_API_URL + '/product-info/' + productInfo?._id)}`;
 
-
+    const stock = Number(productInfo?.productStock ?? 0);
+    const isOutOfStock = stock < 1;
+    const maxSelectableQty = isOutOfStock ? 1 : Math.min(10, stock);
 
     const handelAddToCart = async () => {
+        if (isOutOfStock) {
+            toast.error(`${productInfo?.productName ?? "This product"} is out of stock.`);
+            return;
+        }
 
            const productItem = {
                                         productId: productInfo!._id!,
@@ -133,7 +149,11 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
             }
         } catch (err) {
-            toast.error("Failed to add product to cart. Please try again.");
+            const msg =
+                err instanceof Error
+                    ? err.message
+                    : "Failed to add product to cart. Please try again.";
+            toast.error(msg);
             console.error("Failed to add to cart:", err);
         } finally {
             setCartLoader(false);
@@ -337,11 +357,17 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                             </div>
                         </div>
 
+                        {isOutOfStock ? (
+                            <p className="mt-4 text-sm font-medium text-rose-700 raleway rounded-md border border-rose-200 bg-rose-50 px-3 py-2">
+                                This product is out of stock.
+                            </p>
+                        ) : null}
+
                         <div className="mt-4 flex gap-4 items-center">
 
                             <div className="flex mt-1">
                                 <button className="size-10 flex  items-center justify-center bg-indigo-50 border cursor-pointer text-rose-600 rounded-tl rounded-bl"
-                                    disabled={selectedQunatity <= 1}
+                                    disabled={selectedQunatity <= 1 || isOutOfStock}
                                     onClick={() => setSelectedQunatity(selectedQunatity > 1 ? selectedQunatity - 1 : 1)}
                                 >
                                     <Minus className="size-5" />
@@ -350,11 +376,16 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                     {selectedQunatity}
                                 </div>
                                 <button className="size-10 text-sm flex  items-center justify-center bg-indigo-50 border cursor-pointer text-rose-600 rounded-tr rounded-br"
+                                    disabled={isOutOfStock}
                                     onClick={() => {
-                                        if (selectedQunatity < 10) {
+                                        if (selectedQunatity < maxSelectableQty) {
                                             setSelectedQunatity(selectedQunatity + 1)
                                         } else {
-                                            toast.error("You can only add up to 10 items at a time.")
+                                            toast.error(
+                                                maxSelectableQty >= 10
+                                                    ? "You can only add up to 10 items at a time."
+                                                    : `Only ${stock} in stock.`
+                                            )
                                         }
                                     }}
                                 >
@@ -364,7 +395,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                             <div className="flex-1">
                                 <Button variant={'cart'} className="h-[42px] rounded-md w-full raleway uppercase"
-                                    disabled={!isLoaded || cartLoader}
+                                    disabled={!isLoaded || cartLoader || isOutOfStock}
                                     onClick={() => {
                                         if (!isSignedIn) {
                                             const fullPathWithQuery = window.location.pathname + window.location.search;
@@ -374,7 +405,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                         }
                                     }}
                                 >
-                                    Add to Cart
+                                    {isOutOfStock ? "Out of stock" : "Add to Cart"}
 
 
                               {
@@ -389,7 +420,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                         <div className="mt-4">
                             <Button
-                                disabled={!isLoaded || cartLoader}
+                                disabled={!isLoaded || cartLoader || isOutOfStock}
                                 className="w-full h-[42px] rounded-md raleway uppercase bg-indigo-200 text-black hover:bg-indigo-300 "
                                 onClick={() => {
                                     if (!isSignedIn) {
@@ -401,7 +432,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                     }
                                 }}
                             >
-                                Buy Now
+                                {isOutOfStock ? "Out of stock" : "Buy Now"}
 
                               {
                                 cartLoader && (
@@ -413,6 +444,18 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                         </div>
                     </div>
                 </div>
+
+                {!loader && productInfo._id && (
+                    <>
+                        <ProductReviewsSection key={`reviews-${slug}`} productId={productInfo._id} />
+                        <RelatedProductsSlider
+                            key={`related-${slug}`}
+                            excludeId={productInfo._id}
+                            categoryId={productInfo.productCategoryId}
+                            subCategoryId={productInfo.productSubCategoryId}
+                        />
+                    </>
+                )}
             </div>
         </>
     )

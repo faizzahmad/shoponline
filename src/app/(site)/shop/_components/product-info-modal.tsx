@@ -76,8 +76,15 @@ export const ProductInfoModal = () => {
         if (productId) {
             handelGetProductInfo();
         }
-    }, [productId])
+    }, [productId]);
 
+    useEffect(() => {
+        if (!data) return;
+        const s = Number(data.productStock);
+        if (Number.isFinite(s) && s >= 1) {
+            setSelectedQuantity((q) => Math.min(q, Math.min(10, s)));
+        }
+    }, [data?._id, data?.productStock]);
 
     const { isSignedIn, isLoaded, user } = useUser();
     const router = useRouter();
@@ -96,6 +103,9 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${data?._id}
 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
 const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.NEXT_PUBLIC_API_URL + '/product-info/' + data?._id)}`;
 
+    const stock = data ? Number(data.productStock) : 0;
+    const isOutOfStock = !Number.isFinite(stock) || stock < 1;
+    const maxSelectableQty = isOutOfStock ? 1 : Math.min(10, stock);
 
     return (
         <>
@@ -189,8 +199,13 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>
 
                                 <p  className="raleway text-base mb-1">Product Quantity</p>
+                                {isOutOfStock ? (
+                                    <p className="text-sm font-medium text-rose-700 raleway rounded-md border border-rose-200 bg-rose-50 px-3 py-2 mb-2">
+                                        This product is out of stock.
+                                    </p>
+                                ) : null}
                                 <div className="w-[140px] grid grid-cols-3 bg-white border border-neutral-300 rounded-md h-[40px] raleway shadow-sm">
-                                    <button disabled={selectedQunatity === 1} className="w-full h-full flex items-center justify-center border-r border-neutral-300" onClick={() => setSelectedQuantity((prev) => prev > 1 ? prev - 1 : prev)}>
+                                    <button disabled={selectedQunatity === 1 || isOutOfStock} className="w-full h-full flex items-center justify-center border-r border-neutral-300" onClick={() => setSelectedQuantity((prev) => prev > 1 ? prev - 1 : prev)}>
                                         <Minus className="size-4 cursor-pointer" />
                                     </button>
 
@@ -198,11 +213,15 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                         {selectedQunatity}
                                     </div>
 
-                                    <button className="w-full h-full flex items-center justify-center border-neutral-300" onClick={() => {
-                                        if (selectedQunatity < 10) {
+                                    <button disabled={isOutOfStock} className="w-full h-full flex items-center justify-center border-neutral-300" onClick={() => {
+                                        if (selectedQunatity < maxSelectableQty) {
                                             setSelectedQuantity((prev) => prev + 1);
                                         } else {
-                                            toast.error("Maximum quantity is 10");
+                                            toast.error(
+                                                maxSelectableQty >= 10
+                                                    ? "Maximum quantity is 10"
+                                                    : `Only ${stock} in stock.`
+                                            );
                                         }
                                     }}>
                                         <Plus className="size-4 cursor-pointer" />
@@ -250,7 +269,11 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                             </div>
 
                             <div className="flex flex-col">
-                                <Button variant={'cart'} disabled={cartLoader} className="rounded-sm h-10 flex w-full items-center gap-2 raleway" onClick={async () => {
+                                <Button variant={'cart'} disabled={cartLoader || isOutOfStock} className="rounded-sm h-10 flex w-full items-center gap-2 raleway" onClick={async () => {
+                                    if (isOutOfStock) {
+                                        toast.error(`${data?.productName ?? "This product"} is out of stock.`);
+                                        return;
+                                    }
                                     const productItem = {
                                         productId: data!._id!,
                                         quantity: selectedQunatity,
@@ -296,7 +319,11 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
 
                                             }
                                         } catch (err) {
-                                            toast.error("Failed to add product to cart. Please try again.");
+                                            const msg =
+                                                err instanceof Error
+                                                    ? err.message
+                                                    : "Failed to add product to cart. Please try again.";
+                                            toast.error(msg);
                                             console.error("Failed to add to cart:", err);
                                         } finally {
                                             setCartLoader(false);
@@ -307,7 +334,11 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     }
                                 }}>
                                     {
-                                        isQuickBuy ? "Checkout" : "Add to Cart"
+                                        isOutOfStock
+                                            ? "Out of stock"
+                                            : isQuickBuy
+                                              ? "Checkout"
+                                              : "Add to Cart"
                                     }
                                     {
                                         cartLoader && <Loader className="size-4 animate-spin" />

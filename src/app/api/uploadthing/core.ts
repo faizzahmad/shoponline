@@ -16,18 +16,23 @@ export const ourFileRouter = {
       maxFileSize: "4MB",
       maxFileCount: 1,
     },
-  })
-   
-    .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
+  }).onUploadComplete(async ({ metadata, file }) => {
+    return {
+      fileUrl: file.url,
+      fileKey: file.key,
+      metadata,
+    };
+  }),
 
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { 
-        fileUrl: file.url,
-        fileKey: file.key,
-        metadata,
-       };
-    }),
+  reviewImages: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+  }).onUploadComplete(async ({ file }) => ({
+    fileUrl: file.url,
+    fileKey: file.key,
+  })),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

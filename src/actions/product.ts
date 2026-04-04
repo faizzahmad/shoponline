@@ -8,14 +8,15 @@ export const getNewProducts = async (limit: number) => {
         const products = await Product.find()
             .sort({ createdAt: -1 })
             .limit(limit)
-            .select('_id productName images originalPrice discountPrice');
-        
+            .select("_id productName images originalPrice discountPrice productStock");
+
         return products.map((product) => ({
             id: product._id.toString(),
             title: product.productName,
             images: product.images,
             price: product.originalPrice,
             discountedPrice: product.discountPrice,
+            productStock: product.productStock,
         }));
     } catch (error) {
         console.error("Error fetching new products:", error);
@@ -29,14 +30,15 @@ export const getTopSellingProducts = async (limit: number) => {
         const products = await Product.find()
             .sort({ totalSales: -1 })
             .limit(limit)
-             .select('_id productName images originalPrice discountPrice');
-        
+            .select("_id productName images originalPrice discountPrice productStock");
+
         return products.map((product) => ({
             id: product._id.toString(),
             title: product.productName,
             images: product.images,
             price: product.originalPrice,
             discountedPrice: product.discountPrice,
+            productStock: product.productStock,
         }));
     } catch (error) {
         console.error("Error fetching top selling products:", error);

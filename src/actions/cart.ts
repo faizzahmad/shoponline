@@ -1,7 +1,9 @@
 "use server";
 import Cart from "@/lib/models/cart-model";
+import Product from "@/lib/models/product-model";
 import { connectToDb } from "@/lib/connectToDb";
 import { revalidatePath } from "next/cache";
+import mongoose from "mongoose";
 
 type productItem = {
     productId : string;
@@ -18,45 +20,82 @@ type productItem = {
     longDescription : string;
 }
 
-export const AddtoCart = async (phone : string, items : productItem ) => {
+export const AddtoCart = async (phone: string, items: productItem) => {
     await connectToDb();
-    if(!phone) {
+    if (!phone) {
         throw new Error("Phone number and product ID are required");
     }
     try {
-        const cart = await Cart.findOne({ userPhone: phone });
-        if(!cart){
-            const newCart = new Cart({ userPhone: phone, items: [items] });
-            await newCart.save();
-            revalidatePath("/cart");
-            revalidatePath("/")
-            return {
-                message: "Cart created and item added successfully",
-            }
-
-
-        }else {
-            const existingItemIndex = cart.items.findIndex((item: productItem) => item.productId.toString() === items.productId);
-            if(existingItemIndex > -1) {
-                cart.items[existingItemIndex].quantity += items.quantity;
-            } else {
-                cart.items.push(items);
-
-            }
-            await cart.save();
-            revalidatePath("/cart");
-            revalidatePath("/")
-            return {
-                message: "Item added to cart successfully",
-            }
+        if (!mongoose.Types.ObjectId.isValid(items.productId)) {
+            throw new Error("Invalid product");
+        }
+        const product = await Product.findById(items.productId).lean();
+        if (!product) {
+            throw new Error("Product not found");
+        }
+        const stock = Number(product.productStock ?? 0);
+        if (stock < 1) {
+            throw new Error("This product is out of stock");
         }
 
+        const cart = await Cart.findOne({ userPhone: phone });
+        const existingItemIndex = cart
+            ? cart.items.findIndex(
+                  (item: productItem) => item.productId.toString() === items.productId
+              )
+            : -1;
+        let nextQty = items.quantity;
+        if (existingItemIndex > -1 && cart) {
+            nextQty = cart.items[existingItemIndex].quantity + items.quantity;
+        }
+        if (nextQty > stock) {
+            throw new Error(`Only ${stock} unit(s) available in stock`);
+        }
 
-    }catch(err) {
+        const line: productItem = {
+            ...items,
+            quantity: items.quantity,
+            originalPrice: Number(product.originalPrice),
+            discountPrice: Number(product.discountPrice ?? 0),
+            productName: product.productName,
+            images: product.images ?? [],
+            productCategory: product.productCategory,
+            productCategoryId: String(product.productCategoryId),
+            productSubCategory: product.productSubCategory,
+            productSubCategoryId: String(product.productSubCategoryId),
+            shortDescription: product.shortDescription ?? "",
+            longDescription: product.longDescription ?? "",
+        };
+
+        if (!cart) {
+            const newCart = new Cart({ userPhone: phone, items: [line] });
+            await newCart.save();
+            revalidatePath("/cart");
+            revalidatePath("/");
+            return {
+                message: "Cart created and item added successfully",
+            };
+        }
+
+        if (existingItemIndex > -1) {
+            cart.items[existingItemIndex].quantity += items.quantity;
+            cart.items[existingItemIndex].originalPrice = line.originalPrice;
+            cart.items[existingItemIndex].discountPrice = line.discountPrice;
+        } else {
+            cart.items.push(line);
+        }
+        await cart.save();
+        revalidatePath("/cart");
+        revalidatePath("/");
+        return {
+            message: "Item added to cart successfully",
+        };
+    } catch (err) {
         console.error("Error adding to cart:", err);
+        if (err instanceof Error) throw err;
         throw new Error("Error adding to cart");
     }
-}
+};
 
 
 export const handelRemoveItemFromcart = async (phone: string, productId: string) => {
@@ -125,19 +164,36 @@ export const chnageCount = async (phone: string, productId: string, quantity: nu
         throw new Error("Phone number, product ID and valid quantity are required");
     }
     try {
+        const product = await Product.findById(productId).lean();
+        if (!product) {
+            throw new Error("Product not found");
+        }
+        const stock = Number(product.productStock ?? 0);
+        if (stock < 1) {
+            throw new Error("This product is out of stock");
+        }
+        if (quantity > stock) {
+            throw new Error(`Only ${stock} unit(s) available`);
+        }
+
         const cart = await Cart.findOne({ userPhone: phone });
         if (!cart) {
             throw new Error("Cart not found");
         }
-        const itemIndex = cart.items.findIndex((item: productItem) => item.productId.toString() === productId);
+        const itemIndex = cart.items.findIndex(
+            (item: productItem) => item.productId.toString() === productId
+        );
         if (itemIndex > -1) {
             cart.items[itemIndex].quantity = quantity;
+            cart.items[itemIndex].originalPrice = Number(product.originalPrice);
+            cart.items[itemIndex].discountPrice = Number(product.discountPrice ?? 0);
             await cart.save();
         } else {
             throw new Error("Item not found in cart");
         }
     } catch (err) {
         console.error("Error changing item count:", err);
+        if (err instanceof Error) throw err;
         throw new Error("Error changing item count");
     }
-}
+};

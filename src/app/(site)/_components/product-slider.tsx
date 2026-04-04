@@ -13,6 +13,7 @@ interface productsProps {
     images: string[];
     price: number;
     discountedPrice?: number;
+    productStock?: number;
 }
 
 interface ProductSliderProps {
@@ -25,40 +26,40 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
         <div className="my-10 w-full lg:px-10 px-5">
             <h5 className=" md:text-[2rem] text-[1.5rem] font-[700] exo mb-5">{carouselTitle}</h5>
             <div className="w-full">
-
                 <Carousel>
                     <CarouselContent>
-                        {
-                            products.map((item, index) => (
-                                <CarouselItem className="md:basis-[300px] basis-[250px] pl-4" key={index}>
-                                    <ProductCard
-                                        images={item.images}
-                                        id={item.id}
-                                        title={item.title}
-                                        price={item.price}
-                                        discountedPrice={item.discountedPrice}
-                                        divCalssName="sm:w-full w-full"
-                                        imageContainerClassName="relative w-full aspect-[4/5] overflow-hidden rounded-xl"
-                                    />
-                                </CarouselItem>
-                            ))
-
-                        }
+                        {products.map((item, index) => (
+                            <CarouselItem className="md:basis-[300px] basis-[250px] pl-4" key={index}>
+                                <ProductCard
+                                    images={item.images}
+                                    id={item.id}
+                                    title={item.title}
+                                    price={item.price}
+                                    discountedPrice={item.discountedPrice}
+                                    productStock={item.productStock}
+                                    divCalssName="sm:w-full w-full"
+                                    imageContainerClassName="relative w-full aspect-[4/5] overflow-hidden rounded-xl"
+                                />
+                            </CarouselItem>
+                        ))}
 
                         <CarouselItem className="h-auto basis-[300px] pl-4">
-                           <Link href={carouselTitle === "New Arrivals" ? "/shop?sortBy=new" : "/shop?sortBy=top-selling"}>
-                            <div className="w-full p-4 shadow-sm rounded-xl bg-indigo-50 flex gap-2 items-center justify-center h-full text-rose-600 text-2xl font-semibold raleway">
-                              
-                                View All
-                                 <ArrowRight/>
-                            </div>
+                            <Link
+                                href={
+                                    carouselTitle === "New Arrivals"
+                                        ? "/shop?sortBy=new"
+                                        : "/shop?sortBy=top-selling"
+                                }
+                            >
+                                <div className="w-full p-4 shadow-sm rounded-xl bg-indigo-50 flex gap-2 items-center justify-center h-full text-rose-600 text-2xl font-semibold raleway">
+                                    View All
+                                    <ArrowRight />
+                                </div>
                             </Link>
                         </CarouselItem>
-
                     </CarouselContent>
                 </Carousel>
-
             </div>
         </div>
-    )
-}
+    );
+};

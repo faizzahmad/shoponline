@@ -34,7 +34,9 @@ const orderSchema = new mongoose.Schema({
     deliveryStatus: { type: String, default: "Pending" },
     razorpayOrderId: { type: String, default: null },
     razorpayPaymentId: { type: String, default: null },
-    paymentStatus: { type: String, default: "Pending" }
+    paymentStatus: { type: String, default: "Pending" },
+    /** When true, productStock has been decremented for this order's items */
+    inventoryAdjusted: { type: Boolean, default: false },
 },{
     timestamps: true
 })

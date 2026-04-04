@@ -43,6 +43,7 @@ import {
 import { PaymentComponent } from "../../_components/payenment-comp";
 import { FixedLoader } from "@/components/custom/fixed-loader";
 import { validateDeliveryAddressParts } from "@/lib/delivery-address";
+import type { CartSyncWarning } from "@/actions/cart-sync";
 
 type OrderFormData = {
     shippingAddress: string;
@@ -64,6 +65,8 @@ type productItem = {
     productSubCategoryId: string;
     shortDescription: string;
     longDescription: string;
+    /** Present when loaded from GET /api/cart */
+    availableStock?: number;
 }
 
 type couponDiscount = {
@@ -79,6 +82,10 @@ export const CartComponent = () => {
     const { isChanged, setIsChanged } = useIsChanged((state) => state);
       const { couponCode, setCouponCode, resetCouponCode } = useCoupon();
     const [isAlertDialogOpen, setIsOpenAlert] = useState(false);
+    const [cartSyncWarnings, setCartSyncWarnings] = useState<CartSyncWarning[]>([]);
+    const [showCartSyncDialog, setShowCartSyncDialog] = useState(false);
+    /** While true, empty refetches must not clear sync warnings (avoids dialog flashing closed). */
+    const syncDialogHoldRef = useRef(false);
     const [productIdToDelete, setProductIdToDelete] = useState({
         image: "",
         productId: "",
@@ -120,6 +127,12 @@ export const CartComponent = () => {
         return true;
     };
 
+    const dismissCartSyncDialog = () => {
+        syncDialogHoldRef.current = false;
+        setShowCartSyncDialog(false);
+        setCartSyncWarnings([]);
+    };
+
     const handelFetchCart = async () => {
         setLoading(true);
         const res = await fetch(`/api/cart?phone=${encodeURIComponent(user?.primaryPhoneNumber?.phoneNumber || "")}`, {
@@ -130,16 +143,30 @@ export const CartComponent = () => {
         })
         if (res.ok) {
             const data = await res.json();
-          if(buyNowproductId && data.items.length > 0) {
-                const findProduct = data.items.find((item: productItem) => item.productId === buyNowproductId);
-                console.log("findProduct", findProduct);
-              if (findProduct) {
-                 setCartData([findProduct]);
-                 
-              }
-          }else{
-              setCartData(data.items);
-          }
+            const warnings: CartSyncWarning[] = Array.isArray(data.warnings)
+                ? data.warnings
+                : [];
+            if (warnings.length > 0) {
+                syncDialogHoldRef.current = true;
+                setCartSyncWarnings(warnings);
+                setShowCartSyncDialog(true);
+            } else if (!syncDialogHoldRef.current) {
+                setCartSyncWarnings([]);
+                setShowCartSyncDialog(false);
+            }
+            const rows: productItem[] = data.items ?? [];
+            if (buyNowproductId && rows.length > 0) {
+                const findProduct = rows.find(
+                    (item: productItem) => item.productId === buyNowproductId
+                );
+                if (findProduct) {
+                    setCartData([findProduct]);
+                } else {
+                    setCartData([]);
+                }
+            } else {
+                setCartData(rows);
+            }
         } else {
             console.log("Failed to fetch cart data");
         }
@@ -170,6 +197,7 @@ export const CartComponent = () => {
         });
         if (res.ok) {
             toast.success("Item removed from cart successfully");
+            syncDialogHoldRef.current = false;
             handelFetchCart();
             setIsChanged(!isChanged);
             setIsOpenAlert(false);
@@ -185,6 +213,32 @@ export const CartComponent = () => {
         }
         setLoading(false);
     }
+
+    const removeCartLineById = async (productId: string) => {
+        if (!user?.primaryPhoneNumber?.phoneNumber) {
+            toast.error("Sign in to manage your cart.");
+            return;
+        }
+        setLoading(true);
+        const res = await fetch(`/api/cart`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                phone: user.primaryPhoneNumber.phoneNumber,
+                productId,
+            }),
+        });
+        if (res.ok) {
+            toast.success("Item removed from your cart");
+            syncDialogHoldRef.current = false;
+            setIsChanged(!isChanged);
+            await handelFetchCart();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            toast.error(typeof err?.error === "string" ? err.error : "Could not remove item");
+        }
+        setLoading(false);
+    };
 
     const handelApplyCoupon = async () => {
         if (!couponCode) {
@@ -248,6 +302,8 @@ export const CartComponent = () => {
     //     }
     // },[buyNowproductId, cartdata]);
 
+    const hasCheckoutBlocker = cartdata.some((item) => item.availableStock === 0);
+
     const totalPrice = cartdata
         .reduce((acc, item) => acc + (item.originalPrice * item.quantity), 0);
 
@@ -256,6 +312,10 @@ export const CartComponent = () => {
     const subtotal = parseFloat((totalPrice - totalDiscountPrice).toFixed(2));
 
     const handelPlaceOrder = async () => {
+        if (hasCheckoutBlocker) {
+            toast.error("Remove out-of-stock items from your cart before placing an order.");
+            return;
+        }
         if (cartdata.length <= 0) {
             toast.error("Your cart is empty. Please add some products to proceed.");
             return;
@@ -321,6 +381,10 @@ export const CartComponent = () => {
 
 
       const handelPlaceOrderWithrazorpay = async () => {
+        if (hasCheckoutBlocker) {
+            toast.error("Remove out-of-stock items from your cart before paying.");
+            return;
+        }
            if (cartdata.length <= 0) {
             toast.error("Your cart is empty. Please add some products to proceed.");
             return;
@@ -502,6 +566,56 @@ export const CartComponent = () => {
                     </div>
                 )
             }
+
+            <AlertDialog
+                open={showCartSyncDialog}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        dismissCartSyncDialog();
+                    }
+                }}
+            >
+                <AlertDialogContent className="raleway max-h-[85vh] overflow-y-auto sm:max-w-lg">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="exo">Updates to your cart</AlertDialogTitle>
+                        <AlertDialogDescription asChild>
+                            <div className="text-sm text-muted-foreground space-y-3 pt-2 text-left">
+                                <p>
+                                    The store may have changed prices or stock. Review the updates
+                                    below. For out-of-stock products, remove them when you are ready.
+                                </p>
+                                <ul className="space-y-3 text-foreground/90 list-none pl-0">
+                                    {cartSyncWarnings.map((w, idx) => (
+                                        <li
+                                            key={`${w.type}-${w.productId ?? "x"}-${idx}`}
+                                            className="rounded-md border border-neutral-200/80 bg-neutral-50/80 p-3 text-sm"
+                                        >
+                                            <p className="text-foreground leading-snug">{w.message}</p>
+                                            {w.type === "out_of_stock" && w.productId ? (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="mt-2 border-rose-200 text-rose-700 hover:bg-rose-50"
+                                                    disabled={loading}
+                                                    onClick={() => removeCartLineById(w.productId!)}
+                                                >
+                                                    Remove {w.productName} from cart
+                                                </Button>
+                                            ) : null}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button type="button" variant="default" onClick={dismissCartSyncDialog}>
+                            Got it
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             <AlertDialog open={isAlertDialogOpen} onOpenChange={() => setIsOpenAlert(false)}>
                 <AlertDialogContent className="raleway">
@@ -746,6 +860,12 @@ export const CartComponent = () => {
                         </CardHeader>
                         <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
                             <div className="space-y-3 text-sm">
+                                {hasCheckoutBlocker ? (
+                                    <p className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-md px-3 py-2 raleway">
+                                        Remove out-of-stock products from your cart before you can check
+                                        out.
+                                    </p>
+                                ) : null}
                                 <div className="flex justify-between gap-4">
                                     <span className="text-neutral-600">Item total</span>
                                     <span className="exo font-semibold tabular-nums">{"\u20B9"} {totalPrice}</span>
@@ -768,7 +888,7 @@ export const CartComponent = () => {
                                     <Button
                                         variant="cart"
                                         className="w-full raleway rounded-md exo h-11"
-                                        disabled={loading}
+                                        disabled={loading || hasCheckoutBlocker}
                                         onClick={handelPlaceOrderWithrazorpay}
                                     >
                                         Continue to payment · {"\u20B9"} {subtotal}
@@ -778,6 +898,7 @@ export const CartComponent = () => {
                                     <Button
                                         variant="cart"
                                         className="w-full rounded-md h-11"
+                                        disabled={loading || hasCheckoutBlocker}
                                         onClick={handelPlaceOrder}
                                     >
                                         Place order (cash on delivery)
@@ -798,8 +919,17 @@ export const CartComponent = () => {
                         <h5 className="flex items-center gap-4 lg:text-3xl sm:text-2xl text-xl font-[700] raleway py-5 border-b border-dashed sticky top-0 bg-white z-10">My Cart <ShoppingBag /></h5>
                         <div className="py-5 grid grid-cols-1 gap-5">
                             {
-                                cartdata.map((item, index) => (
-                                    <div className="w-full sm:flex gap-3 border-b last:border-b-0" key={index}>
+                                cartdata.map((item) => {
+                                    const isOutOfStock = item.availableStock === 0;
+                                    const maxSelectable = Math.min(10, item.availableStock ?? 10);
+                                    return (
+                                    <div
+                                        className={cn(
+                                            "w-full sm:flex gap-3 border-b last:border-b-0 rounded-lg p-2 -mx-2",
+                                            isOutOfStock && "border border-rose-200 bg-rose-50/60"
+                                        )}
+                                        key={item.productId}
+                                    >
                                         <div className="sm:size-[120px] size-[100px] relative rounded-xl overflow-hidden shrink-0">
                                             <Image
                                                 src={item.images[0]}
@@ -809,12 +939,18 @@ export const CartComponent = () => {
                                                 sizes="(max-width: 640px) 100px, 120px"
                                             />
                                         </div>
-                                        <div className="flex-1 p-2">
+                                        <div className="flex-1 p-2 min-w-0">
+                                            {isOutOfStock ? (
+                                                <p className="text-xs font-medium text-rose-800 raleway mb-1">
+                                                    This item is out of stock. Remove it to continue
+                                                    checkout.
+                                                </p>
+                                            ) : null}
                                             <h5 className="text-lg font-[500] exo">{item.productName}</h5>
                                             <p className="text-xs font-[300] raleway text-neutral-600 ">{
                                                 item.shortDescription
                                             }</p>
-                                            <div className="flex items-center gap-3 mt-2">
+                                            <div className="flex items-center gap-3 mt-2 flex-wrap">
                                                 <p className="text-rose-600 font-[600] text-sm exo">{"\u20B9"} {
                                                     item.originalPrice * item.quantity
                                                 }</p>
@@ -829,8 +965,13 @@ export const CartComponent = () => {
                                                     }
                                                     % off</p>
                                             </div>
-                                            <div className="flex items-center gap-3 mt-1 text-sm raleway">
+                                            <div className="flex flex-wrap items-center gap-3 mt-1 text-sm raleway">
  
+                                                {isOutOfStock ? (
+                                                    <span className="text-sm text-rose-700 font-medium">
+                                                        Out of stock
+                                                    </span>
+                                                ) : (
                                                 <Select value={item.quantity.toString()}  onValueChange={(value) => {
                                                     if(buyNowproductId === item.productId) {
                                                         toast.error("You cannot change quantity for Buy Now product");
@@ -847,13 +988,18 @@ export const CartComponent = () => {
                                                             productId: item.productId,
                                                             quantity: parseInt(value),
                                                         }),
-                                                    }).then((res) => {
+                                                    }).then(async (res) => {
                                                         if (res.ok) {
                                                             toast.success("Quantity updated successfully");
                                                             setIsChanged(!isChanged);
                                                             handelFetchCart();
                                                         } else {
-                                                            toast.error("Failed to update quantity");
+                                                            const err = await res.json().catch(() => ({}));
+                                                            toast.error(
+                                                                typeof err?.error === "string"
+                                                                    ? err.error
+                                                                    : "Failed to update quantity"
+                                                            );
                                                         }
                                                         setLoading(false);
                                                     }).catch((err) => {
@@ -865,16 +1011,18 @@ export const CartComponent = () => {
     <SelectValue placeholder="Qty" />
   </SelectTrigger>
   <SelectContent>
-{
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((qty) => (
+{Array.from(
+                                                    { length: Math.max(1, maxSelectable) },
+                                                    (_, i) => i + 1
+                                                ).map((qty) => (
         <SelectItem key={qty} value={qty.toString()} >
            Qty {qty}
         </SelectItem>
-    ))
-}
+    ))}
    
   </SelectContent>
 </Select>
+                                                )}
                                                 {/* <div className="flex">
                                                     <div className="size-6 flex  items-center justify-center bg-white border cursor-pointer">
                                                         <Minus className="size-3" />
@@ -902,7 +1050,8 @@ export const CartComponent = () => {
                                             </div>
                                         </div>
                                     </div>
-                                ))
+                                    );
+                                })
                             }
                         </div>
                     </div>

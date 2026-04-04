@@ -143,6 +143,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                                     price={Number(item.originalPrice)}
                                     discountedPrice={Number(item.discountPrice)}
                                     description={item.shortDescription}
+                                    productStock={item.productStock}
                                     divCalssName="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4"
                                     imageContainerClassName="relative w-full aspect-[3/4] min-[377px]:aspect-[4/5] overflow-hidden rounded-xl"
                                 />

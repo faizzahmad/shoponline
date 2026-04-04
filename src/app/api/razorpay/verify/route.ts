@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDb } from "@/lib/connectToDb";
 import Order from "@/lib/models/order-model";
+import { decrementStockForOrderItems } from "@/lib/inventory";
 
 export async function POST(request: NextRequest) {
     try {
@@ -52,10 +53,41 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Order mismatch" }, { status: 400 });
         }
 
-        await Order.findByIdAndUpdate(orderId, {
-            paymentStatus: "Paid",
-            razorpayPaymentId: razorpay_payment_id,
-        });
+        if (order.paymentStatus === "Paid" && order.inventoryAdjusted) {
+            return NextResponse.json({ success: true }, { status: 200 });
+        }
+
+        const items = Array.isArray(order.items)
+            ? order.items.map(
+                  (line: { productId: string; quantity: number }) => ({
+                      productId: String(line.productId),
+                      quantity: Number(line.quantity),
+                  })
+              )
+            : [];
+
+        if (!order.inventoryAdjusted && items.length > 0) {
+            const dec = await decrementStockForOrderItems(items);
+            if (!dec.ok) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "Payment received but inventory could not be allocated. Contact support with your order ID.",
+                    },
+                    { status: 409 }
+                );
+            }
+            await Order.findByIdAndUpdate(orderId, {
+                paymentStatus: "Paid",
+                razorpayPaymentId: razorpay_payment_id,
+                inventoryAdjusted: true,
+            });
+        } else {
+            await Order.findByIdAndUpdate(orderId, {
+                paymentStatus: "Paid",
+                razorpayPaymentId: razorpay_payment_id,
+            });
+        }
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {
