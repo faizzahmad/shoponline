@@ -1,5 +1,22 @@
 import mongoose from "mongoose";
 import Product from "@/lib/models/product-model";
+
+/** Mongoose `.lean()` document shape for order validation */
+type ProductLeanDoc = {
+    _id: unknown;
+    productStock?: number;
+    originalPrice?: number;
+    discountPrice?: number;
+    productName?: string;
+    images?: string[];
+    productCategory?: string;
+    productCategoryId?: unknown;
+    productSubCategory?: string;
+    productSubCategoryId?: unknown;
+    shortDescription?: string;
+    longDescription?: string;
+};
+
 export type ClientOrderLine = {
     productId: string;
     quantity: number;
@@ -40,33 +57,35 @@ export async function validateAndNormalizeOrderItems(
                 code: "PRODUCT_NOT_FOUND",
             };
         }
-        const product = await Product.findById(line.productId).lean();
-        if (!product) {
+        const raw = await Product.findById(line.productId).lean();
+        if (!raw) {
             return {
                 ok: false,
                 error: `Product no longer available: ${line.productName}`,
                 code: "PRODUCT_NOT_FOUND",
             };
         }
+        const product = raw as ProductLeanDoc;
 
         const stock = Number(product.productStock ?? 0);
         const qty = Math.max(1, Math.floor(Number(line.quantity)));
+        const displayName = String(product.productName ?? line.productName);
         if (stock < 1) {
             return {
                 ok: false,
-                error: `${product.productName} is out of stock`,
+                error: `${displayName} is out of stock`,
                 code: "INSUFFICIENT_STOCK",
             };
         }
         if (qty > stock) {
             return {
                 ok: false,
-                error: `Only ${stock} unit(s) available for ${product.productName}`,
+                error: `Only ${stock} unit(s) available for ${displayName}`,
                 code: "INSUFFICIENT_STOCK",
             };
         }
 
-        const originalPrice = Number(product.originalPrice);
+        const originalPrice = Number(product.originalPrice ?? 0);
         const discountPrice = Number(product.discountPrice ?? 0);
         const lineTotal = originalPrice * qty;
         totalAmount += lineTotal;
@@ -76,12 +95,12 @@ export async function validateAndNormalizeOrderItems(
             quantity: qty,
             originalPrice,
             discountPrice,
-            productName: product.productName,
+            productName: displayName,
             images: product.images ?? [],
-            productCategory: product.productCategory,
-            productCategoryId: String(product.productCategoryId),
-            productSubCategory: product.productSubCategory,
-            productSubCategoryId: String(product.productSubCategoryId),
+            productCategory: String(product.productCategory ?? ""),
+            productCategoryId: String(product.productCategoryId ?? ""),
+            productSubCategory: String(product.productSubCategory ?? ""),
+            productSubCategoryId: String(product.productSubCategoryId ?? ""),
             shortDescription: product.shortDescription ?? "",
             longDescription: product.longDescription ?? "",
         });

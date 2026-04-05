@@ -18,7 +18,22 @@ type productItem = {
     productSubCategoryId : string;
     shortDescription : string;  
     longDescription : string;
-}
+};
+
+/** Mongoose `.lean()` is loosely typed; narrow for build-time checks */
+type ProductLeanDoc = {
+    productStock?: number;
+    originalPrice?: number;
+    discountPrice?: number;
+    productName?: string;
+    images?: string[];
+    productCategory?: string;
+    productCategoryId?: unknown;
+    productSubCategory?: string;
+    productSubCategoryId?: unknown;
+    shortDescription?: string;
+    longDescription?: string;
+};
 
 export const AddtoCart = async (phone: string, items: productItem) => {
     await connectToDb();
@@ -29,10 +44,11 @@ export const AddtoCart = async (phone: string, items: productItem) => {
         if (!mongoose.Types.ObjectId.isValid(items.productId)) {
             throw new Error("Invalid product");
         }
-        const product = await Product.findById(items.productId).lean();
-        if (!product) {
+        const rawProduct = await Product.findById(items.productId).lean();
+        if (!rawProduct) {
             throw new Error("Product not found");
         }
+        const product = rawProduct as ProductLeanDoc;
         const stock = Number(product.productStock ?? 0);
         if (stock < 1) {
             throw new Error("This product is out of stock");
@@ -55,14 +71,14 @@ export const AddtoCart = async (phone: string, items: productItem) => {
         const line: productItem = {
             ...items,
             quantity: items.quantity,
-            originalPrice: Number(product.originalPrice),
+            originalPrice: Number(product.originalPrice ?? 0),
             discountPrice: Number(product.discountPrice ?? 0),
-            productName: product.productName,
+            productName: String(product.productName ?? ""),
             images: product.images ?? [],
-            productCategory: product.productCategory,
-            productCategoryId: String(product.productCategoryId),
-            productSubCategory: product.productSubCategory,
-            productSubCategoryId: String(product.productSubCategoryId),
+            productCategory: String(product.productCategory ?? ""),
+            productCategoryId: String(product.productCategoryId ?? ""),
+            productSubCategory: String(product.productSubCategory ?? ""),
+            productSubCategoryId: String(product.productSubCategoryId ?? ""),
             shortDescription: product.shortDescription ?? "",
             longDescription: product.longDescription ?? "",
         };
@@ -164,10 +180,11 @@ export const chnageCount = async (phone: string, productId: string, quantity: nu
         throw new Error("Phone number, product ID and valid quantity are required");
     }
     try {
-        const product = await Product.findById(productId).lean();
-        if (!product) {
+        const rawProduct = await Product.findById(productId).lean();
+        if (!rawProduct) {
             throw new Error("Product not found");
         }
+        const product = rawProduct as ProductLeanDoc;
         const stock = Number(product.productStock ?? 0);
         if (stock < 1) {
             throw new Error("This product is out of stock");
