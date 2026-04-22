@@ -89,29 +89,32 @@ const handleDownloadInvoice = async () => {
 
   const invoiceElement = invoiceDivRef.current;
 
-  // Wait for canvas render
   const canvas = await html2canvas(invoiceElement, {
-    scale: 2, // higher scale = better quality
-    useCORS: true, // if you have remote images
+    // Keep good quality but avoid heavy memory usage on mobile devices.
+    scale: Math.min(2, window.devicePixelRatio || 1),
+    useCORS: true,
+    backgroundColor: "#ffffff",
   });
 
   const imgData = canvas.toDataURL('image/png');
 
+  const pxToPt = 72 / 96;
+  const pageWidth = canvas.width * pxToPt;
+  const pageHeight = canvas.height * pxToPt;
+
   const pdf = new jsPDF({
-    orientation: 'portrait',
+    orientation: pageWidth > pageHeight ? 'landscape' : 'portrait',
     unit: 'pt',
-    format: 'a4',
+    // Use a custom page size so the full invoice stays on one page.
+    format: [pageWidth, pageHeight],
   });
 
-  const imgProps = pdf.getImageProperties(imgData);
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
 
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 const username = orderDetails?.username || "user";
 const date = new Date(orderDetails?.orderDateTime || Date.now())
   .toISOString()
-  .replace(/[:.]/g, "-"); // remove invalid filename characters
+  .replace(/[:.]/g, "-");
 
 pdf.save(`invoice-${username}-${date}.pdf`);
 };

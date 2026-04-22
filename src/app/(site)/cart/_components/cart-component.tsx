@@ -464,88 +464,88 @@ export const CartComponent = () => {
         }
             {
                 loading && (
-                    <div className="w-full  flex justify-center gap-10 py-6  px-32 bg-gray-50">
-                        <div className="w-[65%] min-h-[50vh] max-h-[100vh] overflow-y-auto px-5  bg-white border shadow-sm rounded-md p-5">
-                            <Skeleton className="w-56 h-5" />
-                            <div className="pb-5 pt-10 grid grid-cols-1 gap-5">
-                                <div className="w-full flex gap-5 items-center">
-                                    <div className="size-[120px]">
+                    <div className="w-full flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 py-4 sm:py-6 px-4 sm:px-6 lg:px-16 xl:px-24 bg-gray-50">
+                        <div className="w-full lg:w-[65%] min-h-[50vh] max-h-[100vh] overflow-y-auto px-3 sm:px-5 bg-white border shadow-sm rounded-md p-4 sm:p-5">
+                            <Skeleton className="w-40 sm:w-56 h-5" />
+                            <div className="pb-5 pt-8 sm:pt-10 grid grid-cols-1 gap-4 sm:gap-5">
+                                <div className="w-full flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center">
+                                    <div className="w-full sm:size-[120px] h-40 sm:h-[120px] max-w-[220px] sm:max-w-none">
                                         <Skeleton className="w-full h-full rounded-xl" />
                                     </div>
 
-                                    <div className="flex-1">
-                                        <Skeleton className="w-[40%] h-5 mb-2" />
-                                        <Skeleton className="w-[90%] h-2 mb-2" />
-                                        <div className="flex gap-3 mb-2">
+                                    <div className="flex-1 w-full">
+                                        <Skeleton className="w-2/3 sm:w-[40%] h-5 mb-2" />
+                                        <Skeleton className="w-full sm:w-[90%] h-2 mb-2" />
+                                        <div className="flex flex-wrap gap-3 mb-2">
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                         </div>
 
-                                        <div className="w-full flex justify-between">
+                                        <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 sm:justify-between">
                                             <Skeleton className="w-24 h-5" />
                                             <Skeleton className="w-24 h-4" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="w-full flex gap-5 items-center">
-                                    <div className="size-[120px]">
+                                <div className="w-full flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center">
+                                    <div className="w-full sm:size-[120px] h-40 sm:h-[120px] max-w-[220px] sm:max-w-none">
                                         <Skeleton className="w-full h-full rounded-xl" />
                                     </div>
 
-                                    <div className="flex-1">
-                                        <Skeleton className="w-[40%] h-5 mb-2" />
-                                        <Skeleton className="w-[90%] h-2 mb-2" />
-                                        <div className="flex gap-3 mb-2">
+                                    <div className="flex-1 w-full">
+                                        <Skeleton className="w-2/3 sm:w-[40%] h-5 mb-2" />
+                                        <Skeleton className="w-full sm:w-[90%] h-2 mb-2" />
+                                        <div className="flex flex-wrap gap-3 mb-2">
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                         </div>
 
-                                        <div className="w-full flex justify-between">
+                                        <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 sm:justify-between">
                                             <Skeleton className="w-24 h-5" />
                                             <Skeleton className="w-24 h-4" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="w-full flex gap-5 items-center">
-                                    <div className="size-[120px]">
+                                <div className="w-full flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center">
+                                    <div className="w-full sm:size-[120px] h-40 sm:h-[120px] max-w-[220px] sm:max-w-none">
                                         <Skeleton className="w-full h-full rounded-xl" />
                                     </div>
 
-                                    <div className="flex-1">
-                                        <Skeleton className="w-[40%] h-5 mb-2" />
-                                        <Skeleton className="w-[90%] h-2 mb-2" />
-                                        <div className="flex gap-3 mb-2">
+                                    <div className="flex-1 w-full">
+                                        <Skeleton className="w-2/3 sm:w-[40%] h-5 mb-2" />
+                                        <Skeleton className="w-full sm:w-[90%] h-2 mb-2" />
+                                        <div className="flex flex-wrap gap-3 mb-2">
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                         </div>
 
-                                        <div className="w-full flex justify-between">
+                                        <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 sm:justify-between">
                                             <Skeleton className="w-24 h-5" />
                                             <Skeleton className="w-24 h-4" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="w-full flex gap-5 items-center">
-                                    <div className="size-[120px]">
+                                <div className="w-full flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center">
+                                    <div className="w-full sm:size-[120px] h-40 sm:h-[120px] max-w-[220px] sm:max-w-none">
                                         <Skeleton className="w-full h-full rounded-xl" />
                                     </div>
 
-                                    <div className="flex-1">
-                                        <Skeleton className="w-[40%] h-5 mb-2" />
-                                        <Skeleton className="w-[90%] h-2 mb-2" />
-                                        <div className="flex gap-3 mb-2">
+                                    <div className="flex-1 w-full">
+                                        <Skeleton className="w-2/3 sm:w-[40%] h-5 mb-2" />
+                                        <Skeleton className="w-full sm:w-[90%] h-2 mb-2" />
+                                        <div className="flex flex-wrap gap-3 mb-2">
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                             <Skeleton className="w-10 h-3" />
                                         </div>
 
-                                        <div className="w-full flex justify-between">
+                                        <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 sm:justify-between">
                                             <Skeleton className="w-24 h-5" />
                                             <Skeleton className="w-24 h-4" />
                                         </div>
@@ -553,13 +553,13 @@ export const CartComponent = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-[35%]">
-                            <div className="w-full h-[150px]">
+                        <div className="w-full lg:w-[35%]">
+                            <div className="w-full h-[130px] sm:h-[150px]">
                                 <Skeleton className="w-full h-full" />
 
                             </div>
 
-                            <div className="w-full h-[400px] mt-8">
+                            <div className="w-full h-[280px] sm:h-[400px] mt-6 sm:mt-8">
                                 <Skeleton className="w-full h-full" />
                             </div>
                         </div>
