@@ -7,6 +7,17 @@ const orderSchema = new mongoose.Schema({
     items: [
         {
             productId: { type: String, required: true },
+            variantId: { type: String, default: "" },
+            variantAttributes: {
+                type: [
+                    {
+                        name: { type: String, required: true },
+                        value: { type: String, required: true },
+                    },
+                ],
+                default: [],
+            },
+            variantImage: { type: String, default: "" },
             quantity: { type: Number, required: true },
             originalPrice: { type: Number, required: true },
             discountPrice: { type: Number, required: true },
@@ -17,7 +28,11 @@ const orderSchema = new mongoose.Schema({
             productSubCategory: { type: String, required: true },
             productSubCategoryId: { type: String, required: true },
             shortDescription: { type: String, required: true },
-            longDescription: { type: String, required: true }
+            longDescription: { type: String, required: true },
+            length: { type: Number, default: 0 },
+            breadth: { type: Number, default: 0 },
+            height: { type: Number, default: 0 },
+            weight: { type: Number, default: 0 }
         }
     ],
     totalAmount: { type: Number, required: true },
@@ -37,6 +52,16 @@ const orderSchema = new mongoose.Schema({
     paymentStatus: { type: String, default: "Pending" },
     /** When true, productStock has been decremented for this order's items */
     inventoryAdjusted: { type: Boolean, default: false },
+    /** Shiprocket quick-order id after successful sync */
+    shiprocketOrderId: { type: String, default: null },
+    shiprocketShipmentId: { type: mongoose.Schema.Types.Mixed, default: null },
+    shiprocketSyncedAt: { type: Date, default: null },
+    shiprocketSyncError: { type: String, default: null },
+    /** Set when AWB (tracking number) is assigned to the Shiprocket shipment */
+    awbCode: { type: String, default: null },
+    courierName: { type: String, default: null },
+    courierCompanyId: { type: mongoose.Schema.Types.Mixed, default: null },
+    awbAssignedAt: { type: Date, default: null },
 },{
     timestamps: true
 })

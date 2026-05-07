@@ -14,6 +14,9 @@ import jsPDF from 'jspdf';
 
 type productItems = {
     productId : string;
+    variantId?: string;
+    variantAttributes?: Array<{ name: string; value: string }>;
+    variantImage?: string;
     quantity: number; 
     originalPrice : number;
     discountedPrice : number;
@@ -216,14 +219,26 @@ pdf.save(`invoice-${username}-${date}.pdf`);
           </div>
 
         {
-          orderDetails?.items.map((item) => (
-            <React.Fragment key={item.productId}>
+          orderDetails?.items.map((item) => {
+            const attrs = item.variantAttributes ?? [];
+            return (
+            <React.Fragment key={`${item.productId}-${item.variantId ?? ""}`}>
                 <div className="hidden border-b border-gray-100 sm:block" />
 
           <div className="grid grid-cols-1 gap-3 rounded-md border border-gray-100 bg-white p-3 sm:grid-cols-[minmax(0,1.2fr)_0.5fr_0.7fr_0.85fr] sm:gap-2 sm:border-0 sm:bg-transparent sm:p-0">
             <div className="min-w-0 sm:col-span-1">
               <h5 className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-gray-500 sm:hidden">Item</h5>
               <p className="text-sm font-medium leading-snug text-gray-900 sm:text-[15px]">{item.productName}</p>
+              {attrs.length > 0 && (
+                <p className="mt-1 text-[11px] text-gray-500">
+                  {attrs.map((attr, idx) => (
+                    <span key={`${item.productId}-${attr.name}`}>
+                      <span className="capitalize">{attr.name}</span>: <span className="capitalize text-gray-700">{attr.value}</span>
+                      {idx < attrs.length - 1 ? " · " : ""}
+                    </span>
+                  ))}
+                </p>
+              )}
             </div>
             <div className="flex items-baseline justify-between gap-2 sm:block">
               <h5 className="text-[10px] font-medium uppercase tracking-wide text-gray-500 sm:hidden">Qty</h5>
@@ -245,7 +260,8 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             </div>
           </div>
             </React.Fragment>
-          ))
+            );
+          })
         }
 
           

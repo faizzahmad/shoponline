@@ -13,6 +13,7 @@ import {
     decrementStockForOrderItems,
     type ClientOrderLine,
 } from "@/lib/inventory";
+import { syncOrderToShiprocket } from "@/lib/shiprocket";
 
 function totalsMatchClient(
     clientTotal: number,
@@ -127,6 +128,7 @@ export async function POST(req: Request) {
         const normalizedItems = validated.items;
         const stockLines = normalizedItems.map((i) => ({
             productId: i.productId,
+            variantId: i.variantId,
             quantity: i.quantity,
         }));
 
@@ -175,14 +177,24 @@ export async function POST(req: Request) {
 
         await newOrder.save();
 
+        const mongoOrderId = String(newOrder._id);
+        if (isCod) {
+            void syncOrderToShiprocket(mongoOrderId).catch((err) =>
+                console.error("[Shiprocket] COD sync failed:", err)
+            );
+        }
+
         const cart = await Cart.findOne({ userPhone });
         if (cart) {
-            const orderedIds = new Set(
-                normalizedItems.map((i) => String(i.productId))
+            const orderedKeys = new Set(
+                normalizedItems.map(
+                    (i) => `${String(i.productId)}::${String(i.variantId ?? "")}`
+                )
             );
-            cart.items = cart.items.filter(
-                (item: { productId: unknown }) => !orderedIds.has(String(item.productId))
-            );
+            cart.items = cart.items.filter((item: { productId: unknown; variantId?: unknown }) => {
+                const key = `${String(item.productId)}::${String(item.variantId ?? "")}`;
+                return !orderedKeys.has(key);
+            });
             await cart.save();
         }
 

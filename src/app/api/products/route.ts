@@ -2,12 +2,63 @@ import { connectToDb } from "@/lib/connectToDb";
 import Product from "@/lib/models/product-model";
 import { verifyAuth } from "@/utils/verifyToken";
 
+/** Returns null when valid; otherwise an error message describing the missing/invalid field. */
+function validateShippingDims(body: {
+    length?: unknown;
+    breadth?: unknown;
+    height?: unknown;
+    weight?: unknown;
+}): string | null {
+    const length = Number(body.length);
+    const breadth = Number(body.breadth);
+    const height = Number(body.height);
+    const weight = Number(body.weight);
+    if (!Number.isFinite(length) || length <= 0) {
+        return "Length is required (cm, > 0)";
+    }
+    if (!Number.isFinite(breadth) || breadth <= 0) {
+        return "Breadth is required (cm, > 0)";
+    }
+    if (!Number.isFinite(height) || height <= 0) {
+        return "Height is required (cm, > 0)";
+    }
+    if (!Number.isFinite(weight) || weight < 1) {
+        return "Weight is required (grams, >= 1)";
+    }
+    return null;
+}
+
 export async function POST(request: Request) {
     const isVrefied = await verifyAuth();
     if (!isVrefied.isValid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     await connectToDb();
     const body = await request.json();
-    const { productName, images, productStock, productCategory, productCategoryId, productSubCategory, productSubCategoryId, discountPrice, originalPrice, shortDescription, longDescription, varients } = body;
+    const {
+        productName,
+        images,
+        productStock,
+        productCategory,
+        productCategoryId,
+        productSubCategory,
+        productSubCategoryId,
+        discountPrice,
+        originalPrice,
+        shortDescription,
+        longDescription,
+        varients,
+        variantAttributes,
+        variantCombinations,
+        length,
+        breadth,
+        height,
+        weight,
+    } = body;
+
+    const dimsError = validateShippingDims({ length, breadth, height, weight });
+    if (dimsError) {
+        return new Response(JSON.stringify({ error: dimsError }), { status: 400 });
+    }
+
     try {
         const product = new Product({
             productName,
@@ -22,7 +73,13 @@ export async function POST(request: Request) {
             originalPrice,
             shortDescription,
             longDescription,
-            varients
+            varients,
+            variantAttributes: Array.isArray(variantAttributes) ? variantAttributes : [],
+            variantCombinations: Array.isArray(variantCombinations) ? variantCombinations : [],
+            length: Number(length),
+            breadth: Number(breadth),
+            height: Number(height),
+            weight: Number(weight),
         });
         await product.save();
         return new Response(JSON.stringify({
@@ -80,6 +137,12 @@ export async function PUT(request: Request) {
         shortDescription,
         longDescription,
         varients,
+        variantAttributes,
+        variantCombinations,
+        length,
+        breadth,
+        height,
+        weight,
     } = body;
 
     if (!_id || typeof _id !== "string") {
@@ -87,6 +150,10 @@ export async function PUT(request: Request) {
     }
     if (!productName || !images || productStock === undefined || productStock === null) {
         return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+    }
+    const dimsError = validateShippingDims({ length, breadth, height, weight });
+    if (dimsError) {
+        return new Response(JSON.stringify({ error: dimsError }), { status: 400 });
     }
 
     try {
@@ -108,6 +175,12 @@ export async function PUT(request: Request) {
                     shortDescription,
                     longDescription,
                     varients: varients ?? [],
+                    variantAttributes: variantAttributes ?? [],
+                    variantCombinations: variantCombinations ?? [],
+                    length: Number(length),
+                    breadth: Number(breadth),
+                    height: Number(height),
+                    weight: Number(weight),
                 },
             },
             { new: true }

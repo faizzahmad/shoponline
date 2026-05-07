@@ -16,6 +16,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useIsChanged } from "@/store/use-ischnaged";
+import { useGuestCart } from "@/store/use-guest-cart";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -42,6 +43,15 @@ type Products = {
     shortDescription: string;
     longDescription: string;
     varients: any[];
+    variantCombinations?: Array<{
+        variantId: string;
+        attributes: Array<{ name: string; value: string }>;
+        image?: string;
+        productStock: number;
+        originalPrice: number;
+        discountPrice: number;
+        isDefault?: boolean;
+    }>;
     createdAt: string;
     updatedAt: string;
 }
@@ -52,8 +62,10 @@ export const ProductInfoModal = () => {
     const [data, setData] = useState<Products | null>(null);
     const [seletedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedQunatity, setSelectedQuantity] = useState(1);
+    const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
     const [cartLoader, setCartLoader] = useState(false);
     const { setIsChanged, isChanged } = useIsChanged((state) => state);
+    const addGuestItem = useGuestCart((s) => s.addItem);
    
     const handelGetProductInfo = async () => {
         setIsLoading(true);
@@ -78,13 +90,45 @@ export const ProductInfoModal = () => {
         }
     }, [productId]);
 
+    const variantCombinations = data?.variantCombinations ?? [];
+    const hasNewVariants = variantCombinations.length > 0;
+    const selectedVariant = hasNewVariants
+        ? variantCombinations.find((combo) =>
+              combo.attributes.every((attr) => selectedAttributes[attr.name] === attr.value)
+          ) ?? null
+        : null;
+
     useEffect(() => {
         if (!data) return;
-        const s = Number(data.productStock);
+        const s = Number(selectedVariant?.productStock ?? data.productStock);
         if (Number.isFinite(s) && s >= 1) {
             setSelectedQuantity((q) => Math.min(q, Math.min(10, s)));
         }
-    }, [data?._id, data?.productStock]);
+    }, [data?._id, data?.productStock, selectedVariant?.productStock]);
+
+    useEffect(() => {
+        if (!data) return;
+        if (!hasNewVariants) {
+            setSelectedAttributes((prev) =>
+                Object.keys(prev).length === 0 ? prev : {}
+            );
+            return;
+        }
+        const defaultVariant =
+            variantCombinations.find((v) => v.isDefault) ?? variantCombinations[0];
+        if (!defaultVariant) return;
+        const initial: Record<string, string> = {};
+        for (const attr of defaultVariant.attributes ?? []) {
+            initial[attr.name] = attr.value;
+        }
+        setSelectedAttributes((prev) => {
+            const sameSize = Object.keys(prev).length === Object.keys(initial).length;
+            if (sameSize && Object.keys(initial).every((k) => prev[k] === initial[k])) {
+                return prev;
+            }
+            return initial;
+        });
+    }, [data?._id, hasNewVariants]);
 
     const { isSignedIn, isLoaded, user } = useUser();
     const router = useRouter();
@@ -104,8 +148,41 @@ const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
 const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.NEXT_PUBLIC_API_URL + '/product-info/' + data?._id)}`;
 
     const stock = data ? Number(data.productStock) : 0;
-    const isOutOfStock = !Number.isFinite(stock) || stock < 1;
-    const maxSelectableQty = isOutOfStock ? 1 : Math.min(10, stock);
+    const activeStock = Number(selectedVariant?.productStock ?? stock);
+    const activeOriginalPrice = Number(
+        selectedVariant?.originalPrice ?? Number(data?.originalPrice ?? 0)
+    );
+    const activeDiscountPrice = Number(
+        selectedVariant?.discountPrice ?? Number(data?.discountPrice ?? 0)
+    );
+    const isSelectedOutOfStock = !Number.isFinite(activeStock) || activeStock < 1;
+    const maxSelectableQty = isSelectedOutOfStock ? 1 : Math.min(10, activeStock);
+
+    const attributeNames = hasNewVariants
+        ? Array.from(
+              new Set(
+                  variantCombinations.flatMap((combo) =>
+                      (combo.attributes ?? []).map((attr) => attr.name)
+                  )
+              )
+          )
+        : [];
+    const optionsByAttribute = attributeNames.map((name) => {
+        const seen = new Set<string>();
+        const options: { value: string; image?: string }[] = [];
+        for (const combo of variantCombinations) {
+            const attr = combo.attributes.find((a) => a.name === name);
+            if (!attr || seen.has(attr.value)) continue;
+            seen.add(attr.value);
+            const image = variantCombinations.find(
+                (c) =>
+                    c.image &&
+                    c.attributes.some((a) => a.name === name && a.value === attr.value)
+            )?.image;
+            options.push({ value: attr.value, image });
+        }
+        return { name, options };
+    });
 
     return (
         <>
@@ -120,19 +197,23 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                             <h5>Product Info</h5>
                         </DialogTitle>
                     </DialogHeader>
-                    <div className="w-full lg:flex gap-10">
+                    <div className="w-full lg:flex lg:items-start gap-10">
 
-                        <div className="lg:w-[400px] grid grid-cols-1 gap-y-5">
+                        <div className="lg:w-[400px] grid grid-cols-1 gap-y-2 content-start shrink-0">
                             <div className="w-full aspect-square max-w-[400px] lg:block hidden overflow-hidden relative rounded-xl">
-                                {data?.images?.[seletedImageIndex] && (
-                                    <Image
-                                        src={data.images[seletedImageIndex]}
-                                        alt="productImage"
-                                        className="rounded-xl object-cover object-center"
-                                        fill
-                                        sizes="400px"
-                                    />
-                                )}
+                                {(() => {
+                                    const heroSrc = selectedVariant?.image || data?.images?.[seletedImageIndex];
+                                    if (!heroSrc) return null;
+                                    return (
+                                        <Image
+                                            src={heroSrc}
+                                            alt="productImage"
+                                            className="rounded-xl object-cover object-center"
+                                            fill
+                                            sizes="400px"
+                                        />
+                                    );
+                                })()}
                             </div>
 
                             <div className="w-full">
@@ -146,8 +227,8 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     <CarouselContent >
                                         {
                                             data?.images?.map((image, index) => (
-                                                <CarouselItem className="lg:basis-[100px] basis-[80px]" key={index} onClick={() => setSelectedImageIndex(index)}>
-                                                    <div className={"lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl"}>
+                                                <CarouselItem className="lg:basis-[116px] basis-[88px]" key={index} onClick={() => setSelectedImageIndex(index)}>
+                                                    <div className={"lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl cursor-pointer"}>
                                                         <Image src={image} alt="productImage" className="rounded-xl object-cover object-center" fill sizes="100px" />
                                                     </div>
                                                 </CarouselItem>
@@ -195,17 +276,87 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                                 </div>
-                                <h5 className="lg:text-xl sm:text-lg text-base font-semibold text-rose-600 flex gap-4 mt-3">{"\u20B9"} {data?.originalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {data?.discountPrice}</span></h5>
+                                <h5 className="lg:text-xl sm:text-lg text-base font-semibold text-rose-600 flex gap-4 mt-3">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>
 
-                                <p  className="raleway text-base mb-1">Product Quantity</p>
-                                {isOutOfStock ? (
+                                {isSelectedOutOfStock ? (
                                     <p className="text-sm font-medium text-rose-700 raleway rounded-md border border-rose-200 bg-rose-50 px-3 py-2 mb-2">
                                         This product is out of stock.
                                     </p>
                                 ) : null}
+                                {hasNewVariants &&
+                                    optionsByAttribute.map((group) => (
+                                        <div key={group.name} className="mb-3">
+                                            <p className="text-sm font-semibold exo mb-2 capitalize">{group.name}</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {group.options.map((option) => {
+                                                    const isSelected = selectedAttributes[group.name] === option.value;
+                                                    const isColorAttr =
+                                                        ["color", "colour"].includes(
+                                                            group.name.trim().toLowerCase()
+                                                        );
+                                                    if (isColorAttr && option.image) {
+                                                        return (
+                                                            <button
+                                                                key={`${group.name}-${option.value}`}
+                                                                type="button"
+                                                                className={`flex flex-col items-center gap-1 rounded-md border p-1 transition ${
+                                                                    isSelected
+                                                                        ? "border-rose-600 bg-rose-50"
+                                                                        : "border-neutral-300"
+                                                                }`}
+                                                                onClick={() =>
+                                                                    setSelectedAttributes((prev) => ({
+                                                                        ...prev,
+                                                                        [group.name]: option.value,
+                                                                    }))
+                                                                }
+                                                            >
+                                                                <div className="relative size-14 overflow-hidden rounded">
+                                                                    <Image
+                                                                        src={option.image}
+                                                                        alt={option.value}
+                                                                        fill
+                                                                        sizes="56px"
+                                                                        className="object-cover object-center"
+                                                                    />
+                                                                </div>
+                                                                <span
+                                                                    className={`text-xs capitalize ${
+                                                                        isSelected ? "text-rose-600" : "text-neutral-700"
+                                                                    }`}
+                                                                >
+                                                                    {option.value}
+                                                                </span>
+                                                            </button>
+                                                        );
+                                                    }
+                                                    return (
+                                                        <button
+                                                            key={`${group.name}-${option.value}`}
+                                                            type="button"
+                                                            className={`px-3 py-1.5 rounded border text-sm ${
+                                                                isSelected
+                                                                    ? "border-rose-600 text-rose-600 bg-rose-50"
+                                                                    : "border-neutral-300 text-neutral-700"
+                                                            }`}
+                                                            onClick={() =>
+                                                                setSelectedAttributes((prev) => ({
+                                                                    ...prev,
+                                                                    [group.name]: option.value,
+                                                                }))
+                                                            }
+                                                        >
+                                                            {option.value}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    ))}
+                                <p className="raleway text-base mb-1 mt-2">Product Quantity</p>
                                 <div className="w-[140px] grid grid-cols-3 bg-white border border-neutral-300 rounded-md h-[40px] raleway shadow-sm">
-                                    <button disabled={selectedQunatity === 1 || isOutOfStock} className="w-full h-full flex items-center justify-center border-r border-neutral-300" onClick={() => setSelectedQuantity((prev) => prev > 1 ? prev - 1 : prev)}>
+                                    <button disabled={selectedQunatity === 1 || isSelectedOutOfStock} className="w-full h-full flex items-center justify-center border-r border-neutral-300" onClick={() => setSelectedQuantity((prev) => prev > 1 ? prev - 1 : prev)}>
                                         <Minus className="size-4 cursor-pointer" />
                                     </button>
 
@@ -213,14 +364,14 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                         {selectedQunatity}
                                     </div>
 
-                                    <button disabled={isOutOfStock} className="w-full h-full flex items-center justify-center border-neutral-300" onClick={() => {
+                                    <button disabled={isSelectedOutOfStock} className="w-full h-full flex items-center justify-center border-neutral-300" onClick={() => {
                                         if (selectedQunatity < maxSelectableQty) {
                                             setSelectedQuantity((prev) => prev + 1);
                                         } else {
                                             toast.error(
                                                 maxSelectableQty >= 10
                                                     ? "Maximum quantity is 10"
-                                                    : `Only ${stock} in stock.`
+                                                    : `Only ${activeStock} in stock.`
                                             );
                                         }
                                     }}>
@@ -261,7 +412,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
 
                                     </div>
                                 </div>
-                                <p className="raleway mb-6 lg:text-base sm:text-sm text-xs">
+                                <p className="raleway lg:text-base sm:text-sm text-xs">
                                     {data?.shortDescription}
                                 </p>
 
@@ -269,16 +420,19 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                             </div>
 
                             <div className="flex flex-col">
-                                <Button variant={'cart'} disabled={cartLoader || isOutOfStock} className="rounded-sm h-10 flex w-full items-center gap-2 raleway" onClick={async () => {
-                                    if (isOutOfStock) {
+                                <Button variant={'cart'} disabled={cartLoader || isSelectedOutOfStock} className="rounded-sm h-10 flex w-full items-center gap-2 raleway" onClick={async () => {
+                                    if (isSelectedOutOfStock) {
                                         toast.error(`${data?.productName ?? "This product"} is out of stock.`);
                                         return;
                                     }
                                     const productItem = {
                                         productId: data!._id!,
+                                        variantId: selectedVariant?.variantId ?? "",
+                                        variantAttributes: selectedVariant?.attributes ?? [],
+                                        variantImage: selectedVariant?.image ?? "",
                                         quantity: selectedQunatity,
-                                        originalPrice: selectedQunatity * parseFloat(data!.originalPrice),
-                                        discountPrice: selectedQunatity * parseFloat(data!.discountPrice),
+                                        originalPrice: selectedQunatity * activeOriginalPrice,
+                                        discountPrice: selectedQunatity * activeDiscountPrice,
                                         productName: data!.productName!,
                                         images: data?.images || [],
                                         productCategory: data!.productCategory!,
@@ -289,6 +443,20 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                         longDescription: data?.longDescription || "",
                                     };
 
+                                    const finishAdded = () => {
+                                        if (isQuickBuy) {
+                                            setIsChanged(!isChanged);
+                                            setSelectedQuantity(1);
+                                            router.push(`/cart?type=buy-now&productId=${productItem.productId}`);
+                                        } else {
+                                            close();
+                                            setData(null);
+                                            setSelectedQuantity(1);
+                                            setSelectedImageIndex(0);
+                                            setIsChanged(!isChanged);
+                                        }
+                                    };
+
                                     if (isSignedIn && isLoaded) {
                                         setCartLoader(true);
                                         try {
@@ -297,26 +465,12 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                                 headers: { "Content-Type": "application/json" },
                                                 body: JSON.stringify({ phone: user?.phoneNumbers[0].phoneNumber, items: productItem }),
                                             });
-                                            const data = await res.json();
+                                            const respData = await res.json();
                                             if (res.ok) {
                                                 toast.success("Product added to cart successfully!");
-                                                 if (isQuickBuy) {
-                                                    setIsChanged(!isChanged)
-                                                    setSelectedQuantity(1);
-                                                    router.push(`/cart?type=buy-now&productId=${productItem.productId}`);
-                                                  
-                                                }else{
-                                                 close();
-                                                setData(null);
-                                                setSelectedQuantity(1);
-                                                setSelectedImageIndex(0);
-                                                setIsChanged(!isChanged)
-                                                }
-                                                
-                                               
+                                                finishAdded();
                                             } else {
-                                                throw new Error(data.error);
-
+                                                throw new Error(respData.error);
                                             }
                                         } catch (err) {
                                             const msg =
@@ -329,12 +483,30 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                             setCartLoader(false);
                                         }
                                     } else {
-                                        const fullPathWithQuery = window.location.pathname + window.location.search;
-                                        router.push(`/sign-in?redirect_url=${encodeURIComponent(fullPathWithQuery)}`)
+                                        addGuestItem({
+                                            productId: productItem.productId,
+                                            variantId: productItem.variantId,
+                                            variantAttributes: productItem.variantAttributes,
+                                            variantImage: productItem.variantImage,
+                                            quantity: productItem.quantity,
+                                            originalPrice: activeOriginalPrice,
+                                            discountPrice: activeDiscountPrice,
+                                            productName: productItem.productName,
+                                            images: productItem.images,
+                                            productCategory: productItem.productCategory,
+                                            productCategoryId: productItem.productCategoryId,
+                                            productSubCategory: productItem.productSubCategory,
+                                            productSubCategoryId: productItem.productSubCategoryId,
+                                            shortDescription: productItem.shortDescription,
+                                            longDescription: productItem.longDescription,
+                                            availableStock: activeStock,
+                                        });
+                                        toast.success("Added to cart");
+                                        finishAdded();
                                     }
                                 }}>
                                     {
-                                        isOutOfStock
+                                        isSelectedOutOfStock
                                             ? "Out of stock"
                                             : isQuickBuy
                                               ? "Checkout"

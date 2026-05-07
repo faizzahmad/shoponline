@@ -26,6 +26,20 @@ type ProductData = {
     shortDescription: string;
     longDescription: string;
     varients: any[];
+    variantAttributes?: Array<{ name: string; options: string[] }>;
+    variantCombinations?: Array<{
+        variantId: string;
+        attributes: Array<{ name: string; value: string }>;
+        image?: string;
+        productStock: number;
+        originalPrice: number;
+        discountPrice: number;
+        isDefault?: boolean;
+    }>;
+    length: string;
+    breadth: string;
+    height: string;
+    weight: string;
 };
 
 type GetProductDataprops = {
@@ -43,6 +57,31 @@ type GetProductDataprops = {
     shortDescription: string;
     longDescription: string;
     varients: any[];
+    variantAttributes?: Array<{ name: string; options: string[] }>;
+    variantCombinations?: Array<{
+        variantId: string;
+        attributes: Array<{ name: string; value: string }>;
+        image?: string;
+        productStock: number;
+        originalPrice: number;
+        discountPrice: number;
+        isDefault?: boolean;
+    }>;
+    length?: number;
+    breadth?: number;
+    height?: number;
+    weight?: number;
+};
+
+type VariantRow = {
+    variantId: string;
+    color: string;
+    size: string;
+    image: string;
+    productStock: string;
+    originalPrice: string;
+    discountPrice: string;
+    isDefault: boolean;
 };
 
 // interface ProductDescriptionProps {
@@ -95,6 +134,12 @@ const emptyProductData = (): ProductData => ({
     shortDescription: "",
     longDescription: "",
     varients: [],
+    variantAttributes: [],
+    variantCombinations: [],
+    length: "",
+    breadth: "",
+    height: "",
+    weight: "",
 });
 
 export const ProductDescription = () => {
@@ -111,6 +156,15 @@ export const ProductDescription = () => {
     const [loader, setLoader] = useState<boolean>(false);
     const [products, setProducts] = useState<GetProductDataprops[]>([]); // Assuming products is an array of objects
     const [productData, setProductData] = useState<ProductData>(emptyProductData());
+    const [colorOptionsInput, setColorOptionsInput] = useState("");
+    const [sizeOptionsInput, setSizeOptionsInput] = useState("");
+    const [variantRows, setVariantRows] = useState<VariantRow[]>([]);
+
+    const parseOptions = (value: string): string[] =>
+        value
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean);
 
     // 'color' or 'size'
     const [colorVarient, setColorVarient] = useState(
@@ -162,6 +216,9 @@ export const ProductDescription = () => {
         setProductData(emptyProductData());
         setColorVarient({ type: "color", products: [] });
         setSizeVarient({ type: "size", products: [] });
+        setColorOptionsInput("");
+        setSizeOptionsInput("");
+        setVariantRows([]);
         setSubCategories([]);
     }, [descriptionPage, editProductId]);
 
@@ -188,7 +245,38 @@ export const ProductDescription = () => {
                     shortDescription: p.shortDescription ?? "",
                     longDescription: p.longDescription ?? "",
                     varients: p.varients ?? [],
+                    variantAttributes: p.variantAttributes ?? [],
+                    variantCombinations: p.variantCombinations ?? [],
+                    length: p.length != null ? String(p.length) : "",
+                    breadth: p.breadth != null ? String(p.breadth) : "",
+                    height: p.height != null ? String(p.height) : "",
+                    weight: p.weight != null ? String(p.weight) : "",
                 });
+
+                const colorAttr = (p.variantAttributes ?? []).find(
+                    (a) => a.name.toLowerCase() === "color"
+                );
+                const sizeAttr = (p.variantAttributes ?? []).find(
+                    (a) => a.name.toLowerCase() === "size"
+                );
+                setColorOptionsInput((colorAttr?.options ?? []).join(", "));
+                setSizeOptionsInput((sizeAttr?.options ?? []).join(", "));
+                setVariantRows(
+                    (p.variantCombinations ?? []).map((combo, idx) => ({
+                        variantId: combo.variantId || `v-${idx + 1}`,
+                        color:
+                            combo.attributes.find((a) => a.name.toLowerCase() === "color")?.value ??
+                            "",
+                        size:
+                            combo.attributes.find((a) => a.name.toLowerCase() === "size")?.value ??
+                            "",
+                        image: combo.image ?? "",
+                        productStock: String(combo.productStock ?? 0),
+                        originalPrice: String(combo.originalPrice ?? 0),
+                        discountPrice: String(combo.discountPrice ?? 0),
+                        isDefault: Boolean(combo.isDefault),
+                    }))
+                );
 
                 const raw = (p.varients ?? []) as {
                     type?: string;
@@ -245,6 +333,43 @@ export const ProductDescription = () => {
         }
     }, [editProductId, productData.productCategoryId, categories]);
 
+    useEffect(() => {
+        const colors = parseOptions(colorOptionsInput);
+        const sizes = parseOptions(sizeOptionsInput);
+        if (!colors.length && !sizes.length) {
+            setVariantRows([]);
+            return;
+        }
+        const nextKeys: Array<{ color: string; size: string }> = [];
+        if (colors.length && sizes.length) {
+            for (const color of colors) {
+                for (const size of sizes) nextKeys.push({ color, size });
+            }
+        } else if (colors.length) {
+            for (const color of colors) nextKeys.push({ color, size: "" });
+        } else {
+            for (const size of sizes) nextKeys.push({ color: "", size });
+        }
+
+        setVariantRows((prev) =>
+            nextKeys.map((key, index) => {
+                const found = prev.find((p) => p.color === key.color && p.size === key.size);
+                return (
+                    found ?? {
+                        variantId: `v-${index + 1}`,
+                        color: key.color,
+                        size: key.size,
+                        image: "",
+                        productStock: "",
+                        originalPrice: productData.originalPrice || "",
+                        discountPrice: productData.discountPrice || "",
+                        isDefault: index === 0,
+                    }
+                );
+            })
+        );
+    }, [colorOptionsInput, sizeOptionsInput, productData.originalPrice, productData.discountPrice]);
+
     const handelAddProduct = async () => {
         if (
             !productData.productName ||
@@ -265,21 +390,76 @@ export const ProductDescription = () => {
             return;
         }
 
+        const lengthNum = Number(productData.length);
+        const breadthNum = Number(productData.breadth);
+        const heightNum = Number(productData.height);
+        const weightNum = Number(productData.weight);
+        if (!Number.isFinite(lengthNum) || lengthNum <= 0) {
+            toast.error("Please enter a valid length (cm)");
+            return;
+        }
+        if (!Number.isFinite(breadthNum) || breadthNum <= 0) {
+            toast.error("Please enter a valid breadth (cm)");
+            return;
+        }
+        if (!Number.isFinite(heightNum) || heightNum <= 0) {
+            toast.error("Please enter a valid height (cm)");
+            return;
+        }
+        if (!Number.isFinite(weightNum) || weightNum < 1) {
+            toast.error("Please enter a valid weight (grams)");
+            return;
+        }
+
         setLoader(true);
+
+        const variantAttributes = [
+            { name: "color", options: parseOptions(colorOptionsInput) },
+            { name: "size", options: parseOptions(sizeOptionsInput) },
+        ].filter((item) => item.options.length > 0);
+        const normalizedRows = variantRows.filter((r) => r.originalPrice && r.productStock);
+        const variantCombinations = normalizedRows.map((row) => ({
+            variantId: row.variantId,
+            attributes: [
+                ...(row.color ? [{ name: "color", value: row.color }] : []),
+                ...(row.size ? [{ name: "size", value: row.size }] : []),
+            ],
+            image: row.image || productData.images[0] || "",
+            productStock: Number(row.productStock || 0),
+            originalPrice: Number(row.originalPrice || 0),
+            discountPrice: Number(row.discountPrice || 0),
+            isDefault: row.isDefault,
+        }));
+        const hasCombo = variantCombinations.length > 0;
+        const computedStock = hasCombo
+            ? variantCombinations.reduce((sum, row) => sum + Number(row.productStock || 0), 0)
+            : Number(productData.productStock || 0);
+        const computedOriginal = hasCombo
+            ? Math.min(...variantCombinations.map((row) => Number(row.originalPrice || 0)))
+            : Number(productData.originalPrice || 0);
+        const computedDiscount = hasCombo
+            ? Math.max(...variantCombinations.map((row) => Number(row.discountPrice || 0)))
+            : Number(productData.discountPrice || 0);
 
         const payload = {
             productName: productData.productName,
             images: productData.images,
-            productStock: productData.productStock,
+            productStock: computedStock,
             productCategory: productData.productCategory,
             productCategoryId: productData.productCategoryId,
             productSubCategory: productData.productSubCategory,
             productSubCategoryId: productData.productSubCategoryId,
-            discountPrice: productData.discountPrice,
-            originalPrice: productData.originalPrice,
+            discountPrice: computedDiscount,
+            originalPrice: computedOriginal,
             shortDescription: productData.shortDescription,
             longDescription: productData.longDescription,
             varients: [colorVarient, sizeVarient],
+            variantAttributes,
+            variantCombinations,
+            length: lengthNum,
+            breadth: breadthNum,
+            height: heightNum,
+            weight: weightNum,
         };
 
         try {
@@ -536,10 +716,155 @@ export const ProductDescription = () => {
 
                 <div className="bg-white rounded-lg border p-5 pb-10 raleway">
                     <h5 className="mb-4 text-2xl font-semibold ">
+                        Shipping Details
+                    </h5>
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Used for shipping rate calculation (Shiprocket / couriers). All fields are required.
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                        <div className="w-full">
+                            <Label htmlFor='productLength' className="mb-1">Length (cm)</Label>
+                            <Input id="productLength" type="number" min={0.1} step="0.1"
+                                value={productData.length}
+                                onChange={(e) => setProductData((prev) => ({ ...prev, length: e.target.value }))}
+                                placeholder="e.g. 20"
+                            />
+                        </div>
+                        <div className="w-full">
+                            <Label htmlFor='productBreadth' className="mb-1">Breadth (cm)</Label>
+                            <Input id="productBreadth" type="number" min={0.1} step="0.1"
+                                value={productData.breadth}
+                                onChange={(e) => setProductData((prev) => ({ ...prev, breadth: e.target.value }))}
+                                placeholder="e.g. 15"
+                            />
+                        </div>
+                        <div className="w-full">
+                            <Label htmlFor='productHeight' className="mb-1">Height (cm)</Label>
+                            <Input id="productHeight" type="number" min={0.1} step="0.1"
+                                value={productData.height}
+                                onChange={(e) => setProductData((prev) => ({ ...prev, height: e.target.value }))}
+                                placeholder="e.g. 5"
+                            />
+                        </div>
+                        <div className="w-full">
+                            <Label htmlFor='productWeight' className="mb-1">Weight (grams)</Label>
+                            <Input id="productWeight" type="number" min={1} step="1"
+                                value={productData.weight}
+                                onChange={(e) => setProductData((prev) => ({ ...prev, weight: e.target.value }))}
+                                placeholder="e.g. 500"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-lg border p-5 pb-10 raleway">
+                    <h5 className="mb-4 text-2xl font-semibold ">
                         Product Varients
                     </h5>
 
-                    <div className="flex gap-3">
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Create Myntra/Flipkart-style combinations (Color x Size) with per-variant
+                        stock and price.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <Label className="mb-1">Color options (comma separated)</Label>
+                            <Input
+                                value={colorOptionsInput}
+                                onChange={(e) => setColorOptionsInput(e.target.value)}
+                                placeholder="Black, White, Blue"
+                            />
+                        </div>
+                        <div>
+                            <Label className="mb-1">Size options (comma separated)</Label>
+                            <Input
+                                value={sizeOptionsInput}
+                                onChange={(e) => setSizeOptionsInput(e.target.value)}
+                                placeholder="S, M, L, XL"
+                            />
+                        </div>
+                    </div>
+                    {variantRows.length > 0 ? (
+                        <div className="border rounded-md overflow-hidden mb-6">
+                            <div className="grid grid-cols-7 gap-2 px-3 py-2 text-xs font-semibold bg-neutral-50 border-b">
+                                <span>Color</span>
+                                <span>Size</span>
+                                <span>Stock</span>
+                                <span>Selling Price</span>
+                                <span>MRP</span>
+                                <span>Image URL</span>
+                                <span>Default</span>
+                            </div>
+                            <div className="max-h-[340px] overflow-y-auto">
+                                {variantRows.map((row, idx) => (
+                                    <div
+                                        key={`${row.color}-${row.size}-${idx}`}
+                                        className="grid grid-cols-7 gap-2 px-3 py-2 border-b last:border-b-0"
+                                    >
+                                        <Input value={row.color} disabled />
+                                        <Input value={row.size} disabled />
+                                        <Input
+                                            type="number"
+                                            value={row.productStock}
+                                            onChange={(e) =>
+                                                setVariantRows((prev) =>
+                                                    prev.map((v, i) =>
+                                                        i === idx ? { ...v, productStock: e.target.value } : v
+                                                    )
+                                                )
+                                            }
+                                        />
+                                        <Input
+                                            type="number"
+                                            value={row.originalPrice}
+                                            onChange={(e) =>
+                                                setVariantRows((prev) =>
+                                                    prev.map((v, i) =>
+                                                        i === idx ? { ...v, originalPrice: e.target.value } : v
+                                                    )
+                                                )
+                                            }
+                                        />
+                                        <Input
+                                            type="number"
+                                            value={row.discountPrice}
+                                            onChange={(e) =>
+                                                setVariantRows((prev) =>
+                                                    prev.map((v, i) =>
+                                                        i === idx ? { ...v, discountPrice: e.target.value } : v
+                                                    )
+                                                )
+                                            }
+                                        />
+                                        <Input
+                                            value={row.image}
+                                            onChange={(e) =>
+                                                setVariantRows((prev) =>
+                                                    prev.map((v, i) =>
+                                                        i === idx ? { ...v, image: e.target.value } : v
+                                                    )
+                                                )
+                                            }
+                                            placeholder="https://..."
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant={row.isDefault ? "default" : "outline"}
+                                            onClick={() =>
+                                                setVariantRows((prev) =>
+                                                    prev.map((v, i) => ({ ...v, isDefault: i === idx }))
+                                                )
+                                            }
+                                        >
+                                            {row.isDefault ? "Default" : "Make default"}
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
+
+                    <div className="hidden">
                         {
                             colorVarient.products.map((varient) => (
                                 <Button variant={'outline'} key={varient.productId} className=" relative"
@@ -572,7 +897,7 @@ export const ProductDescription = () => {
                             ))
                         }
                     </div>
-                    <div className="flex gap-5 mt-5 items-end">
+                    <div className="hidden">
                         <div className="w-[200px]">
                             <Label htmlFor='varientType' className="mb-1">Select Varient Type</Label>
                             <Select value={varientdata.type}

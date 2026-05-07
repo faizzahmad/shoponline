@@ -7,6 +7,9 @@ import mongoose from "mongoose";
 
 type productItem = {
     productId : string;
+    variantId?: string;
+    variantAttributes?: Array<{ name: string; value: string }>;
+    variantImage?: string;
     quantity : number;
     originalPrice : number;
     discountPrice : number;
@@ -18,6 +21,10 @@ type productItem = {
     productSubCategoryId : string;
     shortDescription : string;  
     longDescription : string;
+    length?: number;
+    breadth?: number;
+    height?: number;
+    weight?: number;
 };
 
 /** Mongoose `.lean()` is loosely typed; narrow for build-time checks */
@@ -25,6 +32,14 @@ type ProductLeanDoc = {
     productStock?: number;
     originalPrice?: number;
     discountPrice?: number;
+    variantCombinations?: Array<{
+        variantId: string;
+        productStock?: number;
+        originalPrice?: number;
+        discountPrice?: number;
+        image?: string;
+        attributes?: Array<{ name: string; value: string }>;
+    }>;
     productName?: string;
     images?: string[];
     productCategory?: string;
@@ -33,6 +48,10 @@ type ProductLeanDoc = {
     productSubCategoryId?: unknown;
     shortDescription?: string;
     longDescription?: string;
+    length?: number;
+    breadth?: number;
+    height?: number;
+    weight?: number;
 };
 
 export const AddtoCart = async (phone: string, items: productItem) => {
@@ -49,7 +68,19 @@ export const AddtoCart = async (phone: string, items: productItem) => {
             throw new Error("Product not found");
         }
         const product = rawProduct as ProductLeanDoc;
-        const stock = Number(product.productStock ?? 0);
+        const requestedVariantId =
+            typeof items.variantId === "string" ? items.variantId.trim() : "";
+        const selectedVariant = requestedVariantId
+            ? (product.variantCombinations ?? []).find(
+                  (v) => String(v.variantId) === requestedVariantId
+              )
+            : null;
+        if (requestedVariantId && !selectedVariant) {
+            throw new Error("Selected variant is not available");
+        }
+        const stock = Number(
+            selectedVariant ? selectedVariant.productStock ?? 0 : product.productStock ?? 0
+        );
         if (stock < 1) {
             throw new Error("This product is out of stock");
         }
@@ -57,7 +88,9 @@ export const AddtoCart = async (phone: string, items: productItem) => {
         const cart = await Cart.findOne({ userPhone: phone });
         const existingItemIndex = cart
             ? cart.items.findIndex(
-                  (item: productItem) => item.productId.toString() === items.productId
+                  (item: productItem) =>
+                      item.productId.toString() === items.productId &&
+                      String(item.variantId ?? "") === requestedVariantId
               )
             : -1;
         let nextQty = items.quantity;
@@ -70,9 +103,16 @@ export const AddtoCart = async (phone: string, items: productItem) => {
 
         const line: productItem = {
             ...items,
+            variantId: requestedVariantId,
+            variantAttributes: selectedVariant?.attributes ?? items.variantAttributes ?? [],
+            variantImage: selectedVariant?.image ?? "",
             quantity: items.quantity,
-            originalPrice: Number(product.originalPrice ?? 0),
-            discountPrice: Number(product.discountPrice ?? 0),
+            originalPrice: Number(
+                selectedVariant ? selectedVariant.originalPrice ?? 0 : product.originalPrice ?? 0
+            ),
+            discountPrice: Number(
+                selectedVariant ? selectedVariant.discountPrice ?? 0 : product.discountPrice ?? 0
+            ),
             productName: String(product.productName ?? ""),
             images: product.images ?? [],
             productCategory: String(product.productCategory ?? ""),
@@ -81,6 +121,10 @@ export const AddtoCart = async (phone: string, items: productItem) => {
             productSubCategoryId: String(product.productSubCategoryId ?? ""),
             shortDescription: product.shortDescription ?? "",
             longDescription: product.longDescription ?? "",
+            length: Number(product.length ?? 0),
+            breadth: Number(product.breadth ?? 0),
+            height: Number(product.height ?? 0),
+            weight: Number(product.weight ?? 0),
         };
 
         if (!cart) {
@@ -114,7 +158,11 @@ export const AddtoCart = async (phone: string, items: productItem) => {
 };
 
 
-export const handelRemoveItemFromcart = async (phone: string, productId: string) => {
+export const handelRemoveItemFromcart = async (
+    phone: string,
+    productId: string,
+    variantId?: string
+) => {
     await connectToDb();
     if (!phone || !productId) {
         throw new Error("Phone number and product ID are required");
@@ -124,7 +172,12 @@ export const handelRemoveItemFromcart = async (phone: string, productId: string)
         if (!cart) {
             throw new Error("Cart not found");
         }
-        const itemIndex = cart.items.findIndex((item: productItem) => item.productId.toString() === productId);
+        const targetVariant = typeof variantId === "string" ? variantId.trim() : "";
+        const itemIndex = cart.items.findIndex(
+            (item: productItem) =>
+                item.productId.toString() === productId &&
+                (targetVariant === "" || String(item.variantId ?? "") === targetVariant)
+        );
         if (itemIndex > -1) {
             cart.items.splice(itemIndex, 1);
             await cart.save();
@@ -174,7 +227,12 @@ export const getCartCount = async (phone: string) => {
     }
 }
 
-export const chnageCount = async (phone: string, productId: string, quantity: number) => {
+export const chnageCount = async (
+    phone: string,
+    productId: string,
+    quantity: number,
+    variantId?: string
+) => {
     await connectToDb();
     if (!phone || !productId || quantity < 1) {
         throw new Error("Phone number, product ID and valid quantity are required");
@@ -185,25 +243,44 @@ export const chnageCount = async (phone: string, productId: string, quantity: nu
             throw new Error("Product not found");
         }
         const product = rawProduct as ProductLeanDoc;
-        const stock = Number(product.productStock ?? 0);
+        const cart = await Cart.findOne({ userPhone: phone });
+        if (!cart) {
+            throw new Error("Cart not found");
+        }
+        const targetVariant = typeof variantId === "string" ? variantId.trim() : "";
+        const itemIndex = cart.items.findIndex(
+            (item: productItem) =>
+                item.productId.toString() === productId &&
+                (targetVariant === "" || String(item.variantId ?? "") === targetVariant)
+        );
+        if (itemIndex < 0) {
+            throw new Error("Item not found in cart");
+        }
+        const lineVariantId = String(cart.items[itemIndex].variantId ?? "");
+        const selectedVariant = lineVariantId
+            ? (product.variantCombinations ?? []).find((v) => String(v.variantId) === lineVariantId)
+            : null;
+        const stock = Number(
+            selectedVariant ? selectedVariant.productStock ?? 0 : product.productStock ?? 0
+        );
         if (stock < 1) {
             throw new Error("This product is out of stock");
         }
         if (quantity > stock) {
             throw new Error(`Only ${stock} unit(s) available`);
         }
-
-        const cart = await Cart.findOne({ userPhone: phone });
-        if (!cart) {
-            throw new Error("Cart not found");
-        }
-        const itemIndex = cart.items.findIndex(
-            (item: productItem) => item.productId.toString() === productId
-        );
         if (itemIndex > -1) {
             cart.items[itemIndex].quantity = quantity;
-            cart.items[itemIndex].originalPrice = Number(product.originalPrice);
-            cart.items[itemIndex].discountPrice = Number(product.discountPrice ?? 0);
+            cart.items[itemIndex].originalPrice = Number(
+                selectedVariant ? selectedVariant.originalPrice ?? 0 : product.originalPrice
+            );
+            cart.items[itemIndex].discountPrice = Number(
+                selectedVariant ? selectedVariant.discountPrice ?? 0 : product.discountPrice ?? 0
+            );
+            cart.items[itemIndex].length = Number(product.length ?? 0);
+            cart.items[itemIndex].breadth = Number(product.breadth ?? 0);
+            cart.items[itemIndex].height = Number(product.height ?? 0);
+            cart.items[itemIndex].weight = Number(product.weight ?? 0);
             await cart.save();
         } else {
             throw new Error("Item not found in cart");

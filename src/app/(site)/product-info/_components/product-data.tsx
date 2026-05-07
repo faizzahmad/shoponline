@@ -4,6 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useIsChanged } from "@/store/use-ischnaged"
+import { useGuestCart } from "@/store/use-guest-cart"
 import { useUser } from "@clerk/nextjs"
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
 import Autoplay from "embla-carousel-autoplay"
@@ -24,6 +25,16 @@ type Variant = {
     _id: string;
 };
 
+type VariantCombination = {
+    variantId: string;
+    attributes: Array<{ name: string; value: string }>;
+    image?: string;
+    productStock: number;
+    originalPrice: number;
+    discountPrice: number;
+    isDefault?: boolean;
+};
+
 type ProductInfo = {
     _id: string;
     productName: string;
@@ -39,6 +50,7 @@ type ProductInfo = {
     shortDescription: string;
     longDescription: string;
     varients: Variant[];
+    variantCombinations?: VariantCombination[];
     __v: number;
     createdAt: string;
     updatedAt: string;
@@ -52,11 +64,13 @@ export const ProductData = ({ slug }: ProductDataProps) => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [selectedQunatity, setSelectedQunatity] = useState(1);
     const [productInfo, setProductInfo] = useState<ProductInfo>({} as ProductInfo);
+    const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
     const [loader, setLoader] = useState<boolean>(true);
     const [cartLoader, setCartLoader] = useState<boolean>(false);
     const router = useRouter();
     const { isSignedIn, isLoaded, user } = useUser();
     const { setIsChanged, isChanged } = useIsChanged((state) => state);
+    const addGuestItem = useGuestCart((s) => s.addItem);
     const handelFetchProduct = async () => {
         try {
             const response = await fetch(`/api/products/${slug}`, {
@@ -87,13 +101,73 @@ export const ProductData = ({ slug }: ProductDataProps) => {
         }
     }, [slug]);
 
+    const variantCombinations = productInfo?.variantCombinations ?? [];
+    const hasNewVariants = variantCombinations.length > 0;
+
+    const selectedVariant = hasNewVariants
+        ? variantCombinations.find((combo) =>
+              combo.attributes.every((attr) => selectedAttributes[attr.name] === attr.value)
+          ) ?? null
+        : null;
+
     useEffect(() => {
-        const s = Number(productInfo?.productStock ?? 0);
+        const s = Number(selectedVariant?.productStock ?? productInfo?.productStock ?? 0);
         if (s >= 1) {
             const cap = Math.min(10, s);
             setSelectedQunatity((q) => Math.min(q, cap));
         }
-    }, [productInfo?.productStock, productInfo?._id]);
+    }, [selectedVariant?.productStock, productInfo?.productStock, productInfo?._id]);
+
+    useEffect(() => {
+        if (!productInfo?._id) return;
+        if (!hasNewVariants) {
+            setSelectedAttributes((prev) =>
+                Object.keys(prev).length === 0 ? prev : {}
+            );
+            return;
+        }
+        const defaultVariant =
+            variantCombinations.find((v) => v.isDefault) ?? variantCombinations[0];
+        if (!defaultVariant) return;
+        const initial: Record<string, string> = {};
+        for (const attr of defaultVariant.attributes ?? []) {
+            initial[attr.name] = attr.value;
+        }
+        setSelectedAttributes((prev) => {
+            const sameSize = Object.keys(prev).length === Object.keys(initial).length;
+            if (sameSize && Object.keys(initial).every((k) => prev[k] === initial[k])) {
+                return prev;
+            }
+            return initial;
+        });
+    }, [productInfo?._id, hasNewVariants]);
+
+    const attributeNames = hasNewVariants
+        ? Array.from(
+              new Set(
+                  variantCombinations.flatMap((combo) =>
+                      (combo.attributes ?? []).map((attr) => attr.name)
+                  )
+              )
+          )
+        : [];
+
+    const optionsByAttribute = attributeNames.map((name) => {
+        const seen = new Set<string>();
+        const options: { value: string; image?: string }[] = [];
+        for (const combo of variantCombinations) {
+            const attr = combo.attributes.find((a) => a.name === name);
+            if (!attr || seen.has(attr.value)) continue;
+            seen.add(attr.value);
+            const image = variantCombinations.find(
+                (c) =>
+                    c.image &&
+                    c.attributes.some((a) => a.name === name && a.value === attr.value)
+            )?.image;
+            options.push({ value: attr.value, image });
+        }
+        return { name, options };
+    });
 
     const message = `
 ${productInfo?.productName}
@@ -109,29 +183,64 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.NEXT_PUBLIC_API_URL + '/product-info/' + productInfo?._id)}`;
 
     const stock = Number(productInfo?.productStock ?? 0);
-    const isOutOfStock = stock < 1;
-    const maxSelectableQty = isOutOfStock ? 1 : Math.min(10, stock);
+    const activeStock = Number(selectedVariant?.productStock ?? stock);
+    const activeOriginalPrice = Number(
+        selectedVariant?.originalPrice ?? productInfo?.originalPrice ?? 0
+    );
+    const activeDiscountPrice = Number(
+        selectedVariant?.discountPrice ?? productInfo?.discountPrice ?? 0
+    );
+    const isSelectedOutOfStock = activeStock < 1;
+    const maxSelectableQty = isSelectedOutOfStock ? 1 : Math.min(10, activeStock);
 
     const handelAddToCart = async () => {
-        if (isOutOfStock) {
+        if (isSelectedOutOfStock) {
             toast.error(`${productInfo?.productName ?? "This product"} is out of stock.`);
             return;
         }
 
-           const productItem = {
-                                        productId: productInfo!._id!,
-                                        quantity: selectedQunatity,
-                                        originalPrice: selectedQunatity * productInfo.originalPrice,
-                                        discountPrice: selectedQunatity * productInfo.discountPrice,
-                                        productName: productInfo!.productName!,
-                                        images: productInfo?.images || [],
-                                        productCategory: productInfo!.productCategory!,
-                                        productCategoryId: productInfo!.productCategoryId!,
-                                        productSubCategory: productInfo!.productSubCategory!,
-                                        productSubCategoryId: productInfo!.productSubCategoryId!,
-                                        shortDescription: productInfo?.shortDescription || "",
-                                        longDescription: productInfo?.longDescription || "",
-                                    };
+        const productItem = {
+            productId: productInfo!._id!,
+            variantId: selectedVariant?.variantId ?? "",
+            variantAttributes: selectedVariant?.attributes ?? [],
+            variantImage: selectedVariant?.image ?? "",
+            quantity: selectedQunatity,
+            originalPrice: selectedQunatity * activeOriginalPrice,
+            discountPrice: selectedQunatity * activeDiscountPrice,
+            productName: productInfo!.productName!,
+            images: productInfo?.images || [],
+            productCategory: productInfo!.productCategory!,
+            productCategoryId: productInfo!.productCategoryId!,
+            productSubCategory: productInfo!.productSubCategory!,
+            productSubCategoryId: productInfo!.productSubCategoryId!,
+            shortDescription: productInfo?.shortDescription || "",
+            longDescription: productInfo?.longDescription || "",
+        };
+
+        if (!isSignedIn) {
+            addGuestItem({
+                productId: productItem.productId,
+                variantId: productItem.variantId,
+                variantAttributes: productItem.variantAttributes,
+                variantImage: productItem.variantImage,
+                quantity: productItem.quantity,
+                originalPrice: activeOriginalPrice,
+                discountPrice: activeDiscountPrice,
+                productName: productItem.productName,
+                images: productItem.images,
+                productCategory: productItem.productCategory,
+                productCategoryId: productItem.productCategoryId,
+                productSubCategory: productItem.productSubCategory,
+                productSubCategoryId: productItem.productSubCategoryId,
+                shortDescription: productItem.shortDescription,
+                longDescription: productItem.longDescription,
+                availableStock: activeStock,
+            });
+            toast.success("Added to cart");
+            setIsChanged(!isChanged);
+            return;
+        }
+
         setCartLoader(true);
         try {
             const res = await fetch("/api/cart", {
@@ -143,7 +252,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
             if (res.ok) {
                 toast.success("Product added to cart successfully!");
                 setIsChanged(!isChanged);
-                
+
             } else {
                 throw new Error(data.error);
 
@@ -220,7 +329,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                             productInfo.images && productInfo.images.length > 0 && (
                                 <div className="relative w-full aspect-square rounded-lg overflow-hidden">
                                     <Image
-                                        src={productInfo?.images[selectedImageIndex]}
+                                        src={selectedVariant?.image || productInfo?.images[selectedImageIndex]}
                                         alt="productImage"
                                         className="object-cover object-center"
                                         fill
@@ -305,6 +414,76 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
 
                         <div className="my-4">
+                            {hasNewVariants &&
+                                optionsByAttribute.map((group) => (
+                                    <div key={group.name} className="mb-3">
+                                        <p className="text-sm font-semibold exo mb-2 capitalize">{group.name}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {group.options.map((option) => {
+                                                const isSelected = selectedAttributes[group.name] === option.value;
+                                                const isColorAttr =
+                                                    ["color", "colour"].includes(
+                                                        group.name.trim().toLowerCase()
+                                                    );
+                                                if (isColorAttr && option.image) {
+                                                    return (
+                                                        <button
+                                                            key={`${group.name}-${option.value}`}
+                                                            type="button"
+                                                            className={`flex flex-col items-center gap-1 rounded-md border p-1 transition ${
+                                                                isSelected
+                                                                    ? "border-rose-600 bg-rose-50"
+                                                                    : "border-neutral-300"
+                                                            }`}
+                                                            onClick={() =>
+                                                                setSelectedAttributes((prev) => ({
+                                                                    ...prev,
+                                                                    [group.name]: option.value,
+                                                                }))
+                                                            }
+                                                        >
+                                                            <div className="relative size-16 overflow-hidden rounded">
+                                                                <Image
+                                                                    src={option.image}
+                                                                    alt={option.value}
+                                                                    fill
+                                                                    sizes="64px"
+                                                                    className="object-cover object-center"
+                                                                />
+                                                            </div>
+                                                            <span
+                                                                className={`text-xs capitalize ${
+                                                                    isSelected ? "text-rose-600" : "text-neutral-700"
+                                                                }`}
+                                                            >
+                                                                {option.value}
+                                                            </span>
+                                                        </button>
+                                                    );
+                                                }
+                                                return (
+                                                    <button
+                                                        key={`${group.name}-${option.value}`}
+                                                        type="button"
+                                                        className={`px-3 py-1.5 rounded border text-sm ${
+                                                            isSelected
+                                                                ? "border-rose-600 text-rose-600 bg-rose-50"
+                                                                : "border-neutral-300 text-neutral-700"
+                                                        }`}
+                                                        onClick={() =>
+                                                            setSelectedAttributes((prev) => ({
+                                                                ...prev,
+                                                                [group.name]: option.value,
+                                                            }))
+                                                        }
+                                                    >
+                                                        {option.value}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
 
                             {productInfo?.varients?.some((variantGroup) => variantGroup.products.length > 0) && (
                                 <h5 className="text-lg mb-4 exo font-semibold">Variants</h5>
@@ -341,23 +520,29 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                             <div className="flex items-center gap-3 mt-2">
                                 <p className="text-rose-600 font-[600] text-lg exo">{"\u20B9"}
                                     {
-                                        productInfo.originalPrice
+                                        activeOriginalPrice
                                     }
                                 </p>
                                 <p className="text-neutral-500 font-[300] text-base exo line-through">{"\u20B9"}
                                     {
-                                        productInfo.discountPrice
+                                        activeDiscountPrice
                                     }
                                 </p>
                                 <p className="text text-rose-400 font-[300] text-base raleway">
                                     {
-                                        Math.round(((productInfo.discountPrice - productInfo.originalPrice) / productInfo.discountPrice) * 100)
+                                        activeDiscountPrice > 0
+                                            ? Math.round(
+                                                  ((activeDiscountPrice - activeOriginalPrice) /
+                                                      activeDiscountPrice) *
+                                                      100
+                                              )
+                                            : 0
                                     }
                                     % off</p>
                             </div>
                         </div>
 
-                        {isOutOfStock ? (
+                        {isSelectedOutOfStock ? (
                             <p className="mt-4 text-sm font-medium text-rose-700 raleway rounded-md border border-rose-200 bg-rose-50 px-3 py-2">
                                 This product is out of stock.
                             </p>
@@ -367,7 +552,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                             <div className="flex mt-1">
                                 <button className="size-10 flex  items-center justify-center bg-indigo-50 border cursor-pointer text-rose-600 rounded-tl rounded-bl"
-                                    disabled={selectedQunatity <= 1 || isOutOfStock}
+                                    disabled={selectedQunatity <= 1 || isSelectedOutOfStock}
                                     onClick={() => setSelectedQunatity(selectedQunatity > 1 ? selectedQunatity - 1 : 1)}
                                 >
                                     <Minus className="size-5" />
@@ -376,7 +561,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                     {selectedQunatity}
                                 </div>
                                 <button className="size-10 text-sm flex  items-center justify-center bg-indigo-50 border cursor-pointer text-rose-600 rounded-tr rounded-br"
-                                    disabled={isOutOfStock}
+                                    disabled={isSelectedOutOfStock}
                                     onClick={() => {
                                         if (selectedQunatity < maxSelectableQty) {
                                             setSelectedQunatity(selectedQunatity + 1)
@@ -384,7 +569,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                             toast.error(
                                                 maxSelectableQty >= 10
                                                     ? "You can only add up to 10 items at a time."
-                                                    : `Only ${stock} in stock.`
+                                                    : `Only ${activeStock} in stock.`
                                             )
                                         }
                                     }}
@@ -395,17 +580,12 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                             <div className="flex-1">
                                 <Button variant={'cart'} className="h-[42px] rounded-md w-full raleway uppercase"
-                                    disabled={!isLoaded || cartLoader || isOutOfStock}
+                                    disabled={cartLoader || isSelectedOutOfStock}
                                     onClick={() => {
-                                        if (!isSignedIn) {
-                                            const fullPathWithQuery = window.location.pathname + window.location.search;
-                                            router.push(`/sign-in?redirect_url=${encodeURIComponent(fullPathWithQuery)}`)
-                                        }else{
-                                            handelAddToCart();
-                                        }
+                                        handelAddToCart();
                                     }}
                                 >
-                                    {isOutOfStock ? "Out of stock" : "Add to Cart"}
+                                    {isSelectedOutOfStock ? "Out of stock" : "Add to Cart"}
 
 
                               {
@@ -420,19 +600,14 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                         <div className="mt-4">
                             <Button
-                                disabled={!isLoaded || cartLoader || isOutOfStock}
+                                disabled={cartLoader || isSelectedOutOfStock}
                                 className="w-full h-[42px] rounded-md raleway uppercase bg-indigo-200 text-black hover:bg-indigo-300 "
-                                onClick={() => {
-                                    if (!isSignedIn) {
-                                        const fullPathWithQuery = window.location.pathname + window.location.search;
-                                        router.push(`/sign-in?redirect_url=${encodeURIComponent(fullPathWithQuery)}`)
-                                    }else{
-                                        handelAddToCart();
-                                        router.push(`/cart?type=buy-now&productId=${productInfo._id}`);
-                                    }
+                                onClick={async () => {
+                                    await handelAddToCart();
+                                    router.push(`/cart?type=buy-now&productId=${productInfo._id}`);
                                 }}
                             >
-                                {isOutOfStock ? "Out of stock" : "Buy Now"}
+                                {isSelectedOutOfStock ? "Out of stock" : "Buy Now"}
 
                               {
                                 cartLoader && (

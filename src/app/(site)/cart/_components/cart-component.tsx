@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useIsChanged } from "@/store/use-ischnaged";
+import { useGuestCart } from "@/store/use-guest-cart";
 import { useUser } from "@clerk/nextjs";
 import { Loader, MapPin, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
@@ -65,8 +66,17 @@ type productItem = {
     productSubCategoryId: string;
     shortDescription: string;
     longDescription: string;
+    variantId?: string;
+    variantAttributes?: Array<{ name: string; value: string }>;
     /** Present when loaded from GET /api/cart */
     availableStock?: number;
+    variantImage?: string;
+    /** Shipping dimensions (cm) — populated from server */
+    length?: number;
+    breadth?: number;
+    height?: number;
+    /** Shipping weight in grams — populated from server */
+    weight?: number;
 }
 
 type couponDiscount = {
@@ -89,6 +99,7 @@ export const CartComponent = () => {
     const [productIdToDelete, setProductIdToDelete] = useState({
         image: "",
         productId: "",
+        variantId: "",
         productName: "",
 
     })
@@ -101,9 +112,18 @@ export const CartComponent = () => {
     const router = useRouter();
     const [showpaymentComponent, setShowPaymentComponent] = useState(false);
     const [completingOrderRedirect, setCompletingOrderRedirect] = useState(false);
-    
+    const guestItems = useGuestCart((s) => s.items);
+    const guestSetQuantity = useGuestCart((s) => s.setQuantity);
+    const guestRemoveItem = useGuestCart((s) => s.removeItem);
+    const guestClear = useGuestCart((s) => s.clear);
+    const guestReplaceAll = useGuestCart((s) => s.replaceAll);
+    const isGuest = isLoaded && !isSignedIn;
+    const guestSyncedRef = useRef<string>("");
+
     // const [buyNowproductId, setBuyNowProductId] = useState<string | null>(params.get('productId') || null);
    const buyNowproductId = params.get('productId') || null;
+
+    const [guestContact, setGuestContact] = useState({ fullName: "", phone: "" });
 
     const [orderData, setOrderData] = useState<OrderFormData>({
         shippingAddress: "",
@@ -173,18 +193,150 @@ export const CartComponent = () => {
         setLoading(false);
     }
 
+    /**
+     * On sign-in, merge any guest items into the server cart, then fetch.
+     * If still signed out, show guest items directly.
+     */
     useEffect(() => {
-        if (isSignedIn && isLoaded && user) {
-            handelFetchCart();
+        if (!isLoaded) return;
+        const phone = user?.primaryPhoneNumber?.phoneNumber;
+        if (isSignedIn && phone) {
+            const merge = async () => {
+                if (guestItems.length > 0) {
+                    setLoading(true);
+                    try {
+                        for (const it of guestItems) {
+                            await fetch("/api/cart", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    phone,
+                                    items: {
+                                        productId: it.productId,
+                                        variantId: it.variantId ?? "",
+                                        variantAttributes: it.variantAttributes ?? [],
+                                        variantImage: it.variantImage ?? "",
+                                        quantity: it.quantity,
+                                        originalPrice: it.originalPrice,
+                                        discountPrice: it.discountPrice,
+                                        productName: it.productName,
+                                        images: it.images,
+                                        productCategory: it.productCategory,
+                                        productCategoryId: it.productCategoryId,
+                                        productSubCategory: it.productSubCategory,
+                                        productSubCategoryId: it.productSubCategoryId,
+                                        shortDescription: it.shortDescription,
+                                        longDescription: it.longDescription,
+                                    },
+                                }),
+                            });
+                        }
+                        guestClear();
+                    } catch (e) {
+                        console.error("Failed to merge guest cart:", e);
+                    }
+                }
+                handelFetchCart();
+            };
+            merge();
+        } else if (!isSignedIn) {
+            const rows = guestItems as unknown as productItem[];
+            if (buyNowproductId) {
+                const found = rows.find((it) => it.productId === buyNowproductId);
+                setCartData(found ? [found] : []);
+            } else {
+                setCartData(rows);
+            }
+            setLoading(false);
         }
+    }, [isSignedIn, isLoaded, user, guestItems, buyNowproductId]);
 
-    }, [isSignedIn, isLoaded, user]);
+    /**
+     * Guest stock/price refresh: hits /api/cart/preview once per change-set
+     * and updates the local guest store with fresh data + sync warnings.
+     */
+    useEffect(() => {
+        if (!isLoaded || isSignedIn) return;
+        if (guestItems.length === 0) {
+            guestSyncedRef.current = "";
+            return;
+        }
+        const signature = guestItems
+            .map((it) => `${it.productId}:${it.variantId ?? ""}:${it.quantity}`)
+            .join("|");
+        if (signature === guestSyncedRef.current) return;
+        guestSyncedRef.current = signature;
+
+        const run = async () => {
+            try {
+                const res = await fetch("/api/cart/preview", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        items: guestItems.map((it) => ({
+                            productId: it.productId,
+                            variantId: it.variantId ?? "",
+                            quantity: it.quantity,
+                        })),
+                    }),
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                const fresh = (data.items as Array<Record<string, unknown>>) ?? [];
+                if (fresh.length === 0) {
+                    guestClear();
+                } else {
+                    guestReplaceAll(
+                        fresh.map((it) => ({
+                            productId: String(it.productId),
+                            variantId: (it.variantId as string) ?? "",
+                            variantAttributes: (it.variantAttributes as { name: string; value: string }[]) ?? [],
+                            variantImage: (it.variantImage as string) ?? "",
+                            quantity: Number(it.quantity ?? 1),
+                            originalPrice: Number(it.originalPrice ?? 0),
+                            discountPrice: Number(it.discountPrice ?? 0),
+                            productName: String(it.productName ?? ""),
+                            images: (it.images as string[]) ?? [],
+                            productCategory: String(it.productCategory ?? ""),
+                            productCategoryId: String(it.productCategoryId ?? ""),
+                            productSubCategory: String(it.productSubCategory ?? ""),
+                            productSubCategoryId: String(it.productSubCategoryId ?? ""),
+                            shortDescription: String(it.shortDescription ?? ""),
+                            longDescription: String(it.longDescription ?? ""),
+                            availableStock: Number(it.availableStock ?? 0),
+                        }))
+                    );
+                }
+                const warns = (data.warnings as CartSyncWarning[]) ?? [];
+                if (warns.length > 0) {
+                    syncDialogHoldRef.current = true;
+                    setCartSyncWarnings(warns);
+                    setShowCartSyncDialog(true);
+                }
+            } catch (e) {
+                console.error("Guest cart preview failed:", e);
+            }
+        };
+        run();
+    }, [isLoaded, isSignedIn, guestItems, guestClear, guestReplaceAll]);
 
 
 
     const handelRemoveItem = async () => {
+        if (isGuest) {
+            guestRemoveItem(productIdToDelete.productId, productIdToDelete.variantId || undefined);
+            toast.success("Item removed from cart");
+            setIsChanged(!isChanged);
+            setIsOpenAlert(false);
+            setProductIdToDelete({
+                image: "",
+                productId: "",
+                variantId: "",
+                productName: "",
+            });
+            return;
+        }
         setLoading(true);
-        
         const res = await fetch(`/api/cart`, {
             method: "DELETE",
             headers: {
@@ -193,6 +345,7 @@ export const CartComponent = () => {
             body: JSON.stringify({
                 phone: user?.primaryPhoneNumber?.phoneNumber,
                 productId: productIdToDelete.productId,
+                variantId: productIdToDelete.variantId,
             }),
         });
         if (res.ok) {
@@ -204,6 +357,7 @@ export const CartComponent = () => {
             setProductIdToDelete({
                 image: "",
                 productId: "",
+                variantId: "",
                 productName: "",
             });
             
@@ -214,7 +368,7 @@ export const CartComponent = () => {
         setLoading(false);
     }
 
-    const removeCartLineById = async (productId: string) => {
+    const removeCartLineById = async (productId: string, variantId?: string) => {
         if (!user?.primaryPhoneNumber?.phoneNumber) {
             toast.error("Sign in to manage your cart.");
             return;
@@ -226,6 +380,7 @@ export const CartComponent = () => {
             body: JSON.stringify({
                 phone: user.primaryPhoneNumber.phoneNumber,
                 productId,
+                variantId: variantId ?? "",
             }),
         });
         if (res.ok) {
@@ -311,7 +466,40 @@ export const CartComponent = () => {
 
     const subtotal = parseFloat((totalPrice - totalDiscountPrice).toFixed(2));
 
+    const validateGuestContact = (): boolean => {
+        const name = guestContact.fullName.trim();
+        const phone = guestContact.phone.trim();
+        if (name.length < 2) {
+            toast.error("Please enter your full name (at least 2 characters).");
+            return false;
+        }
+        if (!/^[6-9]\d{9}$/.test(phone)) {
+            toast.error("Please enter a valid 10-digit Indian phone number.");
+            return false;
+        }
+        return true;
+    };
+
+    const getCheckoutIdentity = (): { phone: string; name: string } | null => {
+        if (isSignedIn && user) {
+            return {
+                phone: user.primaryPhoneNumber?.phoneNumber ?? "",
+                name: user.fullName ?? guestContact.fullName.trim(),
+            };
+        }
+        if (isGuest) {
+            if (!validateGuestContact()) return null;
+            return {
+                phone: `+91${guestContact.phone.trim()}`,
+                name: guestContact.fullName.trim(),
+            };
+        }
+        return null;
+    };
+
     const handelPlaceOrder = async () => {
+        const identity = getCheckoutIdentity();
+        if (!identity) return;
         if (hasCheckoutBlocker) {
             toast.error("Remove out-of-stock items from your cart before placing an order.");
             return;
@@ -335,10 +523,13 @@ export const CartComponent = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                userPhone: user?.primaryPhoneNumber?.phoneNumber,
-                username : user?.fullName,
+                userPhone: identity.phone,
+                username : identity.name,
                 items: cartdata.map(item => ({
                     productId: item.productId,
+                    variantId: item.variantId ?? "",
+                    variantAttributes: item.variantAttributes ?? [],
+                    variantImage: item.variantImage ?? "",
                     quantity: item.quantity,
                     originalPrice: item.originalPrice,
                     discountPrice: item.discountPrice,
@@ -364,23 +555,22 @@ export const CartComponent = () => {
 
         if (res.ok) {
             const data = await res.json();
-        router.push(`/invoice/${data.orderId}`); 
-        
-         
-            // Redirect to invoice page with order ID
-       
+            if (isGuest) {
+                guestClear();
+            }
+            router.push(`/invoice/${data.orderId}`);
         } else {
             const errorData = await res.json();
             toast.error(errorData.error || "Failed to place order");
             console.error("Failed to place order:", errorData);
         }
         setLoading(false);
-        // Optionally, you can redirect the user to a different page after placing the order
-        // router.push('/order-confirmation');
     }
 
 
       const handelPlaceOrderWithrazorpay = async () => {
+        const identity = getCheckoutIdentity();
+        if (!identity) return;
         if (hasCheckoutBlocker) {
             toast.error("Remove out-of-stock items from your cart before paying.");
             return;
@@ -404,10 +594,13 @@ export const CartComponent = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                userPhone: user?.primaryPhoneNumber?.phoneNumber,
-                username : user?.fullName,
+                userPhone: identity.phone,
+                username : identity.name,
                 items: cartdata.map(item => ({
                     productId: item.productId,
+                    variantId: item.variantId ?? "",
+                    variantAttributes: item.variantAttributes ?? [],
+                    variantImage: item.variantImage ?? "",
                     quantity: item.quantity,
                     originalPrice: item.originalPrice,
                     discountPrice: item.discountPrice,
@@ -433,20 +626,19 @@ export const CartComponent = () => {
 
         if (res.ok) {
             const data = await res.json();
-             setLoading(false);
-             setShowPaymentComponent(true);
-             setOrderId(data.orderId);
+            setLoading(false);
+            if (isGuest) {
+                guestClear();
+            }
+            setShowPaymentComponent(true);
+            setOrderId(data.orderId);
             return data.orderId;
-        // Redirect to invoice page with order ID
-       
         } else {
             const errorData = await res.json();
             toast.error(errorData.error || "Failed to place order");
             console.error("Failed to place order:", errorData);
         }
         setLoading(false);
-        // Optionally, you can redirect the user to a different page after placing the order
-        // router.push('/order-confirmation');
     }
 
     return (
@@ -598,7 +790,7 @@ export const CartComponent = () => {
                                                     size="sm"
                                                     className="mt-2 border-rose-200 text-rose-700 hover:bg-rose-50"
                                                     disabled={loading}
-                                                    onClick={() => removeCartLineById(w.productId!)}
+                                                    onClick={() => removeCartLineById(w.productId!, w.variantId)}
                                                 >
                                                     Remove {w.productName} from cart
                                                 </Button>
@@ -672,6 +864,86 @@ export const CartComponent = () => {
             <div className={cn("w-full lg:flex lg:items-start justify-center gap-8 lg:gap-10 py-8 xl:px-32 lg:px-24 md:px-10 px-5 bg-gray-50", cartdata.length === 0 && 'hidden')}>
 
                 <div className="w-full lg:w-[38%] xl:max-w-md order-2 space-y-5 min-w-0">
+
+                    {isGuest ? (
+                        <Card className="border-rose-200/80 bg-rose-50/50 shadow-sm overflow-hidden raleway">
+                            <CardContent className="p-4 sm:p-5 flex flex-col gap-2">
+                                <p className="text-sm font-medium text-rose-800">
+                                    You&apos;re shopping as a guest
+                                </p>
+                                <p className="text-xs text-neutral-700">
+                                    You can place this order without creating an account.{" "}
+                                    <button
+                                        type="button"
+                                        className="underline underline-offset-2 hover:text-rose-700"
+                                        onClick={() => {
+                                            const fullPathWithQuery =
+                                                window.location.pathname + window.location.search;
+                                            router.push(
+                                                `/sign-in?redirect_url=${encodeURIComponent(fullPathWithQuery)}`
+                                            );
+                                        }}
+                                    >
+                                        Sign in
+                                    </button>{" "}
+                                    for faster checkout next time and to track all your orders.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    ) : null}
+
+                    {isGuest ? (
+                        <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                            <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
+                                <CardTitle className="text-base font-semibold">Your contact details</CardTitle>
+                                <CardDescription className="text-xs">
+                                    We use these to send order updates and confirm delivery.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-4 sm:p-5 pt-0">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="guest-name" className="text-sm font-medium">
+                                            Full name
+                                        </Label>
+                                        <Input
+                                            id="guest-name"
+                                            className="bg-white"
+                                            autoComplete="name"
+                                            placeholder="e.g. Asha Sharma"
+                                            value={guestContact.fullName}
+                                            onChange={(e) =>
+                                                setGuestContact({
+                                                    ...guestContact,
+                                                    fullName: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="guest-phone" className="text-sm font-medium">
+                                            Phone (10 digits)
+                                        </Label>
+                                        <Input
+                                            id="guest-phone"
+                                            className="bg-white"
+                                            inputMode="numeric"
+                                            autoComplete="tel"
+                                            placeholder="9876543210"
+                                            maxLength={10}
+                                            value={guestContact.phone}
+                                            onChange={(e) =>
+                                                setGuestContact({
+                                                    ...guestContact,
+                                                    phone: e.target.value.replace(/\D/g, "").slice(0, 10),
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : null}
 
                     <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
@@ -905,6 +1177,12 @@ export const CartComponent = () => {
                                         {loading && <Loader className="size-3 animate-spin ml-2" />}
                                     </Button>
                                 )}
+                                {isGuest ? (
+                                    <p className="text-[11px] text-neutral-500 mt-2 raleway leading-snug">
+                                        Checking out as guest. Order updates will be sent to the phone
+                                        number you provide.
+                                    </p>
+                                ) : null}
                             </div>
                         </CardContent>
                     </Card>
@@ -922,17 +1200,19 @@ export const CartComponent = () => {
                                 cartdata.map((item) => {
                                     const isOutOfStock = item.availableStock === 0;
                                     const maxSelectable = Math.min(10, item.availableStock ?? 10);
+                                    const displayImage = item.variantImage || item.images[0];
+                                    const variantAttributes = item.variantAttributes ?? [];
                                     return (
                                     <div
                                         className={cn(
                                             "w-full sm:flex gap-3 border-b last:border-b-0 rounded-lg p-2 -mx-2",
                                             isOutOfStock && "border border-rose-200 bg-rose-50/60"
                                         )}
-                                        key={item.productId}
+                                        key={`${item.productId}-${item.variantId ?? ""}`}
                                     >
                                         <div className="sm:size-[120px] size-[100px] relative rounded-xl overflow-hidden shrink-0">
                                             <Image
-                                                src={item.images[0]}
+                                                src={displayImage}
                                                 alt="productImage"
                                                 className="object-cover object-center"
                                                 fill
@@ -950,6 +1230,19 @@ export const CartComponent = () => {
                                             <p className="text-xs font-[300] raleway text-neutral-600 ">{
                                                 item.shortDescription
                                             }</p>
+                                            {variantAttributes.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {variantAttributes.map((attr) => (
+                                                        <span
+                                                            key={`${item.productId}-${attr.name}`}
+                                                            className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] raleway text-neutral-700"
+                                                        >
+                                                            <span className="capitalize text-neutral-500">{attr.name}:</span>
+                                                            <span className="font-medium capitalize text-neutral-800">{attr.value}</span>
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                             <div className="flex items-center gap-3 mt-2 flex-wrap">
                                                 <p className="text-rose-600 font-[600] text-sm exo">{"\u20B9"} {
                                                     item.originalPrice * item.quantity
@@ -977,6 +1270,16 @@ export const CartComponent = () => {
                                                         toast.error("You cannot change quantity for Buy Now product");
                                                         return;
                                                     }
+                                                    if (isGuest) {
+                                                        guestSetQuantity(
+                                                            item.productId,
+                                                            item.variantId ?? "",
+                                                            parseInt(value)
+                                                        );
+                                                        toast.success("Quantity updated");
+                                                        setIsChanged(!isChanged);
+                                                        return;
+                                                    }
                                                     setLoading(true);
                                                     fetch(`/api/cart`, {
                                                         method: "PUT",
@@ -986,6 +1289,7 @@ export const CartComponent = () => {
                                                         body: JSON.stringify({
                                                             phone: user?.primaryPhoneNumber?.phoneNumber,
                                                             productId: item.productId,
+                                                            variantId: item.variantId ?? "",
                                                             quantity: parseInt(value),
                                                         }),
                                                     }).then(async (res) => {
@@ -1040,8 +1344,9 @@ export const CartComponent = () => {
                                                     {
                                                         setIsOpenAlert(true);
                                                         setProductIdToDelete({
-                                                            image: item.images[0],
+                                                            image: item.variantImage || item.images[0],
                                                             productId: item.productId,
+                                                            variantId: item.variantId ?? "",
                                                             productName: item.productName,
                                                         });
                                                     }

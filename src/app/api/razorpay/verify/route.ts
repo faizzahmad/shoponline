@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDb } from "@/lib/connectToDb";
 import Order from "@/lib/models/order-model";
 import { decrementStockForOrderItems } from "@/lib/inventory";
+import { syncOrderToShiprocket } from "@/lib/shiprocket";
 
 export async function POST(request: NextRequest) {
     try {
@@ -54,13 +55,17 @@ export async function POST(request: NextRequest) {
         }
 
         if (order.paymentStatus === "Paid" && order.inventoryAdjusted) {
+            void syncOrderToShiprocket(orderId).catch((err) =>
+                console.error("[Shiprocket] Prepaid retry sync failed:", err)
+            );
             return NextResponse.json({ success: true }, { status: 200 });
         }
 
         const items = Array.isArray(order.items)
             ? order.items.map(
-                  (line: { productId: string; quantity: number }) => ({
+                  (line: { productId: string; variantId?: string; quantity: number }) => ({
                       productId: String(line.productId),
+                      variantId: line.variantId ? String(line.variantId) : "",
                       quantity: Number(line.quantity),
                   })
               )
@@ -88,6 +93,10 @@ export async function POST(request: NextRequest) {
                 razorpayPaymentId: razorpay_payment_id,
             });
         }
+
+        void syncOrderToShiprocket(orderId).catch((err) =>
+            console.error("[Shiprocket] Prepaid sync failed:", err)
+        );
 
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {

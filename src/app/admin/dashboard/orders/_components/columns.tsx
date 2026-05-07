@@ -14,6 +14,9 @@ import {
 
 export type OrderItemLine = {
     productId: string;
+    variantId?: string;
+    variantAttributes?: Array<{ name: string; value: string }>;
+    variantImage?: string;
     quantity: number;
     originalPrice: number;
     discountPrice: number;
@@ -41,6 +44,14 @@ export type OrderRow = {
     deliveryStatus: string;
     paymentStatus: string;
     createdAt?: string;
+    shiprocketOrderId?: string | null;
+    shiprocketShipmentId?: string | number | null;
+    shiprocketSyncedAt?: string | null;
+    shiprocketSyncError?: string | null;
+    awbCode?: string | null;
+    courierName?: string | null;
+    courierCompanyId?: string | number | null;
+    awbAssignedAt?: string | null;
 };
 
 export const ORDER_STATUS_OPTIONS = [

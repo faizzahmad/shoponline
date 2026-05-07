@@ -7,6 +7,14 @@ type ProductLeanDoc = {
     productStock?: number;
     originalPrice?: number;
     discountPrice?: number;
+    variantCombinations?: Array<{
+        variantId: string;
+        productStock?: number;
+        originalPrice?: number;
+        discountPrice?: number;
+        image?: string;
+        attributes?: Array<{ name: string; value: string }>;
+    }>;
     productName?: string;
     images?: string[];
     productCategory?: string;
@@ -15,10 +23,17 @@ type ProductLeanDoc = {
     productSubCategoryId?: unknown;
     shortDescription?: string;
     longDescription?: string;
+    length?: number;
+    breadth?: number;
+    height?: number;
+    weight?: number;
 };
 
 export type ClientOrderLine = {
     productId: string;
+    variantId?: string;
+    variantAttributes?: Array<{ name: string; value: string }>;
+    variantImage?: string;
     quantity: number;
     originalPrice: number;
     discountPrice: number;
@@ -30,6 +45,10 @@ export type ClientOrderLine = {
     productSubCategoryId: string;
     shortDescription: string;
     longDescription: string;
+    length?: number;
+    breadth?: number;
+    height?: number;
+    weight?: number;
 };
 
 export type ValidateOrderResult =
@@ -66,8 +85,17 @@ export async function validateAndNormalizeOrderItems(
             };
         }
         const product = raw as ProductLeanDoc;
+        const requestedVariantId =
+            typeof line.variantId === "string" ? line.variantId.trim() : "";
+        const variant = requestedVariantId
+            ? (product.variantCombinations ?? []).find(
+                  (v) => String(v.variantId) === requestedVariantId
+              )
+            : null;
 
-        const stock = Number(product.productStock ?? 0);
+        const stock = Number(
+            variant ? variant.productStock ?? 0 : product.productStock ?? 0
+        );
         const qty = Math.max(1, Math.floor(Number(line.quantity)));
         const displayName = String(product.productName ?? line.productName);
         if (stock < 1) {
@@ -85,13 +113,20 @@ export async function validateAndNormalizeOrderItems(
             };
         }
 
-        const originalPrice = Number(product.originalPrice ?? 0);
-        const discountPrice = Number(product.discountPrice ?? 0);
+        const originalPrice = Number(
+            variant ? variant.originalPrice ?? 0 : product.originalPrice ?? 0
+        );
+        const discountPrice = Number(
+            variant ? variant.discountPrice ?? 0 : product.discountPrice ?? 0
+        );
         const lineTotal = originalPrice * qty;
         totalAmount += lineTotal;
 
         normalized.push({
             productId: String(product._id),
+            variantId: requestedVariantId,
+            variantAttributes: variant?.attributes ?? [],
+            variantImage: variant?.image ?? "",
             quantity: qty,
             originalPrice,
             discountPrice,
@@ -103,6 +138,10 @@ export async function validateAndNormalizeOrderItems(
             productSubCategoryId: String(product.productSubCategoryId ?? ""),
             shortDescription: product.shortDescription ?? "",
             longDescription: product.longDescription ?? "",
+            length: Number(product.length ?? 0),
+            breadth: Number(product.breadth ?? 0),
+            height: Number(product.height ?? 0),
+            weight: Number(product.weight ?? 0),
         });
     }
 
@@ -111,6 +150,7 @@ export async function validateAndNormalizeOrderItems(
 
 type OrderItemLike = {
     productId: string;
+    variantId?: string;
     quantity: number;
 };
 
@@ -122,19 +162,35 @@ export async function decrementStockForOrderItems(
     session?: mongoose.ClientSession | null
 ): Promise<{ ok: true } | { ok: false; message: string }> {
     for (const line of items) {
-        const updated = await Product.findOneAndUpdate(
-            {
-                _id: line.productId,
-                productStock: { $gte: line.quantity },
-            },
-            {
-                $inc: {
-                    productStock: -line.quantity,
-                    totalSales: line.quantity,
-                },
-            },
-            { new: true, session: session ?? undefined }
-        );
+        const hasVariant = Boolean(line.variantId);
+        const updated = hasVariant
+            ? await Product.findOneAndUpdate(
+                  {
+                      _id: line.productId,
+                      "variantCombinations.variantId": line.variantId,
+                      "variantCombinations.productStock": { $gte: line.quantity },
+                  },
+                  {
+                      $inc: {
+                          "variantCombinations.$.productStock": -line.quantity,
+                          totalSales: line.quantity,
+                      },
+                  },
+                  { new: true, session: session ?? undefined }
+              )
+            : await Product.findOneAndUpdate(
+                  {
+                      _id: line.productId,
+                      productStock: { $gte: line.quantity },
+                  },
+                  {
+                      $inc: {
+                          productStock: -line.quantity,
+                          totalSales: line.quantity,
+                      },
+                  },
+                  { new: true, session: session ?? undefined }
+              );
         if (!updated) {
             return {
                 ok: false,
@@ -150,6 +206,22 @@ export async function incrementStockForOrderItems(
     session?: mongoose.ClientSession | null
 ): Promise<void> {
     for (const line of items) {
+        if (line.variantId) {
+            await Product.findOneAndUpdate(
+                {
+                    _id: line.productId,
+                    "variantCombinations.variantId": line.variantId,
+                },
+                {
+                    $inc: {
+                        "variantCombinations.$.productStock": line.quantity,
+                        totalSales: -line.quantity,
+                    },
+                },
+                { session: session ?? undefined }
+            );
+            continue;
+        }
         await Product.findByIdAndUpdate(
             line.productId,
             {

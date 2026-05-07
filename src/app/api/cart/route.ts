@@ -57,14 +57,36 @@ export async function GET(req: Request) {
         const items = await Promise.all(
             cart.items.map(async (item: Record<string, unknown>) => {
                 const pid = String(item.productId);
-                const p = (await Product.findById(pid).select("productStock").lean()) as {
+                const variantId = String(item.variantId ?? "");
+                const p = (await Product.findById(pid)
+                    .select("productStock variantCombinations length breadth height weight")
+                    .lean()) as {
                     productStock?: number;
+                    variantCombinations?: Array<{
+                        variantId: string;
+                        productStock?: number;
+                        image?: string;
+                    }>;
+                    length?: number;
+                    breadth?: number;
+                    height?: number;
+                    weight?: number;
                 } | null;
-                const availableStock = p ? Number(p.productStock ?? 0) : 0;
+                const matchedVariant = variantId
+                    ? p?.variantCombinations?.find((v) => String(v.variantId) === variantId)
+                    : undefined;
+                const availableStock = p
+                    ? Number(matchedVariant?.productStock ?? p.productStock ?? 0)
+                    : 0;
                 return {
                     ...item,
                     productId: pid,
                     availableStock,
+                    variantImage: (item.variantImage as string) || matchedVariant?.image || "",
+                    length: Number(item.length ?? p?.length ?? 0),
+                    breadth: Number(item.breadth ?? p?.breadth ?? 0),
+                    height: Number(item.height ?? p?.height ?? 0),
+                    weight: Number(item.weight ?? p?.weight ?? 0),
                 };
             })
         );
@@ -83,7 +105,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
     const body = await req.json();
-    const { phone, productId } = body;
+    const { phone, productId, variantId } = body;
     if (!phone || !productId) {
         return new Response(JSON.stringify({ error: "Phone number and product ID are required" }), {
             status: 400,
@@ -91,7 +113,7 @@ export async function DELETE(req: Request) {
     }
     await connectToDb();
     try {
-        await handelRemoveItemFromcart(phone, productId);
+        await handelRemoveItemFromcart(phone, productId, variantId);
         return new Response(JSON.stringify({ message: "Item removed from cart successfully"}), {
             status: 200,
         });
@@ -105,7 +127,7 @@ export async function DELETE(req: Request) {
 
 export async function PUT(req: Request) {
     const body = await req.json();
-    const { phone, productId, quantity } = body;
+    const { phone, productId, variantId, quantity } = body;
     if (!phone || !productId || quantity === undefined) {   
         return new Response(JSON.stringify({ error: "Phone number, product ID, and quantity are required" }), {
             status: 400,
@@ -113,7 +135,7 @@ export async function PUT(req: Request) {
     }
     await connectToDb();
     try {
-        const response = await chnageCount(phone, productId, quantity);
+        const response = await chnageCount(phone, productId, quantity, variantId);
         return new Response(JSON.stringify(response), {
             status: 200,
         });
