@@ -68,7 +68,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
     const [loader, setLoader] = useState<boolean>(true);
     const [cartLoader, setCartLoader] = useState<boolean>(false);
     const router = useRouter();
-    const { isSignedIn, isLoaded, user } = useUser();
+    const { isSignedIn, user } = useUser();
     const { setIsChanged, isChanged } = useIsChanged((state) => state);
     const addGuestItem = useGuestCart((s) => s.addItem);
     const handelFetchProduct = async () => {
