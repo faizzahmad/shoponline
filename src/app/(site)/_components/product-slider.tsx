@@ -14,6 +14,7 @@ interface productsProps {
     price: number;
     discountedPrice?: number;
     productStock?: number;
+    description?: string;
 }
 
 interface ProductSliderProps {
@@ -23,8 +24,8 @@ interface ProductSliderProps {
 
 export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) => {
     return (
-        <div className="my-10 w-full lg:px-10 px-5">
-            <h5 className=" md:text-[2rem] text-[1.5rem] font-[700] exo mb-5">{carouselTitle}</h5>
+        <div className="my-8 w-full px-5 sm:my-12 lg:px-10">
+            <h5 className="mb-4 text-lg font-[700] text-[#244d7c] exo sm:mb-5 sm:text-xl md:text-[2rem]">{carouselTitle}</h5>
             <div className="w-full">
                 <Carousel>
                     <CarouselContent>
@@ -37,6 +38,7 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
                                     price={item.price}
                                     discountedPrice={item.discountedPrice}
                                     productStock={item.productStock}
+                                    description={item.description}
                                     divCalssName="sm:w-full w-full"
                                     imageContainerClassName="relative w-full aspect-[4/5] overflow-hidden rounded-xl"
                                 />
@@ -51,7 +53,7 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
                                         : "/shop?sortBy=top-selling"
                                 }
                             >
-                                <div className="w-full p-4 shadow-sm rounded-xl bg-indigo-50 flex gap-2 items-center justify-center h-full text-rose-600 text-2xl font-semibold raleway">
+                                <div className="flex h-full w-full items-center justify-center gap-2 rounded-xl border border-[#244d7c]/20 bg-[#eaf0f7] p-3 text-base font-semibold text-[#244d7c] shadow-sm transition hover:bg-[#dbe7f4] raleway sm:p-4 sm:text-2xl">
                                     View All
                                     <ArrowRight />
                                 </div>

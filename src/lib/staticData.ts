@@ -219,25 +219,25 @@ export const demoCategories = [
 ]
 
 export const demoBanners = [
-    {
-        img: "https://3903pqvnfg.ufs.sh/f/z0RMgQlNXvIcPHSc9OKgzjS45exYiMcvyGp2XmIu9ahkZtLb",
+      {
+        img: "https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVje1yMLfWZ3S0QqlJHevtdEoLDKwnNrbAua7cpU",
         urlLink: "/shop",
-        title: "Celebrate every moment",
-        subtitle: "Curated party essentials, delivered with care.",
-        ctaLabel: "Shop the collection",
+        title: "New arrivals for men and women",
+        subtitle: "Discover weekly drops designed to keep your looks fresh all season long.",
+        ctaLabel: "Explore new arrivals",
     },
     {
-        img: "https://3903pqvnfg.ufs.sh/f/z0RMgQlNXvIct10uwrpBNn0tkTl1prZxDmiGaIq8QvjSybeK",
+        img: "https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVjepiVQ9dsRjouSFf6H5akQUXTLrlJygsGndxCc",
         urlLink: "/shop",
-        title: "New arrivals are here",
-        subtitle: "Fresh decor, balloons, and gifts for your next event.",
-        ctaLabel: "Explore new in",
+        title: "Modern styles for everyday confidence",
+        subtitle: "Clean cuts, elevated basics, and trend-forward looks curated for every wardrobe.",
+        ctaLabel: "Shop clothing",
     },
     {
-        img: "https://3903pqvnfg.ufs.sh/f/z0RMgQlNXvIcBX8qo4Emc7r0xE68sKqDf5JHTPCYyn1MbOWi",
+        img: "https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVje0F4VkqierdMHOnVflJRWGIcpYDjQ5i6uU0PT",
         urlLink: "/shop",
-        title: "Party-ready in one click",
-        subtitle: "Quality picks at friendly prices — browse bestsellers.",
+        title: "Premium quality, easy everyday wear",
+        subtitle: "From workdays to weekends, find pieces that balance comfort and style.",
         ctaLabel: "View bestsellers",
     },
 ]

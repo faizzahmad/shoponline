@@ -28,11 +28,11 @@ export type CartSyncWarning = {
  * Refresh cart line prices from Product documents and enforce stock limits.
  * Out-of-stock lines stay in the cart so the customer can remove them manually.
  */
-export async function syncCartWithProducts(phone: string): Promise<CartSyncWarning[]> {
+export async function syncCartWithProducts(userEmail: string): Promise<CartSyncWarning[]> {
     await connectToDb();
     const warnings: CartSyncWarning[] = [];
 
-    const cart = await Cart.findOne({ userPhone: phone });
+    const cart = await Cart.findOne({ userEmail });
     if (!cart || !cart.items.length) {
         return warnings;
     }

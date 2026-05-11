@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const cartSchema = new mongoose.Schema({
-  userPhone: { type: String, required: true },
+  /** Signed-in cart owner — Clerk primary email (normalized lowercase). */
+  userEmail: { type: String, required: true, index: true },
   items: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, required: true },

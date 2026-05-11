@@ -39,7 +39,7 @@ export const ShopMobileCategoryFilter = ({
                 </DrawerTrigger>
                 <DrawerContent className="max-h-[90vh]">
                     <DrawerHeader className="text-left">
-                        <DrawerTitle className="exo text-xl font-[700]">
+                        <DrawerTitle className="exo text-lg font-[700] sm:text-xl">
                             Categories
                         </DrawerTitle>
                     </DrawerHeader>
@@ -48,7 +48,7 @@ export const ShopMobileCategoryFilter = ({
                     </div>
                     <div className="border-t p-4">
                         <DrawerClose asChild>
-                            <Button className="w-full bg-rose-600 hover:bg-rose-700">
+                            <Button className="w-full bg-[#244d7c] hover:bg-[#426b9a]">
                                 Done
                             </Button>
                         </DrawerClose>

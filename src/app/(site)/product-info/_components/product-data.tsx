@@ -12,11 +12,12 @@ import { Loader, Minus, Plus, Share2, ShoppingBag, ShoppingBasket } from "lucide
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FaFacebook, FaWhatsapp } from "react-icons/fa"
 import { toast } from "sonner";
 import { ProductReviewsSection } from "./product-reviews-section";
 import { RelatedProductsSlider } from "./related-products-slider";
+import { sanitizeRichText } from "@/utils/sanitize-rich-text";
 
 
 type Variant = {
@@ -61,7 +62,7 @@ interface ProductDataProps {
 }
 
 export const ProductData = ({ slug }: ProductDataProps) => {
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [selectedQunatity, setSelectedQunatity] = useState(1);
     const [productInfo, setProductInfo] = useState<ProductInfo>({} as ProductInfo);
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -192,6 +193,10 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
     );
     const isSelectedOutOfStock = activeStock < 1;
     const maxSelectableQty = isSelectedOutOfStock ? 1 : Math.min(10, activeStock);
+    const sanitizedLongDescription = useMemo(
+        () => sanitizeRichText(productInfo?.longDescription ?? ""),
+        [productInfo?.longDescription]
+    );
 
     const handelAddToCart = async () => {
         if (isSelectedOutOfStock) {
@@ -246,7 +251,10 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
             const res = await fetch("/api/cart", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone: user?.phoneNumbers[0].phoneNumber, items: productItem }),
+                body: JSON.stringify({
+                    email: user?.primaryEmailAddress?.emailAddress ?? "",
+                    items: productItem,
+                }),
             });
             const data = await res.json();
             if (res.ok) {
@@ -321,15 +329,21 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                     </div>
                 )
             }
-            <div className="w-full xl:px-36 lg:px-28 md:px-16 sm:px-10 px-10 md:py-16 py-8">
+            <div className="w-full xl:px-28 lg:px-16 md:px-10 sm:px-8 px-5 md:py-14 py-8 bg-[#f7fafd]">
 
-                <div className="w-full lg:flex gap-10 items-center ">
-                    <div className="w-full max-w-[500px] shrink-0">
+                <div className="w-full lg:flex gap-8 items-start rounded-2xl border border-[#244d7c]/15 bg-white p-4 md:p-5 shadow-sm">
+                    <div className="w-full max-w-[560px] shrink-0 lg:sticky lg:top-24 self-start">
                         {
                             productInfo.images && productInfo.images.length > 0 && (
-                                <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                                <div className="relative w-full aspect-square rounded-xl overflow-hidden">
                                     <Image
-                                        src={selectedVariant?.image || productInfo?.images[selectedImageIndex]}
+                                        src={
+                                            (selectedImageIndex !== null
+                                                ? productInfo?.images[selectedImageIndex]
+                                                : undefined) ||
+                                            selectedVariant?.image ||
+                                            productInfo?.images?.[0]
+                                        }
                                         alt="productImage"
                                         className="object-cover object-center"
                                         fill
@@ -351,10 +365,18 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                     <CarouselContent >
                                         {
                                             productInfo.images && productInfo.images.length > 0 && productInfo?.images.map((image, index) => (
-                                                <CarouselItem className="lg:basis-[100px] basis-[80px]" key={index} onClick={() => setSelectedImageIndex(index)}>
-                                                    <div className={"lg:size-[90px] size-[70px] overflow-hidden relative rounded-lg"}>
+                                                <CarouselItem className="lg:basis-[100px] basis-[80px]" key={index}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setSelectedImageIndex(index)}
+                                                        className={`lg:size-[90px] size-[70px] overflow-hidden relative rounded-lg border-2 ${
+                                                            selectedImageIndex === index
+                                                                ? "border-[#244d7c]"
+                                                                : "border-transparent"
+                                                        }`}
+                                                    >
                                                         <Image src={image} alt="productImage" className="rounded-lg object-cover object-center" fill sizes="90px" />
-                                                    </div>
+                                                    </button>
                                                 </CarouselItem>
                                             ))
                                         }
@@ -368,19 +390,19 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                         </div>
                     </div>
 
-                    <div className="flex-1 mt-5 lg:mt-0">
-                        <h6 className="uppercase text-sm font-[700] text-rose-600 raleway">
+                    <div className="flex-1 mt-5 lg:mt-0 min-w-0 lg:border-l lg:border-[#244d7c]/10 lg:pl-7">
+                        <h6 className="uppercase text-[10px] font-[700] tracking-[0.16em] text-[#426b9a] raleway sm:text-xs sm:tracking-[0.2em]">
                             {productInfo.productCategory} / {productInfo.productSubCategory}
                         </h6>
                         <div className="flex mt-4  justify-between items-center">
-                            <h4 className=" md:text-3xl text-xl font-[700] exo">
+                            <h4 className="text-xl font-[700] leading-snug text-[#244d7c] exo sm:text-2xl md:text-4xl">
 
                                 {productInfo.productName}
                             </h4>
                             <DropdownMenu>
-                                <DropdownMenuTrigger className=" bg-rose-600 text-white shadow-sm border rounded px-4 py-1 md:text-sm text-xs exo flex gap-2 items-center">Share  <Share2 className="size-4" /></DropdownMenuTrigger>
+                                <DropdownMenuTrigger className="bg-[#244d7c] text-white shadow-sm border border-[#244d7c] rounded-full px-4 py-1.5 md:text-sm text-xs exo flex gap-2 items-center hover:bg-[#426b9a] transition">Share  <Share2 className="size-4" /></DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    <DropdownMenuLabel className="exo text-base">
+                                    <DropdownMenuLabel className="exo text-sm sm:text-base">
                                         Share this Products
                                         <br />
                                         <span className="raleway text-xs text-muted-foreground font-[300]">
@@ -397,7 +419,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                             <FaWhatsapp />
                                         </Link>
 
-                                        <Link target="_blank" href={facebookUrl} className="size-12 flex items-center justify-center text-white bg-blue-500 text-3xl rounded">
+                                        <Link target="_blank" href={facebookUrl} className="size-12 flex items-center justify-center text-white bg-[#244d7c] text-3xl rounded">
                                             <FaFacebook />
                                         </Link>
                                     </DropdownMenuItem>
@@ -406,18 +428,33 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                             </DropdownMenu>
                         </div>
 
-                        <p className="raleway md:text-base text-sm text-neutral-700 font-[300] mt-4">
-                            {
-                                productInfo.longDescription
-                            }
-                        </p>
+                        <div className="mt-4 rounded-xl bg-[#f4f8fc] p-4 border border-[#244d7c]/10">
+                            <div className="flex items-center gap-3 mt-1">
+                                <p className="text-[#244d7c] font-[700] text-xl exo sm:text-2xl">{"\u20B9"}
+                                    {activeOriginalPrice}
+                                </p>
+                                <p className="text-neutral-500 font-[400] text-sm exo line-through sm:text-base">{"\u20B9"}
+                                    {activeDiscountPrice}
+                                </p>
+                                <p className="text-[#426b9a] font-[600] text-sm raleway">
+                                    {activeDiscountPrice > 0
+                                        ? Math.round(
+                                              ((activeDiscountPrice - activeOriginalPrice) /
+                                                  activeDiscountPrice) *
+                                                  100
+                                          )
+                                        : 0}
+                                    % off
+                                </p>
+                            </div>
+                            <p className="text-xs text-neutral-500 mt-2 raleway">Inclusive of all taxes</p>
+                        </div>
 
-
-                        <div className="my-4">
+                        <div className="my-6 border-t border-[#244d7c]/10 pt-5">
                             {hasNewVariants &&
                                 optionsByAttribute.map((group) => (
                                     <div key={group.name} className="mb-3">
-                                        <p className="text-sm font-semibold exo mb-2 capitalize">{group.name}</p>
+                                <p className="text-sm font-semibold exo mb-2 capitalize text-[#244d7c]">{group.name}</p>
                                         <div className="flex flex-wrap gap-2">
                                             {group.options.map((option) => {
                                                 const isSelected = selectedAttributes[group.name] === option.value;
@@ -432,15 +469,16 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                                             type="button"
                                                             className={`flex flex-col items-center gap-1 rounded-md border p-1 transition ${
                                                                 isSelected
-                                                                    ? "border-rose-600 bg-rose-50"
+                                                                    ? "border-[#244d7c] bg-[#eef4fb]"
                                                                     : "border-neutral-300"
                                                             }`}
-                                                            onClick={() =>
+                                                            onClick={() => {
                                                                 setSelectedAttributes((prev) => ({
                                                                     ...prev,
                                                                     [group.name]: option.value,
-                                                                }))
-                                                            }
+                                                                }));
+                                                                setSelectedImageIndex(null);
+                                                            }}
                                                         >
                                                             <div className="relative size-16 overflow-hidden rounded">
                                                                 <Image
@@ -453,7 +491,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                                             </div>
                                                             <span
                                                                 className={`text-xs capitalize ${
-                                                                    isSelected ? "text-rose-600" : "text-neutral-700"
+                                                                    isSelected ? "text-[#244d7c]" : "text-neutral-700"
                                                                 }`}
                                                             >
                                                                 {option.value}
@@ -465,17 +503,18 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                                     <button
                                                         key={`${group.name}-${option.value}`}
                                                         type="button"
-                                                        className={`px-3 py-1.5 rounded border text-sm ${
+                                                        className={`px-3 py-1.5 rounded-full border text-sm ${
                                                             isSelected
-                                                                ? "border-rose-600 text-rose-600 bg-rose-50"
+                                                                ? "border-[#244d7c] text-[#244d7c] bg-[#eef4fb]"
                                                                 : "border-neutral-300 text-neutral-700"
                                                         }`}
-                                                        onClick={() =>
+                                                        onClick={() => {
                                                             setSelectedAttributes((prev) => ({
                                                                 ...prev,
                                                                 [group.name]: option.value,
-                                                            }))
-                                                        }
+                                                            }));
+                                                            setSelectedImageIndex(null);
+                                                        }}
                                                     >
                                                         {option.value}
                                                     </button>
@@ -486,7 +525,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                 ))}
 
                             {productInfo?.varients?.some((variantGroup) => variantGroup.products.length > 0) && (
-                                <h5 className="text-lg mb-4 exo font-semibold">Variants</h5>
+                                <h5 className="text-lg mb-4 exo font-semibold text-[#244d7c]">More Colors / Styles</h5>
                             )}
                             <div className="w-full flex flex-wrap gap-4">
                                 {productInfo?.varients?.map((variantGroup: { products: any[] }) =>
@@ -494,7 +533,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                         <div key={product.productId} className="flex flex-col items-center">
                                             <Link href={`/product-info/${product.productId}`} target="_blank">
                                                 <div className="w-[60px]">
-                                                    <div className="w-full h-[60px] relative border-2 border-rose-600 rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
+                                                    <div className="w-full h-[60px] relative border-2 border-[#244d7c] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
                                                         <Image
                                                             src={product.image}
                                                             alt={product.pname}
@@ -516,51 +555,25 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                         </div>
 
 
-                        <div className="mt-4">
-                            <div className="flex items-center gap-3 mt-2">
-                                <p className="text-rose-600 font-[600] text-lg exo">{"\u20B9"}
-                                    {
-                                        activeOriginalPrice
-                                    }
-                                </p>
-                                <p className="text-neutral-500 font-[300] text-base exo line-through">{"\u20B9"}
-                                    {
-                                        activeDiscountPrice
-                                    }
-                                </p>
-                                <p className="text text-rose-400 font-[300] text-base raleway">
-                                    {
-                                        activeDiscountPrice > 0
-                                            ? Math.round(
-                                                  ((activeDiscountPrice - activeOriginalPrice) /
-                                                      activeDiscountPrice) *
-                                                      100
-                                              )
-                                            : 0
-                                    }
-                                    % off</p>
-                            </div>
-                        </div>
-
                         {isSelectedOutOfStock ? (
-                            <p className="mt-4 text-sm font-medium text-rose-700 raleway rounded-md border border-rose-200 bg-rose-50 px-3 py-2">
+                            <p className="mt-4 text-sm font-medium text-[#244d7c] raleway rounded-md border border-[#244d7c]/20 bg-[#eef4fb] px-3 py-2">
                                 This product is out of stock.
                             </p>
                         ) : null}
 
-                        <div className="mt-4 flex gap-4 items-center">
+                        <div className="mt-5 flex gap-4 items-center">
 
                             <div className="flex mt-1">
-                                <button className="size-10 flex  items-center justify-center bg-indigo-50 border cursor-pointer text-rose-600 rounded-tl rounded-bl"
+                                <button className="size-10 flex items-center justify-center bg-white border border-[#244d7c]/20 cursor-pointer text-[#244d7c] rounded-tl rounded-bl"
                                     disabled={selectedQunatity <= 1 || isSelectedOutOfStock}
                                     onClick={() => setSelectedQunatity(selectedQunatity > 1 ? selectedQunatity - 1 : 1)}
                                 >
                                     <Minus className="size-5" />
                                 </button>
-                                <div className="size-10 text-lg flex  items-center justify-center bg-indigo-50 border-y ">
+                                <div className="size-10 text-lg flex items-center justify-center bg-white border-y border-[#244d7c]/20 ">
                                     {selectedQunatity}
                                 </div>
-                                <button className="size-10 text-sm flex  items-center justify-center bg-indigo-50 border cursor-pointer text-rose-600 rounded-tr rounded-br"
+                                <button className="size-10 text-sm flex items-center justify-center bg-white border border-[#244d7c]/20 cursor-pointer text-[#244d7c] rounded-tr rounded-br"
                                     disabled={isSelectedOutOfStock}
                                     onClick={() => {
                                         if (selectedQunatity < maxSelectableQty) {
@@ -601,7 +614,7 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                         <div className="mt-4">
                             <Button
                                 disabled={cartLoader || isSelectedOutOfStock}
-                                className="w-full h-[42px] rounded-md raleway uppercase bg-indigo-200 text-black hover:bg-indigo-300 "
+                                className="w-full h-[42px] rounded-md raleway uppercase bg-[#c7d9ec] text-[#244d7c] hover:bg-[#b2cce4] "
                                 onClick={async () => {
                                     await handelAddToCart();
                                     router.push(`/cart?type=buy-now&productId=${productInfo._id}`);
@@ -617,8 +630,28 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
                                 <ShoppingBasket />
                             </Button>
                         </div>
+
+                        <div className="mt-5 grid grid-cols-3 gap-3">
+                            <div className="rounded-lg border border-[#244d7c]/15 bg-[#f8fbff] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#244d7c]">100% Original</p>
+                            </div>
+                            <div className="rounded-lg border border-[#244d7c]/15 bg-[#f8fbff] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#244d7c]">Easy Returns</p>
+                            </div>
+                            <div className="rounded-lg border border-[#244d7c]/15 bg-[#f8fbff] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#244d7c]">Fast Delivery</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <section className="mt-8 rounded-2xl border border-[#244d7c]/15 bg-white p-5 md:p-7 shadow-sm">
+                    <h5 className="mb-4 text-lg font-semibold text-[#244d7c] raleway sm:text-xl">Product Details</h5>
+                    <div
+                        className="rich-long-desc max-w-none text-sm leading-relaxed text-neutral-700 md:text-[15px] [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-xl [&_a]:text-[#244d7c] [&_a]:underline"
+                        dangerouslySetInnerHTML={{ __html: sanitizedLongDescription }}
+                    />
+                </section>
 
                 {!loader && productInfo._id && (
                     <>

@@ -54,10 +54,10 @@ type ProductLeanDoc = {
     weight?: number;
 };
 
-export const AddtoCart = async (phone: string, items: productItem) => {
+export const AddtoCart = async (userEmail: string, items: productItem) => {
     await connectToDb();
-    if (!phone) {
-        throw new Error("Phone number and product ID are required");
+    if (!userEmail) {
+        throw new Error("Email and product ID are required");
     }
     try {
         if (!mongoose.Types.ObjectId.isValid(items.productId)) {
@@ -85,7 +85,7 @@ export const AddtoCart = async (phone: string, items: productItem) => {
             throw new Error("This product is out of stock");
         }
 
-        const cart = await Cart.findOne({ userPhone: phone });
+        const cart = await Cart.findOne({ userEmail });
         const existingItemIndex = cart
             ? cart.items.findIndex(
                   (item: productItem) =>
@@ -128,7 +128,7 @@ export const AddtoCart = async (phone: string, items: productItem) => {
         };
 
         if (!cart) {
-            const newCart = new Cart({ userPhone: phone, items: [line] });
+            const newCart = new Cart({ userEmail, items: [line] });
             await newCart.save();
             revalidatePath("/cart");
             revalidatePath("/");
@@ -159,16 +159,16 @@ export const AddtoCart = async (phone: string, items: productItem) => {
 
 
 export const handelRemoveItemFromcart = async (
-    phone: string,
+    userEmail: string,
     productId: string,
     variantId?: string
 ) => {
     await connectToDb();
-    if (!phone || !productId) {
-        throw new Error("Phone number and product ID are required");
+    if (!userEmail || !productId) {
+        throw new Error("Email and product ID are required");
     }
     try {
-        const cart = await Cart.findOne({ userPhone: phone });
+        const cart = await Cart.findOne({ userEmail });
         if (!cart) {
             throw new Error("Cart not found");
         }
@@ -190,13 +190,13 @@ export const handelRemoveItemFromcart = async (
     }
 }
 
-export const handelgetCart = async (phone: string) =>{
+export const handelgetCart = async (userEmail: string) =>{
      await connectToDb();
-        if (!phone) {
-            throw new Error("Phone number is required");
+        if (!userEmail) {
+            throw new Error("Email is required");
         }
         try {
-            const cart = await Cart.findOne ({ userPhone: phone }).populate('items.productId');     
+            const cart = await Cart.findOne ({ userEmail }).populate('items.productId');     
             if (!cart) {
                 throw new Error("Cart not found");
             }
@@ -207,14 +207,14 @@ export const handelgetCart = async (phone: string) =>{
         }   
 }
 
-export const getCartCount = async (phone: string) => {
+export const getCartCount = async (userEmail: string) => {
     await connectToDb();
-    if (!phone) {
-        console.log("Phone number is required");
+    if (!userEmail) {
+        console.log("Email is required");
         return 0;
     }
     try {
-        const cart = await Cart.findOne({ userPhone: phone });
+        const cart = await Cart.findOne({ userEmail });
         if (!cart) {
             return 0; 
         }
@@ -228,14 +228,14 @@ export const getCartCount = async (phone: string) => {
 }
 
 export const chnageCount = async (
-    phone: string,
+    userEmail: string,
     productId: string,
     quantity: number,
     variantId?: string
 ) => {
     await connectToDb();
-    if (!phone || !productId || quantity < 1) {
-        throw new Error("Phone number, product ID and valid quantity are required");
+    if (!userEmail || !productId || quantity < 1) {
+        throw new Error("Email, product ID and valid quantity are required");
     }
     try {
         const rawProduct = await Product.findById(productId).lean();
@@ -243,7 +243,7 @@ export const chnageCount = async (
             throw new Error("Product not found");
         }
         const product = rawProduct as ProductLeanDoc;
-        const cart = await Cart.findOne({ userPhone: phone });
+        const cart = await Cart.findOne({ userEmail });
         if (!cart) {
             throw new Error("Cart not found");
         }

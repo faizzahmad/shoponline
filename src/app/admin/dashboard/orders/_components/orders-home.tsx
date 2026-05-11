@@ -197,6 +197,7 @@ export const OrdersHome = () => {
                                 <p className="text-muted-foreground">Customer</p>
                                 <p className="font-medium">
                                     {detail.username} · {detail.userPhone}
+                                    {detail.userEmail ? ` · ${detail.userEmail}` : ""}
                                 </p>
                             </div>
                             <div>

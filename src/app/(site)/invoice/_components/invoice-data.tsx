@@ -34,6 +34,7 @@ type OrdersDetails = {
     _id : string;
     username : string;
     userPhone : string;
+    userEmail?: string;
     items : productItems[];
     totalAmount : number;
     orderDateTime : Date;
@@ -138,8 +139,8 @@ pdf.save(`invoice-${username}-${date}.pdf`);
                   <TfiShoppingCartFull className="size-8 sm:size-10 md:size-12" aria-hidden />
                 </div>
                 <div className="min-w-0">
-                    <p className="exo text-lg font-bold tracking-tight text-gray-900 sm:text-xl md:text-2xl">Congratulations!</p>
-                    <p className="exo mt-0.5 text-base font-semibold text-gray-600 sm:text-lg md:text-xl">Order placed successfully</p>
+                    <p className="exo text-base font-bold tracking-tight text-gray-900 sm:text-xl md:text-2xl">Congratulations!</p>
+                    <p className="exo mt-0.5 text-sm font-semibold text-gray-600 sm:text-base md:text-xl">Order placed successfully</p>
                     <div className="raleway mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
                     <Button variant={'outline'} size="sm" className="sm:h-9" onClick={() => router.push('/shop')} >
                             Continue shopping
@@ -162,7 +163,14 @@ pdf.save(`invoice-${username}-${date}.pdf`);
       {/* Grid */}
       <div className="flex flex-col gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="shrink-0">
-          <Image src={'/images/web/logo.svg'} alt="Logo" height={36} width={90} className="h-8 w-auto sm:h-9" />
+          <Image
+            src="/images/web/logo.png"
+            alt="Najak Clothing"
+            width={280}
+            height={112}
+            className="h-14 w-auto sm:h-[4.5rem] md:h-24"
+            priority
+          />
         </div>
 
         <div className="min-w-0 sm:text-end">
@@ -170,9 +178,21 @@ pdf.save(`invoice-${username}-${date}.pdf`);
           <span className="mt-1 block break-all text-xs text-gray-500 exo sm:text-sm">{orderDetails?._id}</span>
 
           <address className="mt-3 not-italic text-xs leading-relaxed text-gray-600 sm:mt-4 sm:text-sm">
-           Lal bagh purnea city <br />
-            Purnea, Bihar  854301,<br />
-            India<br />
+            Lal bagh purnea city <br />
+            Purnea, Bihar 854301,
+            <br />
+            India
+            <br />
+            <a
+              className="mt-2 inline-block text-[#244d7c] underline-offset-2 hover:underline"
+              href="mailto:najakclothing@gmail.com"
+            >
+              najakclothing@gmail.com
+            </a>
+            <br />
+            <a className="text-[#244d7c] underline-offset-2 hover:underline" href="tel:+919572908188">
+              +91 95729 08188
+            </a>
           </address>
         </div>
       </div>
@@ -183,6 +203,12 @@ pdf.save(`invoice-${username}-${date}.pdf`);
           <p className="mt-1.5 text-base font-semibold capitalize text-gray-900 sm:text-lg">
             {orderDetails?.username}
           </p>
+          {orderDetails?.userEmail ? (
+            <p className="mt-1 text-xs text-gray-500 exo break-all">{orderDetails.userEmail}</p>
+          ) : null}
+          {orderDetails?.userPhone ? (
+            <p className="mt-1 text-xs text-gray-500 exo">Phone: {orderDetails.userPhone}</p>
+          ) : null}
           <address className="mt-2 not-italic text-sm leading-relaxed text-gray-600 whitespace-pre-line">
          {
           orderDetails?.deliveryAddress
@@ -301,7 +327,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             <div className="flex items-baseline justify-between gap-4 border-b border-gray-100 pb-2.5">
               <dt className="raleway font-medium text-gray-600">Discount</dt>
               <dd>
-              <span className="tabular-nums text-rose-600 exo">
+              <span className="tabular-nums text-[#244d7c] exo">
                 {"\u20B9"} {
                  (orderDetails?.items.reduce((total, item) => total + (item.originalPrice * item.quantity), 0) - orderDetails?.totalAmount ).toFixed(2)
                 }
@@ -357,12 +383,22 @@ pdf.save(`invoice-${username}-${date}.pdf`);
         <h4 className="text-base font-semibold text-gray-900">Thank you!</h4>
         <p className="mt-1.5 text-sm leading-relaxed text-gray-600">Questions about this invoice? Reach us at:</p>
         <div className="mt-3 space-y-1">
-          <p className="text-sm font-medium text-gray-800">john.doe@example.com</p>
-          <p className="text-sm font-medium text-gray-800">+1 202-555-0143</p>
+          <p className="text-sm font-medium text-gray-800">
+            <a className="text-[#244d7c] hover:underline" href="mailto:najakclothing@gmail.com">
+              najakclothing@gmail.com
+            </a>
+          </p>
+          <p className="text-sm font-medium text-gray-800">
+            <a className="text-[#244d7c] hover:underline" href="tel:+919572908188">
+              +91 95729 08188
+            </a>
+          </p>
         </div>
       </div>
 
-      <p className="mt-4 text-center text-xs text-gray-500 sm:mt-5 sm:text-left">{"\u00A9"} 2026 Buyora</p>
+      <p className="mt-4 text-center text-xs text-gray-500 sm:mt-5 sm:text-left">
+        {"\u00A9"} 2026 Najak Clothing
+      </p>
     </div>
     
   </div>

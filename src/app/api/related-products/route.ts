@@ -25,6 +25,7 @@ export async function GET(request: Request) {
             originalPrice: number;
             discountPrice: number;
             productStock?: number;
+            shortDescription?: string;
         };
 
         let items: LeanProduct[] = [];
@@ -36,7 +37,7 @@ export async function GET(request: Request) {
             })
                 .sort({ createdAt: -1 })
                 .limit(12)
-                .select("_id productName images originalPrice discountPrice productStock")
+                .select("_id productName images originalPrice discountPrice productStock shortDescription")
                 .lean()) as unknown as LeanProduct[];
         }
 
@@ -48,7 +49,7 @@ export async function GET(request: Request) {
             })
                 .sort({ createdAt: -1 })
                 .limit(12 - items.length)
-                .select("_id productName images originalPrice discountPrice productStock")
+                .select("_id productName images originalPrice discountPrice productStock shortDescription")
                 .lean()) as unknown as LeanProduct[];
             items = [...items, ...more];
         }
@@ -60,7 +61,7 @@ export async function GET(request: Request) {
             })
                 .sort({ createdAt: -1 })
                 .limit(12)
-                .select("_id productName images originalPrice discountPrice productStock")
+                .select("_id productName images originalPrice discountPrice productStock shortDescription")
                 .lean()) as unknown as LeanProduct[];
         }
 
@@ -71,6 +72,7 @@ export async function GET(request: Request) {
             price: p.originalPrice,
             discountedPrice: p.discountPrice,
             productStock: p.productStock ?? 0,
+            description: p.shortDescription ?? "",
         }));
 
         return new Response(JSON.stringify(payload), {

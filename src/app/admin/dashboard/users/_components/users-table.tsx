@@ -50,10 +50,10 @@ export function UsersDataTable<TData, TValue>({ columns, data }: UsersDataTableP
         <div className="exo">
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Search by phone"
-                    value={(table.getColumn("phoneNumber")?.getFilterValue() as string) ?? ""}
+                    placeholder="Search by email"
+                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("phoneNumber")?.setFilterValue(event.target.value)
+                        table.getColumn("email")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm bg-white"
                 />

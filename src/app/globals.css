@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
 
 @tailwind base;
@@ -12,10 +12,8 @@
 
 @layer base {
   :root {
-
     --background: 0 0% 100%;
-
-    --foreground: 0 0% 3.9%;
+    --foreground: 210 54% 31%;
 
     --card: 0 0% 100%;
 
@@ -25,41 +23,29 @@
 
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 0 0% 9%;
+    --primary: 210 54% 31%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 211 40% 43%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 211 42% 95%;
 
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 0 0% 96.1%;
-
-    --secondary-foreground: 0 0% 9%;
-
-    --muted: 0 0% 96.1%;
-
-    --muted-foreground: 0 0% 45.1%;
-
-    --accent: 0 0% 96.1%;
-
-    --accent-foreground: 0 0% 9%;
+    --muted-foreground: 210 30% 35%;
+    --accent: 211 42% 95%;
+    --accent-foreground: 210 54% 31%;
 
     --destructive: 0 84.2% 60.2%;
 
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 89.8%;
+    --border: 210 25% 85%;
+    --input: 210 25% 85%;
+    --ring: 210 54% 31%;
 
-    --input: 0 0% 89.8%;
-
-    --ring: 0 0% 3.9%;
-
-    --chart-1: 12 76% 61%;
-
-    --chart-2: 173 58% 39%;
-
-    --chart-3: 197 37% 24%;
-
-    --chart-4: 43 74% 66%;
-
-    --chart-5: 27 87% 67%;
+    --chart-1: 210 54% 31%;
+    --chart-2: 211 40% 43%;
+    --chart-3: 210 45% 24%;
+    --chart-4: 214 33% 56%;
+    --chart-5: 210 60% 70%;
 
     --radius: 0.5rem
   ;
@@ -155,15 +141,16 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: linear-gradient(180deg, #ffffff 0%, #f3f7fb 100%);
   }
 }
 
 
 .raleway{
-  font-family: "Raleway", sans-serif;
+  font-family: "Cinzel", serif;
 }
 .exo{
-  font-family: "Exo", sans-serif;
+  font-family: "Cormorant Garamond", serif;
 }
 
 .signin-bg::before{
@@ -173,7 +160,7 @@
   top: 0; 
   width: 100%;
   height: 100%;
-  background-image: url('/images/web/auth/bg1.webp');
+  background-image: url('https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVjeCbsPQZMtK0PFXrNpAZavgoCbmsyEkG5BMi2w');
   background-size: cover;
   background-position: center;
   z-index: -1;
@@ -186,23 +173,23 @@
   top: 0; 
   width: 100%;
   height: 100%;
-  background-image: url('/images/web/auth/bg3.webp');
+  background-image: url('https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVje0BeKZUierdMHOnVflJRWGIcpYDjQ5i6uU0PT');
   background-size: cover;
-  background-position: top;
+  background-position: center;
   z-index: -1;
 }
 
 .alegreya{
-  font-family: "Alegreya", serif;
+  font-family: "EB Garamond", serif;
 }
 
 .overlayimage{
   position: relative;
-  background-image: url('https://images.pexels.com/photos/8865545/pexels-photo-8865545.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load');
+  background-image: url('https://images.pexels.com/photos/5709661/pexels-photo-5709661.jpeg?auto=compress&cs=tinysrgb&w=1600');
   background-size :cover;
   background-position : center;
   background-attachment: fixed;
-  background-color: rgba(0, 0, 0, 0.43);
+  background-color: rgba(36, 77, 124, 0.38);
   background-blend-mode: screen;
 }
 
@@ -213,5 +200,67 @@
   top: 0; 
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.43);
+  background-color: rgba(22, 45, 74, 0.6);
+}
+
+/* Stored product descriptions (sanitized HTML) */
+.rich-long-desc ul {
+  margin: 0.75rem 0;
+  padding-left: 1.35rem;
+  list-style-type: disc;
+}
+.rich-long-desc ol {
+  margin: 0.75rem 0;
+  padding-left: 1.35rem;
+  list-style-type: decimal;
+}
+.rich-long-desc li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.rich-long-desc li > p {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+}
+.rich-long-desc li > p:last-child {
+  margin-bottom: 0;
+}
+.rich-long-desc p {
+  margin: 0.5rem 0;
+}
+.rich-long-desc blockquote {
+  margin: 0.75rem 0;
+  border-left: 3px solid #244d7c;
+  padding-left: 0.85rem;
+  color: rgb(82 82 82);
+}
+
+@media (max-width: 639px) {
+  .rich-long-desc {
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .rich-long-desc h1,
+  .rich-long-desc h2,
+  .rich-long-desc h3 {
+    font-size: 1.05rem;
+    line-height: 1.35;
+    margin-top: 0.75rem;
+    margin-bottom: 0.35rem;
+  }
+  .rich-long-desc h4,
+  .rich-long-desc h5,
+  .rich-long-desc h6 {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+}
+
+/* TipTap long-description editor placeholder */
+.rich-desc-editor-wrap .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
 }

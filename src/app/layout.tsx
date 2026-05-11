@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import "./globals.css";
 import {
   ClerkProvider
@@ -6,12 +5,9 @@ import {
 import NextTopLoader from 'nextjs-toploader';
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from "sonner";
+import { buildRootMetadata } from "@/lib/site-metadata";
 
-
-export const metadata: Metadata = {
-  title: "Buyora",
-  description: "Buyora is a platform for buying and selling products",
-};
+export const metadata = buildRootMetadata();
 
 export default function RootLayout({
   children,
@@ -27,7 +23,7 @@ export default function RootLayout({
 <link rel="manifest" href="/site.webmanifest"/>
       </head>
       <body>
-        <NextTopLoader color="#F43F5E" />
+        <NextTopLoader color="#244d7c" />
         <ClerkProvider appearance={{ layout: { unsafe_disableDevelopmentModeWarnings: true } }}>
           <NuqsAdapter>
             <Toaster/>

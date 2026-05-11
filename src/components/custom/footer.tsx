@@ -12,10 +12,10 @@ export const Footer = async() => {
         const categories = await getLatestCategories(10);
    return (
      <footer >
-        <div className="w-full grid lg:grid-cols-4 grid-cols-2 md:gap-16 gap-8 md:p-10 p-5 bg-indigo-200">
+        <div className="w-full grid lg:grid-cols-4 grid-cols-2 md:gap-16 gap-8 md:p-10 p-5 bg-[#eaf0f7] text-[#244d7c]">
             <div className="w-full">
                <div>
-                <h4 className="md:text-2xl text-xl font-[700] raleway">
+                <h4 className="text-lg font-[700] raleway sm:text-xl md:text-2xl">
                     {
                         user ? 'Account page' : 'Register with us'
                     }
@@ -23,7 +23,7 @@ export const Footer = async() => {
                 {
                     user ? (
                         <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
-                    <li className="transition hover:text-rose-600">
+                    <li className="transition hover:text-[#426b9a]">
                         <Link href="/sign-up">
                         Account Page
                         </Link>
@@ -32,12 +32,12 @@ export const Footer = async() => {
                 </ul>
                     ) : (
                         <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
-                    <li className="transition hover:text-rose-600">
+                    <li className="transition hover:text-[#426b9a]">
                         <Link href="/sign-up">
                         Create an account
                         </Link>
                     </li>
-                     <li className="transition hover:text-rose-600">
+                     <li className="transition hover:text-[#426b9a]">
                         <Link href="/sign-in">
                         Sign in to your account
 
@@ -50,24 +50,23 @@ export const Footer = async() => {
                </div>
 
                 <div className="mt-10">
-                <h4 className="md:text-2xl text-xl font-[700] raleway">Contact Us</h4>
+                <h4 className="text-lg font-[700] raleway sm:text-xl md:text-2xl">Contact Us</h4>
                 <ul className="md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
-                    <li className="transition hover:text-rose-600">
-                        <Link href="mailto:connect@beaze.in" target="_blank">
-                       john.doe@example.com
+                    <li className="transition hover:text-[#426b9a]">
+                        <Link href="mailto:najakclothing@gmail.com" target="_blank">
+                       najakclothing@gmail.com
                         </Link>
                     </li>
-                     <li className="transition hover:text-rose-600">
-                        <Link href="telto:+919876543210" target="_blank">
-                       +1 202-555-0143
+                     <li className="transition hover:text-[#426b9a]">
+                        <Link href="tel:+919572908188" target="_blank" rel="noopener noreferrer">
+                       +91 95729 08188
                         </Link>
                     </li>
 
-                     <li className="transition">
-                        123 Main Street
-Apt 4B
-New York, NY 10001
-United States
+                     <li className="transition whitespace-pre-line">
+                        {`Lal bagh, Purnia city
+Bihar, India
+854302`}
                     </li>
                 </ul>
 
@@ -75,11 +74,11 @@ United States
             </div>
 
             <div className="w-full">
-             <h4 className="md:text-2xl text-xl font-[700] raleway">Shop</h4>
+             <h4 className="text-lg font-[700] raleway sm:text-xl md:text-2xl">Shop</h4>
              <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
 {
     categories.map((category) => (
-                            <li className="transition hover:text-rose-600" key={category._id}>
+                            <li className="transition hover:text-[#426b9a]" key={category._id}>
                         <Link href={`/shop?category=${category._id}`}>
                        {category.title}
                         </Link>
@@ -91,34 +90,34 @@ United States
             </div>
 
              <div className="w-full">
-             <h4 className="md:text-2xl text-xl font-[700] raleway">About & Help</h4>
+             <h4 className="text-lg font-[700] raleway sm:text-xl md:text-2xl">About & Help</h4>
              <ul className="md:mt-5 mt-2 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
-                    <li className="transition hover:text-rose-600">
+                    <li className="transition hover:text-[#426b9a]">
                         <Link href="/about">
                         About us
                         </Link>
                     </li>
-                     <li className="transition hover:text-rose-600">
+                     <li className="transition hover:text-[#426b9a]">
                         <Link href="/about#reviews-heading">
                         Reviews
                         </Link>
                     </li>
-                     <li className="transition hover:text-rose-600">
+                     <li className="transition hover:text-[#426b9a]">
                         <Link href="/terms">
                         Terms and Conditions
                         </Link>
                     </li>
-                     <li className="transition hover:text-rose-600">
+                     <li className="transition hover:text-[#426b9a]">
                         <Link href="/policies#return-refund-policy">
                       Return & Refund Policy
                         </Link>
                     </li>
-                    <li className="transition hover:text-rose-600">
+                    <li className="transition hover:text-[#426b9a]">
                         <Link href="/policies#privacy-policy">
                        Privacy Policy
                         </Link>
                     </li>
-                    <li className="transition hover:text-rose-600">
+                    <li className="transition hover:text-[#426b9a]">
                         <Link href="/policies#shipping-policy">
                         Shipping Policy
                         </Link>
@@ -127,13 +126,13 @@ United States
                 </ul>
             </div>
              <div className="w-full">
-             <h4 className="md:text-2xl text-xl font-[700] raleway">We Offers</h4>
+             <h4 className="text-lg font-[700] raleway sm:text-xl md:text-2xl">We Offers</h4>
              <ul className="md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
                 <li className="transition flex gap-4">
                        <p>
                            <span className="font-semibold">
                             100% ORIGINAL
-                            </span> guarantee for all products at partyhub.in
+                            </span> guarantee for all products at najakclothing.com
                         </p>
                         
                     </li>
@@ -153,8 +152,8 @@ United States
             </div>
         </div>
 
-        <div className=" bg-rose-600 p-2 w-full text-center">
-          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2026. Buyora. All Rights Reserved.</h5>
+        <div className=" bg-[#244d7c] p-2 w-full text-center">
+          <h5 className="md:font-semibold md:text-[1rem] text-sm raleway text-white">{"\u00A9"} Copyright 2026. Najak Clothing. All Rights Reserved.</h5>
         </div>
     </footer>
    )

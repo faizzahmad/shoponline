@@ -60,7 +60,7 @@ export const ProductInfoModal = () => {
     const { productId, close, isOpen, isQuickBuy } = useProductInfoModal();
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState<Products | null>(null);
-    const [seletedImageIndex, setSelectedImageIndex] = useState(0);
+    const [seletedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [selectedQunatity, setSelectedQuantity] = useState(1);
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
     const [cartLoader, setCartLoader] = useState(false);
@@ -190,7 +190,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                 isLoading ? (<FixedLoader />) : (<CustomModal open={isOpen} onOpenChange={() => {
                     close();
                     setData(null);
-                    setSelectedImageIndex(0);
+                    setSelectedImageIndex(null);
                 }} className="lg:max-w-[1100px] sm:max-w-[80vw]  max-w-[90vw] max-h-[80vh] overflow-y-auto rounded-lg">
                     <DialogHeader className="hidden">
                         <DialogTitle asChild>
@@ -202,7 +202,12 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                         <div className="lg:w-[400px] grid grid-cols-1 gap-y-2 content-start shrink-0">
                             <div className="w-full aspect-square max-w-[400px] lg:block hidden overflow-hidden relative rounded-xl">
                                 {(() => {
-                                    const heroSrc = selectedVariant?.image || data?.images?.[seletedImageIndex];
+                                    const heroSrc =
+                                        (seletedImageIndex !== null
+                                            ? data?.images?.[seletedImageIndex]
+                                            : undefined) ||
+                                        selectedVariant?.image ||
+                                        data?.images?.[0];
                                     if (!heroSrc) return null;
                                     return (
                                         <Image
@@ -227,10 +232,18 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     <CarouselContent >
                                         {
                                             data?.images?.map((image, index) => (
-                                                <CarouselItem className="lg:basis-[116px] basis-[88px]" key={index} onClick={() => setSelectedImageIndex(index)}>
-                                                    <div className={"lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl cursor-pointer"}>
+                                                <CarouselItem className="lg:basis-[116px] basis-[88px]" key={index}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setSelectedImageIndex(index)}
+                                                        className={`lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl cursor-pointer border-2 ${
+                                                            seletedImageIndex === index
+                                                                ? "border-[#244d7c]"
+                                                                : "border-transparent"
+                                                        }`}
+                                                    >
                                                         <Image src={image} alt="productImage" className="rounded-xl object-cover object-center" fill sizes="100px" />
-                                                    </div>
+                                                    </button>
                                                 </CarouselItem>
                                             ))
                                         }
@@ -247,7 +260,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                 <p className="sm:text-sm text-xs exo font-[300] capitalize">{data?.productCategory} / {data?.productSubCategory}</p>
                                 
                                 <div className="flex  justify-between items-center">
-                                      <h4 className="raleway lg:text-2xl sm:text-xl text-lg font-semibold mt-4">{data?.productName}</h4>
+                                      <h4 className="raleway mt-4 text-base font-semibold sm:text-lg md:text-xl lg:text-2xl">{data?.productName}</h4>
                                     <DropdownMenu>
                                     <DropdownMenuTrigger className=" bg-white shadow-sm border rounded px-4 py-1 text-sm exo flex gap-2 items-center">Share  <Share2 className="size-4" /></DropdownMenuTrigger>
                                     <DropdownMenuContent>
@@ -268,7 +281,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                              <FaWhatsapp/>
                                             </Link>
 
-                                             <Link target="_blank" href={facebookUrl} className="size-12 flex items-center justify-center text-white bg-blue-500 text-3xl rounded">
+                                             <Link target="_blank" href={facebookUrl} className="size-12 flex items-center justify-center text-white bg-[#244d7c] text-3xl rounded">
                                              <FaFacebook/>
                                             </Link>
                                         </DropdownMenuItem>
@@ -276,11 +289,11 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                                 </div>
-                                <h5 className="lg:text-xl sm:text-lg text-base font-semibold text-rose-600 flex gap-4 mt-3">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
+                                <h5 className="mt-3 flex gap-3 text-base font-semibold text-[#244d7c] sm:gap-4 sm:text-lg lg:text-xl">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>
 
                                 {isSelectedOutOfStock ? (
-                                    <p className="text-sm font-medium text-rose-700 raleway rounded-md border border-rose-200 bg-rose-50 px-3 py-2 mb-2">
+                                    <p className="text-sm font-medium text-[#244d7c] raleway rounded-md border border-[#244d7c]/20 bg-[#eef4fb] px-3 py-2 mb-2">
                                         This product is out of stock.
                                     </p>
                                 ) : null}
@@ -302,15 +315,16 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                                                 type="button"
                                                                 className={`flex flex-col items-center gap-1 rounded-md border p-1 transition ${
                                                                     isSelected
-                                                                        ? "border-rose-600 bg-rose-50"
+                                                                        ? "border-[#244d7c] bg-[#eef4fb]"
                                                                         : "border-neutral-300"
                                                                 }`}
-                                                                onClick={() =>
+                                                                onClick={() => {
                                                                     setSelectedAttributes((prev) => ({
                                                                         ...prev,
                                                                         [group.name]: option.value,
-                                                                    }))
-                                                                }
+                                                                    }));
+                                                                    setSelectedImageIndex(null);
+                                                                }}
                                                             >
                                                                 <div className="relative size-14 overflow-hidden rounded">
                                                                     <Image
@@ -323,7 +337,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                                                 </div>
                                                                 <span
                                                                     className={`text-xs capitalize ${
-                                                                        isSelected ? "text-rose-600" : "text-neutral-700"
+                                                                        isSelected ? "text-[#244d7c]" : "text-neutral-700"
                                                                     }`}
                                                                 >
                                                                     {option.value}
@@ -337,15 +351,16 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                                             type="button"
                                                             className={`px-3 py-1.5 rounded border text-sm ${
                                                                 isSelected
-                                                                    ? "border-rose-600 text-rose-600 bg-rose-50"
+                                                                    ? "border-[#244d7c] text-[#244d7c] bg-[#eef4fb]"
                                                                     : "border-neutral-300 text-neutral-700"
                                                             }`}
-                                                            onClick={() =>
+                                                            onClick={() => {
                                                                 setSelectedAttributes((prev) => ({
                                                                     ...prev,
                                                                     [group.name]: option.value,
-                                                                }))
-                                                            }
+                                                                }));
+                                                                setSelectedImageIndex(null);
+                                                            }}
                                                         >
                                                             {option.value}
                                                         </button>
@@ -390,7 +405,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                                 <div key={product.productId} className="flex flex-col items-center">
                                                     <Link href={`/product-info/${product.productId}`} target="_blank">
                                                         <div className="w-[60px]">
-                                                            <div className="w-full h-[60px] relative border-2 border-rose-600 rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
+                                                            <div className="w-full h-[60px] relative border-2 border-[#244d7c] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
                                                                 <Image
                                                                     src={product.image}
                                                                     alt={product.pname}
@@ -452,7 +467,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                             close();
                                             setData(null);
                                             setSelectedQuantity(1);
-                                            setSelectedImageIndex(0);
+                                            setSelectedImageIndex(null);
                                             setIsChanged(!isChanged);
                                         }
                                     };
@@ -463,7 +478,10 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                             const res = await fetch("/api/cart", {
                                                 method: "POST",
                                                 headers: { "Content-Type": "application/json" },
-                                                body: JSON.stringify({ phone: user?.phoneNumbers[0].phoneNumber, items: productItem }),
+                                                body: JSON.stringify({
+                                                    email: user?.primaryEmailAddress?.emailAddress ?? "",
+                                                    items: productItem,
+                                                }),
                                             });
                                             const respData = await res.json();
                                             if (res.ok) {
@@ -520,7 +538,7 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                     onClick={() => {
                                         close();
                                         setData(null);
-                                        setSelectedImageIndex(0);
+                                        setSelectedImageIndex(null);
                                     }}
                                 >Cancel</Button>
                             </div>

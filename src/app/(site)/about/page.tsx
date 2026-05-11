@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "About us & reviews",
   description:
-    "Learn about Buyora and read what customers say about our party supplies.",
+    "Learn about Najak Clothing and read what customers say about our apparel, quality, and service.",
 };
 
 const DUMMY_REVIEWS = [
@@ -72,12 +72,12 @@ export default function AboutPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-3xl md:text-4xl font-bold text-rose-600 border-b-4 border-rose-600 pb-3 inline-block">
+        <h1 className="raleway text-2xl font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-3xl md:text-4xl">
           About us
         </h1>
       </header>
 
-      <div className="mt-8 exo text-neutral-700 leading-relaxed space-y-4 text-[0.95rem] md:text-base">
+      <div className="mt-6 exo text-neutral-700 leading-relaxed space-y-4 text-sm sm:mt-8 sm:text-[0.95rem] md:text-base">
         <p>
           Buyora is your online destination for party supplies, decorations, and
           essentials that help you celebrate without the stress. We curate
@@ -101,21 +101,21 @@ export default function AboutPage() {
       <section className="mt-14 md:mt-16" aria-labelledby="reviews-heading">
         <h2
           id="reviews-heading"
-          className="raleway text-2xl md:text-3xl font-bold text-rose-600 border-b-4 border-rose-600 pb-3 inline-block"
+          className="raleway text-lg font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-2xl md:text-3xl"
         >
           Reviews
         </h2>
-        <p className="mt-4 exo text-neutral-600 text-sm md:text-[0.95rem]">
+        <p className="mt-3 exo text-xs text-neutral-600 sm:mt-4 sm:text-sm md:text-[0.95rem]">
           Recent feedback from shoppers (sample data for demonstration).
         </p>
 
         <ul className="mt-8 grid gap-5 sm:grid-cols-2">
           {DUMMY_REVIEWS.map((review) => (
             <li key={`${review.name}-${review.date}`}>
-              <Card className="h-full border-indigo-200/80 bg-white/90 shadow-sm transition hover:shadow-md">
+              <Card className="h-full border-[#244d7c]/20/80 bg-white/90 shadow-sm transition hover:shadow-md">
                 <CardHeader className="space-y-2 pb-2">
                   <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="raleway text-lg font-semibold text-neutral-900">
+                    <CardTitle className="raleway text-base font-semibold text-neutral-900 sm:text-lg">
                       {review.name}
                     </CardTitle>
                     <Stars count={review.rating} />

@@ -33,6 +33,7 @@ export type OrderItemLine = {
 export type OrderRow = {
     _id: string;
     userPhone: string;
+    userEmail?: string;
     username: string;
     items: OrderItemLine[];
     totalAmount: number;
@@ -111,11 +112,16 @@ export function buildOrderColumns({
                 </Button>
             ),
             cell: ({ row }) => (
-                <div className="pl-2 max-w-[140px]">
+                <div className="pl-2 max-w-[180px]">
                     <div className="font-medium truncate">{row.original.username}</div>
-                    <div className="text-xs text-muted-foreground truncate">
+                    <div className="text-xs text-muted-foreground truncate" title={row.original.userPhone}>
                         {row.original.userPhone}
                     </div>
+                    {row.original.userEmail ? (
+                        <div className="text-xs text-muted-foreground truncate" title={row.original.userEmail}>
+                            {row.original.userEmail}
+                        </div>
+                    ) : null}
                 </div>
             ),
         },

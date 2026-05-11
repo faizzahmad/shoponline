@@ -102,7 +102,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                     <div className="w-full flex flex-wrap items-center gap-2">
                         {
                             search && (
-                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-rose-600 text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
+                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-[#244d7c] text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
                                     setSearch('');
                                     setPage(1);
 
@@ -165,7 +165,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                         products.length === 0 && !isLoading && (
                             <div className=" mt-10 w-full flex flex-col items-center text-center text-neutral-600  justify-center">
                                 <ShoppingCart className="size-10" />
-                                <h2 className="text-xl font-semibold exo mt-5">No Products Found</h2>
+                                <h2 className="mt-5 text-lg font-semibold exo sm:text-xl">No Products Found</h2>
                                 <p className="mt-2 raleway">Try changing the filters or sorting options.</p>
                             </div>
                         )
@@ -193,7 +193,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
 
 const ProductCardSkeleton = () => {
     return (
-        <div className="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4 shadow-sm rounded-xl bg-indigo-50">
+        <div className="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4 shadow-sm rounded-2xl bg-white border border-[#244d7c]/15">
             <div className="w-full aspect-[3/4] min-[377px]:aspect-[4/5] rounded-xl overflow-hidden">
                 <Skeleton className='w-full h-full' />
             </div>

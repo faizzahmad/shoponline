@@ -54,7 +54,7 @@ export const CategoryFilterList = ({
                     )}
                 >
                     <div
-                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-rose-600 raleway"
+                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#244d7c] raleway"
                         onClick={() => {
                             setExpandedCategoryIds((prev) =>
                                 prev.includes(items.id)
@@ -63,7 +63,7 @@ export const CategoryFilterList = ({
                             );
                         }}
                     >
-                        <span className="text-lg">{items.name}</span>
+                        <span className="text-base sm:text-lg">{items.name}</span>
                         <ChevronDown
                             className={cn(
                                 "size-5 transition",
@@ -84,7 +84,7 @@ export const CategoryFilterList = ({
                     >
                         <div className="flex items-center gap-4">
                             <Checkbox
-                                className="data-[state=checked]:border-rose-600 data-[state=checked]:bg-rose-600"
+                                className="data-[state=checked]:border-[#244d7c] data-[state=checked]:bg-[#244d7c]"
                                 onCheckedChange={(checked) => {
                                     const subCategoryIds =
                                         items.subCategories?.map((sub) => sub.id) ||
@@ -124,7 +124,7 @@ export const CategoryFilterList = ({
                             >
                                 <Checkbox
                                     id={subItems.id}
-                                    className="data-[state=checked]:border-rose-600 data-[state=checked]:bg-rose-600"
+                                    className="data-[state=checked]:border-[#244d7c] data-[state=checked]:bg-[#244d7c]"
                                     checked={subcategory.includes(subItems.id)}
                                     onCheckedChange={(checked) => {
                                         if (checked) {

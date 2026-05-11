@@ -39,8 +39,9 @@ export async function POST(req: Request) {
     await connectToDb();
     const body = await req.json();
     const { title, image, categoryId } = body;
+    const normalizedTitle = String(title ?? "").trim();
 
-    if (!title || !image || !categoryId) {
+    if (!normalizedTitle || !image || !categoryId) {
         return new Response(JSON.stringify({ error: "All fields are required" }), {
             status: 400,
         });
@@ -53,7 +54,17 @@ export async function POST(req: Request) {
                 status: 404,
             });
         }
-        category.subCategories.push({ title, image });
+        const duplicateExists = category.subCategories.some(
+            (sub: { title?: string }) =>
+                String(sub?.title ?? "").trim().toLowerCase() === normalizedTitle.toLowerCase()
+        );
+        if (duplicateExists) {
+            return new Response(
+                JSON.stringify({ error: "Subcategory already exists in this category" }),
+                { status: 409 }
+            );
+        }
+        category.subCategories.push({ title: normalizedTitle, image });
         await category.save();
         return new Response(JSON.stringify({
             message: "Subcategory created successfully",
@@ -61,8 +72,19 @@ export async function POST(req: Request) {
         }), {
             status: 200,
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error creating subcategory:", error);
+        if (
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            (error as { code?: number }).code === 11000
+        ) {
+            return new Response(
+                JSON.stringify({ error: "Duplicate value found. Please use a different name." }),
+                { status: 409 }
+            );
+        }
         return new Response(JSON.stringify({ error: "Error creating subcategory" }), {
             status: 500,
         });
@@ -112,20 +134,40 @@ export async function PUT(req: Request) {
     await connectToDb();
     const body = await req.json();
     const { id, title, image } = body;
+    const normalizedTitle = String(title ?? "").trim();
 
-    if (!id || !title || !image) {
+    if (!id || !normalizedTitle || !image) {
         return new Response(JSON.stringify({ error: "All fields are required" }), {
             status: 400,
         });
     }
 
     try {
-        const category = await Category.findOneAndUpdate(
-            { 'subCategories._id': id },
-            { $set: { 'subCategories.$.title': title, 'subCategories.$.image': image } },
+        const category = await Category.findOne({ "subCategories._id": id });
+        if (!category) {
+            return new Response(JSON.stringify({ error: "Subcategory not found" }), {
+                status: 404,
+            });
+        }
+
+        const duplicateExists = category.subCategories.some(
+            (sub: { _id: { toString: () => string }; title?: string }) =>
+                sub._id.toString() !== id &&
+                String(sub?.title ?? "").trim().toLowerCase() === normalizedTitle.toLowerCase()
+        );
+        if (duplicateExists) {
+            return new Response(
+                JSON.stringify({ error: "Subcategory already exists in this category" }),
+                { status: 409 }
+            );
+        }
+
+        const updated = await Category.findOneAndUpdate(
+            { "subCategories._id": id },
+            { $set: { "subCategories.$.title": normalizedTitle, "subCategories.$.image": image } },
             { new: true }
         );
-        if (!category) {
+        if (!updated) {
             return new Response(JSON.stringify({ error: "Subcategory not found" }), {
                 status: 404,
             });

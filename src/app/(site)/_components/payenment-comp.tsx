@@ -15,6 +15,8 @@ interface PaymentComponentProsp {
     /** Fires as soon as payment succeeds, while verification + redirect run (can take a few seconds). */
     onPaymentRedirecting?: () => void;
     onPaymentVerifyFailed?: () => void;
+    /** After server confirms payment — e.g. clear guest cart before redirect to invoice. */
+    onPaymentVerified?: () => void;
 }
 
 export const PaymentComponent = ({
@@ -22,6 +24,7 @@ export const PaymentComponent = ({
     orderId,
     onPaymentRedirecting,
     onPaymentVerifyFailed,
+    onPaymentVerified,
 }: PaymentComponentProsp) => {
     const [scriptReady, setScriptReady] = useState(false);
     const openedRef = useRef(false);
@@ -51,13 +54,19 @@ export const PaymentComponent = ({
             }
 
             const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
+            const siteOrigin = baseUrl.replace(/\/$/, "");
+            const brandLogo =
+                siteOrigin.startsWith("http://") || siteOrigin.startsWith("https://")
+                    ? `${siteOrigin}/images/web/logo.png`
+                    : undefined;
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                 amount: data.amount,
                 currency: data.currency ?? "INR",
-                name: "Buyora",
-                description: "Payment for your order",
+                name: "The Najak",
+                description: "Secure payment for your order",
+                ...(brandLogo ? { image: brandLogo } : {}),
                 order_id: data.id,
                 handler: async (paymentResponse: {
                     razorpay_payment_id: string;
@@ -82,11 +91,12 @@ export const PaymentComponent = ({
                             toast.error(
                                 typeof err?.error === "string"
                                     ? err.error
-                                    : "Payment could not be verified. Contact support with your order ID."
+                                    : "Payment could not be verified. Email najakclothing@gmail.com with your order ID."
                             );
                             return;
                         }
 
+                        onPaymentVerified?.();
                         window.location.href = `${baseUrl}/invoice/${orderId}`;
                     } catch {
                         onPaymentVerifyFailed?.();
@@ -95,7 +105,7 @@ export const PaymentComponent = ({
                     }
                 },
                 theme: {
-                    color: "#e11d48",
+                    color: "#244d7c",
                 },
                 modal: {
                     ondismiss: () => {
@@ -112,7 +122,7 @@ export const PaymentComponent = ({
             console.error("Payment error:", err);
             toast.error("Something went wrong. Please try again.");
         }
-    }, [amount, orderId, onPaymentRedirecting, onPaymentVerifyFailed]);
+    }, [amount, orderId, onPaymentRedirecting, onPaymentVerifyFailed, onPaymentVerified]);
 
     useEffect(() => {
         if (!scriptReady || !orderId) return;

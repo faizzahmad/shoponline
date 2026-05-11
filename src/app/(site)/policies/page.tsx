@@ -2,146 +2,236 @@ import type { Metadata } from "next";
 import { SiteContentShell } from "../_components/site-content-shell";
 
 export const metadata: Metadata = {
-  title: "Return, privacy & shipping policies",
+  title: "Return, privacy & shipping",
   description:
-    "Return and refund, privacy, and shipping policies for Buyora customers.",
+    "Return and refund, privacy, and shipping policies for Najak Clothing customers.",
 };
 
 export default function PoliciesPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-3xl md:text-4xl font-bold text-rose-600 border-b-4 border-rose-600 pb-3 inline-block">
+        <h1 className="raleway text-2xl font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-3xl md:text-4xl">
           Store policies
         </h1>
         <p className="mt-4 exo text-sm text-neutral-500">
-          Return & refund, privacy, and shipping information for Buyora
-          shoppers.
+          Return & refund, privacy, and shipping for The Najak — men&apos;s and
+          women&apos;s apparel and accessories.
         </p>
       </header>
 
-      <div className="mt-10 exo text-neutral-700 leading-relaxed space-y-14 text-[0.95rem] md:text-base">
+      <div className="mt-8 exo text-neutral-700 leading-relaxed space-y-10 text-sm sm:mt-10 sm:space-y-14 sm:text-[0.95rem] md:text-base">
         <section id="return-refund-policy" className="scroll-mt-24">
-          <h2 className="raleway text-2xl md:text-3xl font-bold text-rose-600 border-b-2 border-indigo-200 pb-2 mb-6">
+          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Return & refund policy
           </h2>
           <div className="space-y-4">
             <p>
-              We want you to be happy with your party supplies. If something is
-              not right, you may return eligible items within{" "}
-              <strong className="font-semibold text-neutral-900">14 days</strong>{" "}
-              of delivery for a refund or exchange, subject to the rules below.
+              We want you to love your purchase from{" "}
+              <strong className="font-semibold text-neutral-900">The Najak</strong>.
+              If an item is not right, you may request a return or exchange for
+              eligible clothing and accessories within{" "}
+              <strong className="font-semibold text-neutral-900">14 days</strong> of
+              delivery, subject to the rules below.
             </p>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className="list-disc space-y-2 pl-6">
               <li>
-                Items must be unused, in original packaging, and with tags
-                attached where applicable.
+                Items must be{" "}
+                <strong className="font-semibold text-neutral-900">unworn</strong>,{" "}
+                <strong className="font-semibold text-neutral-900">unwashed</strong>,
+                and in original condition with all tags and packaging intact where
+                supplied.
               </li>
               <li>
-                Personalized, custom, or clearance items marked “final sale” may
-                not be returnable unless defective.
+                Footwear and accessories should be returned in the original box or
+                pouch if one was included.
               </li>
               <li>
-                Opened consumables (e.g., certain confetti or food-contact items)
-                may not be eligible for hygiene reasons.
+                For hygiene reasons, certain categories (for example innerwear,
+                socks, or opened personal-care items sold with apparel) may be marked
+                non-returnable on the product page. Clearance or final-sale items
+                marked as non-returnable cannot be returned unless they are
+                defective.
+              </li>
+              <li>
+                If you receive the wrong item, a damaged garment, or a manufacturing
+                defect, contact us as soon as possible with your order number and
+                photos; we will help with a replacement or refund as appropriate.
               </li>
             </ul>
             <p>
-              To start a return, contact us with your order number and reason. We
-              will provide return instructions. Refunds are issued to the original
-              payment method after we receive and inspect the return. Shipping
-              costs are non-refundable unless we shipped the wrong item or the
-              product is defective.
+              To start a return or exchange, email{" "}
+              <a
+                href="mailto:najakclothing@gmail.com"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                najakclothing@gmail.com
+              </a>{" "}
+              or call{" "}
+              <a
+                href="tel:+919572908188"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                +91 95729 08188
+              </a>{" "}
+              with your order number and reason. We will share return instructions
+              (including the return address). Refunds, when approved, are processed
+              to the original payment method after we receive and inspect the item.
+              Unless the return is due to our error or a defective product, original
+              shipping charges are non-refundable.
             </p>
           </div>
         </section>
 
         <section id="privacy-policy" className="scroll-mt-24">
-          <h2 className="raleway text-2xl md:text-3xl font-bold text-rose-600 border-b-2 border-indigo-200 pb-2 mb-6">
+          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Privacy policy
           </h2>
-          <p className="text-sm text-neutral-500 mb-4">
-            Last updated: March 29, 2026
+          <p className="mb-4 text-sm text-neutral-500">
+            Last updated: May 11, 2026
           </p>
           <div className="space-y-4">
             <p>
-              This policy describes how Buyora collects, uses, and protects
-              information when you visit our site or place an order.
+              This policy explains how{" "}
+              <strong className="font-semibold text-neutral-900">The Najak</strong>{" "}
+              collects, uses, and protects personal information when you shop
+              clothing and accessories on najakclothing.com.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">
                 Information we collect:
               </strong>{" "}
-              contact and shipping details you provide, order history, device and
-              usage data (such as pages viewed), and communications with support.
-              If you use an account provider (e.g., Clerk), we may receive
-              profile details according to your settings with that provider.
+              name, phone number, email, delivery and billing addresses, order and
+              payment history, items purchased, device and usage data (such as pages
+              viewed), and messages you send to customer support. If you create an
+              account through a provider such as Clerk, we may receive profile
+              details according to your settings with that provider.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">
                 How we use it:
               </strong>{" "}
-              to process and deliver orders, communicate about purchases, improve
-              our store, prevent fraud, and comply with legal obligations.
+              to process and ship orders, send order updates, handle returns and
+              support, improve our catalogue and website experience, prevent fraud,
+              and meet legal requirements.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">Sharing:</strong>{" "}
-              we may share data with payment processors, shipping carriers, and
-              service providers who assist our operations, under strict
-              agreements. We do not sell your personal information.
+              we share data only as needed with payment partners, logistics and
+              courier companies, and other service providers who help us run the
+              store, under appropriate safeguards. We do not sell your personal
+              information.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">
                 Your choices:
               </strong>{" "}
-              you may update account information where applicable, opt out of
-              non-essential marketing emails, or contact us to exercise rights
-              available in your region (such as access or deletion requests,
-              where applicable).
+              you can update certain account details where the platform allows it,
+              opt out of non-essential marketing where offered, or email{" "}
+              <a
+                href="mailto:najakclothing@gmail.com"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                najakclothing@gmail.com
+              </a>{" "}
+              or call{" "}
+              <a
+                href="tel:+919572908188"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                +91 95729 08188
+              </a>{" "}
+              for privacy-related requests (such as access or deletion) where
+              applicable law gives you those rights.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">Security:</strong>{" "}
-              we use reasonable technical and organizational measures to protect
-              data, but no method of transmission over the internet is 100%
-              secure.
+              we use reasonable technical and organisational measures to protect your
+              data. No online transmission is completely risk-free.
             </p>
           </div>
         </section>
 
         <section id="shipping-policy" className="scroll-mt-24">
-          <h2 className="raleway text-2xl md:text-3xl font-bold text-rose-600 border-b-2 border-indigo-200 pb-2 mb-6">
+          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Shipping policy
           </h2>
           <div className="space-y-4">
             <p>
-              We ship to addresses within the regions shown at checkout. Orders
-              are typically processed within{" "}
+              We ship orders to addresses within India (and any other regions we
+              enable at checkout). Clothing and accessories are typically packed
+              within{" "}
               <strong className="font-semibold text-neutral-900">
                 1–2 business days
-              </strong>
-              ; processing may take longer during sales or holidays.
+              </strong>{" "}
+              after confirmation; during sales, launches, or holidays processing may
+              take longer.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">
                 Delivery times
               </strong>{" "}
-              depend on the carrier and destination. Estimates shown at checkout
-              are not guaranteed. You will receive tracking information when your
-              order ships, when available.
+              depend on your location and the courier. Estimates shown at checkout
+              are indicative, not guaranteed. When your order ships, we will share
+              tracking details by email or SMS where available.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">Fees:</strong>{" "}
-              shipping costs are calculated at checkout based on weight,
-              dimensions, and service level. Free shipping may be offered on
-              qualifying orders as displayed on the site.
+              shipping is calculated at checkout from weight, dimensions, and
+              service level. Any free-shipping offers will be shown clearly on the
+              site or at checkout.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">
                 Damaged or missing items:
               </strong>{" "}
-              inspect your package on arrival. If something is damaged or
-              missing, contact us within 48 hours with photos if possible so we can
-              help.
+              please check your parcel when it arrives. If the package is damaged
+              or an item is missing, email{" "}
+              <a
+                href="mailto:najakclothing@gmail.com"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                najakclothing@gmail.com
+              </a>{" "}
+              or call{" "}
+              <a
+                href="tel:+919572908188"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                +91 95729 08188
+              </a>{" "}
+              within 48 hours with your order number and photos if possible so we
+              can assist.
+            </p>
+          </div>
+        </section>
+
+        <section id="contact" className="scroll-mt-24">
+          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+            Contact
+          </h2>
+          <div className="space-y-2">
+            <p>
+              <strong className="font-semibold text-neutral-900">Brand:</strong> The
+              Najak — najakclothing.com
+            </p>
+            <p>
+              <strong className="font-semibold text-neutral-900">Email:</strong>{" "}
+              <a
+                href="mailto:najakclothing@gmail.com"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                najakclothing@gmail.com
+              </a>
+            </p>
+            <p>
+              <strong className="font-semibold text-neutral-900">Phone:</strong>{" "}
+              <a
+                href="tel:+919572908188"
+                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              >
+                +91 95729 08188
+              </a>
             </p>
           </div>
         </section>

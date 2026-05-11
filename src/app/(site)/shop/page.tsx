@@ -1,4 +1,11 @@
-import { getLatestCategories } from "@/actions/category";
+import type { Metadata } from "next";
+import { getOldestCategories } from "@/actions/category";
+
+export const metadata: Metadata = {
+    title: "Shop",
+    description:
+        "Browse men's and women's clothing by category and filters. Shop Najak Clothing online with secure checkout and delivery across India.",
+};
 import { ShopSidebar } from "./_components/shop-sidebar";
 import { ShopPage } from "./_components/shop-page";
 
@@ -10,7 +17,7 @@ interface SubCategory {
 
 
 const Shop = async() => {
- const categories = await getLatestCategories(50);
+ const categories = await getOldestCategories(50);
 const categoriesData = categories.map((category) => ({
   id: category._id.toString(),
   name: category.title,

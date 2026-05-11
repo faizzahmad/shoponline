@@ -1,4 +1,5 @@
 "use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsChanged } from "@/store/use-ischnaged";
 import { useGuestCart } from "@/store/use-guest-cart";
@@ -6,34 +7,33 @@ import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-interface CartCountProps {
-  phoneNumber?: string;
-}
+type CartCountProps = {
+  userEmail?: string | null;
+};
 
-export const CartCount = ({ phoneNumber }: CartCountProps) => {
-  const [cartCount, setCartCount] = useState<number>(0);
-  const [loader, setLoader] = useState<boolean>(false);
+export const CartCount = ({ userEmail }: CartCountProps) => {
+  const [cartCount, setCartCount] = useState(0);
+  const [loader, setLoader] = useState(false);
   const { isChanged } = useIsChanged((state) => state);
-  const guestCount = useGuestCart((s) => s.items.length);
+  const guestLineCount = useGuestCart((s) => s.items.length);
 
   useEffect(() => {
-    if (!phoneNumber) return;
+    const email = (userEmail ?? "").trim();
+    if (!email) return;
 
     const fetchCartCount = async () => {
       setLoader(true);
       try {
         const res = await fetch(
-          `/api/cart/count?phone=${encodeURIComponent(phoneNumber)}`,
+          `/api/cart/count?email=${encodeURIComponent(email)}`,
           {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           }
         );
         if (res.ok) {
           const data = await res.json();
-          setCartCount(data.count);
+          setCartCount(Number(data.count ?? 0));
         } else {
           console.log("Failed to fetch cart count");
         }
@@ -43,24 +43,24 @@ export const CartCount = ({ phoneNumber }: CartCountProps) => {
       setLoader(false);
     };
 
-    fetchCartCount();
-  }, [phoneNumber, isChanged]);
+    void fetchCartCount();
+  }, [userEmail, isChanged]);
 
-  const displayCount = phoneNumber ? cartCount : guestCount;
+  const displayCount = userEmail ? cartCount : guestLineCount;
 
   return (
     <Link
       href={"/cart"}
-      className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-red-600 transition"
+      className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#426b9a] transition text-[#244d7c]"
     >
       <div className="relative">
         <ShoppingCart className="size-5" />
-        {phoneNumber && loader && (
-          <Skeleton className="absolute -top-3 -right-[3px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-semibold" />
+        {userEmail && loader && (
+          <Skeleton className="absolute -top-3 -right-[3px] h-4 w-4 rounded-full bg-[#244d7c]/30" />
         )}
-        {(!phoneNumber || !loader) && displayCount > 0 && (
-          <div className="absolute -top-3 -right-[3px] bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-semibold">
-            {displayCount}
+        {(!userEmail || !loader) && displayCount > 0 && (
+          <div className="absolute -top-3 -right-[3px] flex h-4 min-w-4 items-center justify-center rounded-full bg-[#244d7c] px-1 text-[10px] font-semibold text-white">
+            {displayCount > 99 ? "99+" : displayCount}
           </div>
         )}
       </div>

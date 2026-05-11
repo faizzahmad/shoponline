@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { currentUser } from "@clerk/nextjs/server";
+
+export const metadata: Metadata = {
+    title: "Create account",
+    description: "Create a Najak Clothing account for order history and a faster checkout.",
+};
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -14,16 +20,16 @@ const SignupPage = async() => {
         <div className="w-full h-screen flex items-center justify-center exo">
         <div className=" h-full lg:w-[60%] mid:w-[50%] relative signup-bg hidden mid:block">
             <Link href='/' className='absolute left-5 top-5'>
-            <Image src={'/images/web/logo.svg'} alt='logo' height={60} width={60} />
+            <Image src={'/images/web/logo.png'} alt='logo' height={150} width={150} />
             </Link>
         </div> 
 
         <div className="w-full lg:w-[40%] mid:w-[50%] p-5 flex flex-col mid:gap-10 gap-4 h-full items-center justify-center overflow-y-auto">
             <div className=' flex flex-col gap-4 items-center'>
                   <Link href='/' className=' mid:hidden block'>
-                                <Image src={'/images/web/logo.svg'} alt='logo' height={50} width={50} />
+                                <Image src={'/images/web/logo.png'} alt='logo' height={100} width={120} />
                                 </Link>
-                <h2 className=' mid:text-[2.5rem] text-[1.5rem] font-bold'>Sign Up</h2>
+                <h2 className='text-xl font-bold sm:text-2xl mid:text-[2.5rem]'>Sign Up</h2>
             </div>
          
            <SignUnPage/>

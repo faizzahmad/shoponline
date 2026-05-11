@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+    title: "Sign in",
+    description: "Sign in to your Najak Clothing account to track orders and check out faster.",
+};
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
@@ -15,17 +21,17 @@ const Signin = async() => {
         <div className="w-full h-screen flex items-center justify-center exo">
             <div className=" h-full lg:w-[60%] mid:w-[50%] relative signin-bg hidden mid:block">
                 <Link href='/' className='absolute left-5 top-5 '>
-                <Image src={'/images/web/logo.svg'} alt='logo' height={60} width={60} />
+                <Image src={'/images/web/logo.png'} alt='logo' height={150} width={150} />
                 </Link>
             </div> 
 
             <div className="w-full lg:w-[40%] mid:w-[50%] p-5 flex flex-col gap-10 h-full items-center justify-center overflow-y-auto">
                 <div className=' flex flex-col gap-4 items-center'>
                      <Link href='/' className=' mid:hidden block'>
-                <Image src={'/images/web/logo.svg'} alt='logo' height={50} width={50} />
+                <Image src={'/images/web/logo.png'} alt='logo' height={100} width={100} />
                 </Link>
-                    <h2 className=' mid:text-[2.5rem] text-[1.5rem] font-bold'>Sign In</h2>
-                    <p className=' px-10 mid:text-sm text-xs text-center raleway'>Welcome back, busy bee! Log in now to continue your
+                    <h2 className='text-xl font-bold sm:text-2xl mid:text-[2.5rem]'>Sign In</h2>
+                    <p className='px-6 text-center text-xs raleway mid:px-10 mid:text-sm sm:text-sm'>Welcome back, busy bee! Log in now to continue your
                     bee-autiful shopping journey with us</p>
                 </div>
                

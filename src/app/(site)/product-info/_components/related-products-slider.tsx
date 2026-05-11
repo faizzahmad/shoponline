@@ -18,6 +18,7 @@ type RelatedItem = {
     price: number;
     discountedPrice?: number;
     productStock?: number;
+    description?: string;
 };
 
 export function RelatedProductsSlider({
@@ -69,7 +70,7 @@ export function RelatedProductsSlider({
     if (loading) {
         return (
             <section className="mt-14 border-t border-neutral-200 pt-10">
-                <h2 className="text-2xl font-bold tracking-tight text-neutral-900 exo mb-6">
+                <h2 className="mb-4 text-lg font-bold tracking-tight text-neutral-900 exo sm:mb-6 sm:text-2xl">
                     You may also like
                 </h2>
                 <div className="flex items-center justify-center gap-2 py-12 text-neutral-500">
@@ -88,15 +89,15 @@ export function RelatedProductsSlider({
         <section className="mt-14 border-t border-neutral-200 pt-10">
             <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-rose-600">Similar picks</p>
-                    <h2 className="text-2xl font-bold tracking-tight text-neutral-900 exo">You may also like</h2>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#244d7c]">Similar picks</p>
+                    <h2 className="text-lg font-bold tracking-tight text-neutral-900 exo sm:text-2xl">You may also like</h2>
                     <p className="mt-1 text-sm text-neutral-600 raleway">
                         More from the same category and subcategory.
                     </p>
                 </div>
                 <Link
                     href={`/shop?category=${encodeURIComponent(categoryId)}`}
-                    className="text-sm font-semibold text-indigo-700 hover:text-indigo-900"
+                    className="text-sm font-semibold text-[#244d7c] hover:text-[#426b9a]"
                 >
                     View category
                     <ArrowRight className="ml-1 inline h-4 w-4" />
@@ -116,6 +117,7 @@ export function RelatedProductsSlider({
                                 price={item.price}
                                 discountedPrice={item.discountedPrice}
                                 productStock={item.productStock}
+                                description={item.description}
                                 divCalssName="w-full"
                                 imageContainerClassName="relative w-full aspect-[4/5] overflow-hidden rounded-xl"
                             />

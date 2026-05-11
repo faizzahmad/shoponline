@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       "images.pexels.com",
       "firebasestorage.googleapis.com",
       "3903pqvnfg.ufs.sh",
+      "az0ocw5ei9.ufs.sh",
       "utfs.io",
       "ufs.sh",
     ],

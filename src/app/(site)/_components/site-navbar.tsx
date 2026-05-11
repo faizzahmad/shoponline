@@ -26,12 +26,12 @@ export const SiteNavbar = async () => {
   
     return (
         <header>
-            <nav className=" bg-indigo-50 py-2 xl:px-10 px-5  raleway lg:border-b-0  border-b-[5px] border-rose-600">
+            <nav className="bg-white/90 backdrop-blur-md py-2 xl:px-10 px-5 raleway lg:border-b border-b-[4px] border-[#244d7c]/30">
                 <div className="hidden lg:flex items-center justify-between">
                     <div className="flex xl:gap-16 gap-6 items-center">
                         <Link href={'/'}>
-                            <Image src={'/images/web/logo.svg'} alt="Logo" height={40} width={50}></Image></Link>
-                        <ul className=" xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-rose-600 hidden">
+                            <Image src={'/images/web/logo.png'} alt="Logo" height={50} width={100}></Image></Link>
+                        <ul className="xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-[#244d7c] hidden">
                             <li>
                                 <Link href={'/shop'}>Shop</Link>
                             </li>
@@ -43,7 +43,7 @@ export const SiteNavbar = async () => {
                         <SearchBar />
                     </div>
 
-                    <div className=" flex gap-3 text-rose-600 text-[1rem]">
+                    <div className=" flex gap-3 text-[#244d7c] text-[1rem]">
 
                     </div>
 
@@ -56,7 +56,7 @@ export const SiteNavbar = async () => {
 
                                       <UserButtonComp/>
                                         <div>
-                                            <Link href={'/account'} className="flex items-center hover:text-red-600 transition">
+                                            <Link href={'/account'} className="flex items-center hover:text-[#426b9a] transition">
                                                 Account Page
 
                                             </Link>
@@ -67,7 +67,7 @@ export const SiteNavbar = async () => {
                                 ) : (
                                     <ul className="flex gap-3">
                                         <li>
-                                            <Link href={'/sign-in'} className="flex items-center hover:text-red-600 transition">
+                                            <Link href={'/sign-in'} className="flex items-center hover:text-[#426b9a] transition">
 
                                                 <span className=" font-semibold">Sign-in</span>
                                             </Link>
@@ -80,7 +80,7 @@ export const SiteNavbar = async () => {
                                         </li>
                                         <li>
 
-                                            <Link href={'/sign-up'} className="flex items-center gap-2 hover:text-red-600 transition">
+                                            <Link href={'/sign-up'} className="flex items-center gap-2 hover:text-[#426b9a] transition">
                                                 <UserPlus className="size-5" />
                                                 <span className=" font-semibold">Create an account</span>
                                             </Link>
@@ -90,18 +90,18 @@ export const SiteNavbar = async () => {
                             }
                         </div>
                     
-                        <CartCount phoneNumber={externalUser?.phoneNumbers?.[0]?.phoneNumber} />
+                        <CartCount userEmail={externalUser?.primaryEmailAddress?.emailAddress} />
                     </div>
                 </div>
                 <div className="lg:hidden">
                     <MobileSidebar />
                 </div>
             </nav>
-            <div className="w-full h-8 bg-rose-600 xl:text-lg text-[1rem] hidden lg:flex items-center justify-center xl:gap-8 gap-5 text-white font-[500] raleway">
+            <div className="w-full h-9 bg-[#244d7c] xl:text-base text-[1rem] hidden lg:flex items-center justify-center xl:gap-8 gap-5 text-white font-[500] raleway">
 
                 {
                     categories.map((category) => (
-                        <div className="relative group" key={category._id}>
+                        <div className="relative group h-full flex items-center py-1" key={category._id}>
                             <Link href={`/shop?category=${category._id}&subcategory=${category.subCategories.map((sub: SubCategory) => sub._id).join(',')}`}
                             >{category.title}</Link>
                             {

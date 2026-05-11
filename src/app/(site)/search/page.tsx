@@ -9,10 +9,10 @@ const Search = () => {
 
     return ( 
         <div className="w-full h-screen fixed  bg-white top-0 left-0 z-10">
-           <Button variant={'icon'} className="flex text-black items-center gap-2 text-base raleway" onClick={() => {
+           <Button variant={'icon'} className="flex items-center gap-2 text-sm text-black raleway sm:text-base" onClick={() => {
             router.push('/');
            }}>
-                <ArrowLeft className="size-10 text-black" />
+                <ArrowLeft className="size-8 text-black sm:size-10" />
                  Back to Home
             </Button>
 

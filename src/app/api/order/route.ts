@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
         userPhone,
+        userEmail: rawUserEmail,
         username,
         items,
         totalAmount,
@@ -49,6 +50,9 @@ export async function POST(req: Request) {
         state,
         zipCode,
     } = body;
+
+    const userEmail =
+        typeof rawUserEmail === "string" ? rawUserEmail.trim().toLowerCase() : "";
 
     if (!userPhone || !username || !items || !totalAmount || !paymentMethod) {
         return new Response(JSON.stringify({ error: "All fields are required" }), {
@@ -160,6 +164,7 @@ export async function POST(req: Request) {
 
         const newOrder = new Order({
             userPhone,
+            userEmail,
             username,
             items: normalizedItems,
             totalAmount: storedTotal,
@@ -184,18 +189,22 @@ export async function POST(req: Request) {
             );
         }
 
-        const cart = await Cart.findOne({ userPhone });
-        if (cart) {
-            const orderedKeys = new Set(
-                normalizedItems.map(
-                    (i) => `${String(i.productId)}::${String(i.variantId ?? "")}`
-                )
-            );
-            cart.items = cart.items.filter((item: { productId: unknown; variantId?: unknown }) => {
-                const key = `${String(item.productId)}::${String(item.variantId ?? "")}`;
-                return !orderedKeys.has(key);
-            });
-            await cart.save();
+        // COD: cart is finalized now. Online: keep cart until Razorpay verify succeeds
+        // so abandoned checkouts still have items and the client can charge the right amount.
+        if (isCod) {
+            const cart = userEmail ? await Cart.findOne({ userEmail }) : null;
+            if (cart) {
+                const orderedKeys = new Set(
+                    normalizedItems.map(
+                        (i) => `${String(i.productId)}::${String(i.variantId ?? "")}`
+                    )
+                );
+                cart.items = cart.items.filter((item: { productId: unknown; variantId?: unknown }) => {
+                    const key = `${String(item.productId)}::${String(item.variantId ?? "")}`;
+                    return !orderedKeys.has(key);
+                });
+                await cart.save();
+            }
         }
 
         return new Response(

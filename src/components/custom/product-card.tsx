@@ -43,7 +43,7 @@ export const ProductCard = ({
     return (
         <div
             className={cn(
-                "p-4 shadow-sm rounded-xl bg-indigo-50",
+                "p-3 rounded-2xl bg-white border border-[#244d7c]/15 shadow-[0_8px_24px_rgba(36,77,124,0.08)] transition-all duration-300 hover:shadow-[0_14px_30px_rgba(36,77,124,0.16)] hover:-translate-y-0.5",
                 divCalssName,
                 isOutOfStock && "opacity-[0.88] saturate-[0.85]"
             )}
@@ -59,26 +59,32 @@ export const ProductCard = ({
                 >
                     <CarouselContent>
                        {
-                        images.map((item,index) => (
-                             <CarouselItem key={index}>
-                            <div className={cn(imageContainerClassName)}>
-                                <Image
-                                    src={item}
-                                    alt="productImage"
-                                    className="rounded-xl object-cover object-center"
-                                    fill
-                                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 33vw, 280px"
-                                />
-                            </div>
-                        </CarouselItem>
+                        images.map((item, index) => (
+                            <CarouselItem key={index}>
+                                <Link
+                                    href={`/product-info/${id}`}
+                                    className={cn(
+                                        "block outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-[#244d7c]",
+                                        imageContainerClassName
+                                    )}
+                                >
+                                    <Image
+                                        src={item}
+                                        alt={title}
+                                        className="rounded-xl object-cover object-center"
+                                        fill
+                                        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 33vw, 280px"
+                                    />
+                                </Link>
+                            </CarouselItem>
                         ))
                        }
                         
                     </CarouselContent>
-                    <CarouselPrevious className="left-2 size-4 text-xs" />
-                    <CarouselNext className="right-2 size-4 text-xs" />
+                    <CarouselPrevious className="left-2 z-20 size-5 text-xs border-[#244d7c]/25 bg-white/90 text-[#244d7c] hover:bg-white" />
+                    <CarouselNext className="right-2 z-20 size-5 text-xs border-[#244d7c]/25 bg-white/90 text-[#244d7c] hover:bg-white" />
                 </Carousel>
-                <div className="absolute bottom-3 w-full left-0 flex justify-center px-2">
+                <div className="absolute bottom-3 left-0 z-10 flex w-full justify-center px-2">
                     {isOutOfStock ? (
                         <span className="text-neutral-600 md:py-1 py-[2px] px-6 bg-white/95 border border-neutral-200 rounded-full md:text-xs text-[10px] font-medium raleway">
                             Out of stock
@@ -86,7 +92,7 @@ export const ProductCard = ({
                     ) : (
                         <button
                             type="button"
-                            className="text-rose-500 md:py-1 py-[2px] px-10 bg-indigo-50 rounded-full md:text-xs text-[10px]"
+                            className="text-[#244d7c] md:py-1 py-[2px] px-10 bg-white/90 border border-[#244d7c]/30 rounded-full md:text-xs text-[10px] font-semibold hover:bg-[#244d7c] hover:text-white transition"
                             onClick={() => {
                                 setProductId(id);
                                 setIsOpen(true);
@@ -100,10 +106,12 @@ export const ProductCard = ({
             </div>
             <div className="mt-3 flex flex-col gap-y-1">
                <Link  href={`/product-info/${id}`} className="flex flex-col gap-y-1" >
-                <h5 className="md:text-[1.2rem] text-[1rem] font-[600] exo">{title}</h5>
-                <p className="md:text-sm text-xs font-[500] raleway truncate w-full text-neutral-600">{description} </p>
+                <h5 className="text-[0.9rem] font-[700] leading-snug text-[#244d7c] exo line-clamp-2 sm:text-[1rem] md:text-[1.1rem]">{title}</h5>
+                <p className="md:text-sm text-xs font-[500] raleway w-full text-[#426b9a] truncate">
+                    {description?.trim() || "Premium fit and quality fabric for a modern everyday clothing look."}
+                </p>
                 <div className="flex items-center gap-3">
-                    <p className="text-rose-600 font-[700] md:text-[1rem] text-sm exo my-2">{"\u20B9"} {price}</p>
+                    <p className="text-[#244d7c] font-[700] md:text-[1rem] text-sm exo my-1">{"\u20B9"} {price}</p>
                     {
                         discountedPrice && (
                             <p className=" line-through text-muted-foreground md:text-[1rem] text-sm">{"\u20B9"} {discountedPrice}</p>
@@ -113,7 +121,7 @@ export const ProductCard = ({
                </Link>
                 <Button
                     variant="cart"
-                    className="md:mt-3 mt-2 raleway"
+                    className="mt-1 raleway"
                     disabled={isOutOfStock}
                     onClick={() => {
                         if (isOutOfStock) return;

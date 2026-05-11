@@ -20,6 +20,7 @@ type productItems = {
 type OrdersDetails = {
     _id : string;
     userPhone : string;
+    userEmail?: string;
     username : string;
     items : productItems[];
     totalAmount : number;
@@ -61,11 +62,13 @@ export const getOrderById = async (orderId: string): Promise<OrdersDetails | nul
     }
 }
 
-export const getlatestOrdersbyUserPhone = async (userPhone: string): Promise<MinimalOrder[]> => {
+export const getlatestOrdersbyUserEmail = async (userEmail: string): Promise<MinimalOrder[]> => {
   await connectToDb();
+  const email = userEmail.trim().toLowerCase();
+  if (!email) return [];
   try {
     const orders = await Order.find(
-      { userPhone },
+      { userEmail: email },
       '_id orderDateTime totalAmount'
     )
     .sort({ orderDateTime: -1 })
@@ -73,7 +76,7 @@ export const getlatestOrdersbyUserPhone = async (userPhone: string): Promise<Min
 
     return orders as MinimalOrder[];
   } catch (error) {
-    console.error("Error fetching latest orders by user phone:", error);
+    console.error("Error fetching latest orders by user email:", error);
     throw new Error("Failed to fetch orders");
   }
 }

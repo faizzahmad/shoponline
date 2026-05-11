@@ -45,6 +45,7 @@ import { PaymentComponent } from "../../_components/payenment-comp";
 import { FixedLoader } from "@/components/custom/fixed-loader";
 import { validateDeliveryAddressParts } from "@/lib/delivery-address";
 import type { CartSyncWarning } from "@/actions/cart-sync";
+import { normalizeAccountEmail } from "@/utils/account-email";
 
 type OrderFormData = {
     shippingAddress: string;
@@ -124,6 +125,8 @@ export const CartComponent = () => {
    const buyNowproductId = params.get('productId') || null;
 
     const [guestContact, setGuestContact] = useState({ fullName: "", phone: "" });
+    /** Delivery contact phone when signed in (Clerk email auth — phone collected at checkout). */
+    const [signedInPhone, setSignedInPhone] = useState("");
 
     const [orderData, setOrderData] = useState<OrderFormData>({
         shippingAddress: "",
@@ -155,7 +158,8 @@ export const CartComponent = () => {
 
     const handelFetchCart = async () => {
         setLoading(true);
-        const res = await fetch(`/api/cart?phone=${encodeURIComponent(user?.primaryPhoneNumber?.phoneNumber || "")}`, {
+        const email = normalizeAccountEmail(user?.primaryEmailAddress?.emailAddress);
+        const res = await fetch(`/api/cart?email=${encodeURIComponent(email)}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -199,8 +203,8 @@ export const CartComponent = () => {
      */
     useEffect(() => {
         if (!isLoaded) return;
-        const phone = user?.primaryPhoneNumber?.phoneNumber;
-        if (isSignedIn && phone) {
+        const email = normalizeAccountEmail(user?.primaryEmailAddress?.emailAddress);
+        if (isSignedIn && email) {
             const merge = async () => {
                 if (guestItems.length > 0) {
                     setLoading(true);
@@ -210,7 +214,7 @@ export const CartComponent = () => {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
-                                    phone,
+                                    email,
                                     items: {
                                         productId: it.productId,
                                         variantId: it.variantId ?? "",
@@ -249,7 +253,7 @@ export const CartComponent = () => {
             }
             setLoading(false);
         }
-    }, [isSignedIn, isLoaded, user, guestItems, buyNowproductId]);
+    }, [isSignedIn, isLoaded, user?.primaryEmailAddress?.emailAddress, guestItems, buyNowproductId]);
 
     /**
      * Guest stock/price refresh: hits /api/cart/preview once per change-set
@@ -343,7 +347,7 @@ export const CartComponent = () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                phone: user?.primaryPhoneNumber?.phoneNumber,
+                email: normalizeAccountEmail(user?.primaryEmailAddress?.emailAddress),
                 productId: productIdToDelete.productId,
                 variantId: productIdToDelete.variantId,
             }),
@@ -369,7 +373,8 @@ export const CartComponent = () => {
     }
 
     const removeCartLineById = async (productId: string, variantId?: string) => {
-        if (!user?.primaryPhoneNumber?.phoneNumber) {
+        const em = normalizeAccountEmail(user?.primaryEmailAddress?.emailAddress);
+        if (!em) {
             toast.error("Sign in to manage your cart.");
             return;
         }
@@ -378,7 +383,7 @@ export const CartComponent = () => {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                phone: user.primaryPhoneNumber.phoneNumber,
+                email: em,
                 productId,
                 variantId: variantId ?? "",
             }),
@@ -480,11 +485,22 @@ export const CartComponent = () => {
         return true;
     };
 
-    const getCheckoutIdentity = (): { phone: string; name: string } | null => {
+    const getCheckoutIdentity = (): { phone: string; name: string; userEmail: string } | null => {
         if (isSignedIn && user) {
+            const userEmail = normalizeAccountEmail(user.primaryEmailAddress?.emailAddress);
+            if (!userEmail) {
+                toast.error("Your account needs an email address to check out.");
+                return null;
+            }
+            const digits = signedInPhone.replace(/\D/g, "").slice(0, 10);
+            if (!/^[6-9]\d{9}$/.test(digits)) {
+                toast.error("Please enter a valid 10-digit Indian phone number for delivery and SMS updates.");
+                return null;
+            }
             return {
-                phone: user.primaryPhoneNumber?.phoneNumber ?? "",
-                name: user.fullName ?? guestContact.fullName.trim(),
+                phone: `+91${digits}`,
+                name: (user.fullName ?? "").trim() || guestContact.fullName.trim() || "Customer",
+                userEmail,
             };
         }
         if (isGuest) {
@@ -492,6 +508,7 @@ export const CartComponent = () => {
             return {
                 phone: `+91${guestContact.phone.trim()}`,
                 name: guestContact.fullName.trim(),
+                userEmail: "",
             };
         }
         return null;
@@ -524,6 +541,7 @@ export const CartComponent = () => {
             },
             body: JSON.stringify({
                 userPhone: identity.phone,
+                userEmail: identity.userEmail,
                 username : identity.name,
                 items: cartdata.map(item => ({
                     productId: item.productId,
@@ -595,6 +613,7 @@ export const CartComponent = () => {
             },
             body: JSON.stringify({
                 userPhone: identity.phone,
+                userEmail: identity.userEmail,
                 username : identity.name,
                 items: cartdata.map(item => ({
                     productId: item.productId,
@@ -627,9 +646,8 @@ export const CartComponent = () => {
         if (res.ok) {
             const data = await res.json();
             setLoading(false);
-            if (isGuest) {
-                guestClear();
-            }
+            // Do not clear guest/server cart until Razorpay succeeds — clearing here
+            // zeroed subtotal and broke /api/razorpay (min 1 paise).
             setShowPaymentComponent(true);
             setOrderId(data.orderId);
             return data.orderId;
@@ -651,6 +669,9 @@ export const CartComponent = () => {
                  orderId={orderId ? orderId : ""}
                  onPaymentRedirecting={() => setCompletingOrderRedirect(true)}
                  onPaymentVerifyFailed={() => setCompletingOrderRedirect(false)}
+                 onPaymentVerified={() => {
+                     if (isLoaded && !isSignedIn) guestClear();
+                 }}
                  />
             )
         }
@@ -788,7 +809,7 @@ export const CartComponent = () => {
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    className="mt-2 border-rose-200 text-rose-700 hover:bg-rose-50"
+                                                    className="mt-2 border-[#244d7c]/20 text-[#244d7c] hover:bg-[#eef4fb]"
                                                     disabled={loading}
                                                     onClick={() => removeCartLineById(w.productId!, w.variantId)}
                                                 >
@@ -849,8 +870,8 @@ export const CartComponent = () => {
             {
                 cartdata.length <= 0 && loading === false && (
                     <div className={cn("w-full px-10 py-5 bg-white border-b shadow-sm h-screen flex items-center justify-center flex-col gap-3")}>
-                        <ShoppingBag className="size-12 text-rose-600" />
-                        <h5 className="md:text-2xl text-lg font-[600] raleway">Your Cart is Empty</h5>
+                        <ShoppingBag className="size-12 text-[#244d7c]" />
+                        <h5 className="text-base font-[600] raleway sm:text-lg md:text-2xl">Your Cart is Empty</h5>
                         <p className="md:text-base text-sm text-neutral-500 raleway">Please add some products to your cart to proceed.</p>
                         <Link href={'/shop'}>
                             <Button variant={'cart'} className="ralewa md:px-10 px-5 exo">
@@ -866,16 +887,16 @@ export const CartComponent = () => {
                 <div className="w-full lg:w-[38%] xl:max-w-md order-2 space-y-5 min-w-0">
 
                     {isGuest ? (
-                        <Card className="border-rose-200/80 bg-rose-50/50 shadow-sm overflow-hidden raleway">
+                        <Card className="border-[#244d7c]/20/80 bg-[#eef4fb]/50 shadow-sm overflow-hidden raleway">
                             <CardContent className="p-4 sm:p-5 flex flex-col gap-2">
-                                <p className="text-sm font-medium text-rose-800">
+                                <p className="text-sm font-medium text-[#244d7c]">
                                     You&apos;re shopping as a guest
                                 </p>
                                 <p className="text-xs text-neutral-700">
                                     You can place this order without creating an account.{" "}
                                     <button
                                         type="button"
-                                        className="underline underline-offset-2 hover:text-rose-700"
+                                        className="underline underline-offset-2 hover:text-[#244d7c]"
                                         onClick={() => {
                                             const fullPathWithQuery =
                                                 window.location.pathname + window.location.search;
@@ -893,7 +914,7 @@ export const CartComponent = () => {
                     ) : null}
 
                     {isGuest ? (
-                        <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                        <Card className="border-[#244d7c]/15/90 bg-white shadow-sm overflow-hidden raleway">
                             <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                                 <CardTitle className="text-base font-semibold">Your contact details</CardTitle>
                                 <CardDescription className="text-xs">
@@ -929,7 +950,7 @@ export const CartComponent = () => {
                                             className="bg-white"
                                             inputMode="numeric"
                                             autoComplete="tel"
-                                            placeholder="9876543210"
+                                            placeholder="10-digit mobile"
                                             maxLength={10}
                                             value={guestContact.phone}
                                             onChange={(e) =>
@@ -945,7 +966,38 @@ export const CartComponent = () => {
                         </Card>
                     ) : null}
 
-                    <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                    {!isGuest ? (
+                        <Card className="border-[#244d7c]/15/90 bg-white shadow-sm overflow-hidden raleway">
+                            <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
+                                <CardTitle className="text-base font-semibold">Contact for delivery</CardTitle>
+                                <CardDescription className="text-xs">
+                                    We use your email ({user?.primaryEmailAddress?.emailAddress ?? "—"}) for your
+                                    account. Add a mobile number for courier and order updates.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-4 sm:p-5 pt-0">
+                                <div className="space-y-2">
+                                    <Label htmlFor="signed-in-phone" className="text-sm font-medium">
+                                        Phone (10 digits)
+                                    </Label>
+                                    <Input
+                                        id="signed-in-phone"
+                                        className="bg-white"
+                                        inputMode="numeric"
+                                        autoComplete="tel"
+                                        placeholder="10-digit mobile"
+                                        maxLength={10}
+                                        value={signedInPhone}
+                                        onChange={(e) =>
+                                            setSignedInPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+                                        }
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : null}
+
+                    <Card className="border-[#244d7c]/15/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                             <CardTitle className="text-base font-semibold">Payment method</CardTitle>
                             <CardDescription className="text-xs">
@@ -962,7 +1014,7 @@ export const CartComponent = () => {
                                             paymentMode: checked ? "onlinePayment" : "cod",
                                         });
                                     }}
-                                    className="data-[state=checked]:bg-rose-600 data-[state=checked]:border-rose-600 mt-0.5"
+                                    className="data-[state=checked]:bg-[#244d7c] data-[state=checked]:border-[#244d7c] mt-0.5"
                                     checked={orderData.paymentMode === "onlinePayment"}
                                 />
                                 <Label htmlFor="onlinePayment" className="text-sm font-normal leading-snug cursor-pointer">
@@ -978,7 +1030,7 @@ export const CartComponent = () => {
                                             paymentMode: checked ? "cod" : "onlinePayment",
                                         });
                                     }}
-                                    className="data-[state=checked]:bg-rose-600 data-[state=checked]:border-rose-600 mt-0.5"
+                                    className="data-[state=checked]:bg-[#244d7c] data-[state=checked]:border-[#244d7c] mt-0.5"
                                     checked={orderData.paymentMode === "cod"}
                                 />
                                 <Label htmlFor="cod" className="text-sm font-normal leading-snug cursor-pointer">
@@ -988,7 +1040,7 @@ export const CartComponent = () => {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                    <Card className="border-[#244d7c]/15/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2">
                             <CardTitle className="text-base font-semibold">Promo code</CardTitle>
                             <CardDescription className="text-xs">Have a coupon? Apply it here.</CardDescription>
@@ -1013,11 +1065,11 @@ export const CartComponent = () => {
                                         </Button>
                                     </div>
                                     {couponError ? (
-                                        <p className="text-xs text-red-600 exo">{couponError}</p>
+                                        <p className="text-xs text-[#244d7c] exo">{couponError}</p>
                                     ) : null}
                                 </div>
                             ) : (
-                                <div className="bg-rose-600 text-white exo p-4 rounded-lg relative">
+                                <div className="bg-[#244d7c] text-white exo p-4 rounded-lg relative">
                                     <h5 className="font-[500] text-sm">Coupon applied</h5>
                                     <p className="mt-2 text-xs raleway pr-6">
                                         {couponCode} is applied — {discountPercentage}% off your order.
@@ -1044,10 +1096,10 @@ export const CartComponent = () => {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-indigo-100/90 bg-white shadow-sm overflow-hidden raleway">
+                    <Card className="border-[#244d7c]/15/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                <MapPin className="size-4 text-rose-600 shrink-0" aria-hidden />
+                                <MapPin className="size-4 text-[#244d7c] shrink-0" aria-hidden />
                                 Delivery details
                             </CardTitle>
                             <CardDescription className="text-xs">
@@ -1133,7 +1185,7 @@ export const CartComponent = () => {
                         <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
                             <div className="space-y-3 text-sm">
                                 {hasCheckoutBlocker ? (
-                                    <p className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-md px-3 py-2 raleway">
+                                    <p className="text-xs text-[#244d7c] bg-[#eef4fb] border border-[#244d7c]/20 rounded-md px-3 py-2 raleway">
                                         Remove out-of-stock products from your cart before you can check
                                         out.
                                     </p>
@@ -1152,7 +1204,7 @@ export const CartComponent = () => {
                                 </div>
                                 <div className="flex justify-between gap-4 pt-3 border-t border-dashed border-neutral-300 text-base">
                                     <span className="font-semibold">Subtotal</span>
-                                    <span className="exo font-semibold text-rose-600 tabular-nums">{"\u20B9"} {subtotal}</span>
+                                    <span className="exo font-semibold text-[#244d7c] tabular-nums">{"\u20B9"} {subtotal}</span>
                                 </div>
                             </div>
                             <div className="w-full pt-1">
@@ -1194,7 +1246,7 @@ export const CartComponent = () => {
 
 
                     <div className="w-full">
-                        <h5 className="flex items-center gap-4 lg:text-3xl sm:text-2xl text-xl font-[700] raleway py-5 border-b border-dashed sticky top-0 bg-white z-10">My Cart <ShoppingBag /></h5>
+                        <h5 className="sticky top-0 z-10 flex items-center gap-3 border-b border-dashed bg-white py-4 text-lg font-[700] raleway sm:gap-4 sm:py-5 sm:text-2xl lg:text-3xl">My Cart <ShoppingBag /></h5>
                         <div className="py-5 grid grid-cols-1 gap-5">
                             {
                                 cartdata.map((item) => {
@@ -1206,7 +1258,7 @@ export const CartComponent = () => {
                                     <div
                                         className={cn(
                                             "w-full sm:flex gap-3 border-b last:border-b-0 rounded-lg p-2 -mx-2",
-                                            isOutOfStock && "border border-rose-200 bg-rose-50/60"
+                                            isOutOfStock && "border border-[#244d7c]/20 bg-[#eef4fb]/60"
                                         )}
                                         key={`${item.productId}-${item.variantId ?? ""}`}
                                     >
@@ -1221,15 +1273,13 @@ export const CartComponent = () => {
                                         </div>
                                         <div className="flex-1 p-2 min-w-0">
                                             {isOutOfStock ? (
-                                                <p className="text-xs font-medium text-rose-800 raleway mb-1">
+                                                <p className="text-xs font-medium text-[#244d7c] raleway mb-1">
                                                     This item is out of stock. Remove it to continue
                                                     checkout.
                                                 </p>
                                             ) : null}
                                             <h5 className="text-lg font-[500] exo">{item.productName}</h5>
-                                            <p className="text-xs font-[300] raleway text-neutral-600 ">{
-                                                item.shortDescription
-                                            }</p>
+                                           
                                             {variantAttributes.length > 0 && (
                                                 <div className="flex flex-wrap gap-2 mt-2">
                                                     {variantAttributes.map((attr) => (
@@ -1244,7 +1294,7 @@ export const CartComponent = () => {
                                                 </div>
                                             )}
                                             <div className="flex items-center gap-3 mt-2 flex-wrap">
-                                                <p className="text-rose-600 font-[600] text-sm exo">{"\u20B9"} {
+                                                <p className="text-[#244d7c] font-[600] text-sm exo">{"\u20B9"} {
                                                     item.originalPrice * item.quantity
                                                 }</p>
                                                 <p className="text-neutral-500 font-[300] text-xs exo line-through">{"\u20B9"}
@@ -1252,7 +1302,7 @@ export const CartComponent = () => {
                                                         item.discountPrice * item.quantity
                                                     }
                                                 </p>
-                                                <p className="text text-rose-400 font-[300] text-xs raleway">
+                                                <p className="text text-[#426b9a] font-[300] text-xs raleway">
                                                     {
                                                         Math.round(((item.discountPrice - item.originalPrice) / item.discountPrice) * 100)
                                                     }
@@ -1261,7 +1311,7 @@ export const CartComponent = () => {
                                             <div className="flex flex-wrap items-center gap-3 mt-1 text-sm raleway">
  
                                                 {isOutOfStock ? (
-                                                    <span className="text-sm text-rose-700 font-medium">
+                                                    <span className="text-sm text-[#244d7c] font-medium">
                                                         Out of stock
                                                     </span>
                                                 ) : (
@@ -1287,7 +1337,7 @@ export const CartComponent = () => {
                                                             "Content-Type": "application/json",
                                                         },
                                                         body: JSON.stringify({
-                                                            phone: user?.primaryPhoneNumber?.phoneNumber,
+                                                            email: normalizeAccountEmail(user?.primaryEmailAddress?.emailAddress),
                                                             productId: item.productId,
                                                             variantId: item.variantId ?? "",
                                                             quantity: parseInt(value),
@@ -1340,7 +1390,7 @@ export const CartComponent = () => {
                                                 </div> */}
                                                 <Button variant={'link'} disabled={loading || 
                                                     buyNowproductId === item.productId
-                                                } className="text-rose-600 font-[500] text-sm exo ms-auto" onClick={() => {
+                                                } className="text-[#244d7c] font-[500] text-sm exo ms-auto" onClick={() => {
                                                     {
                                                         setIsOpenAlert(true);
                                                         setProductIdToDelete({

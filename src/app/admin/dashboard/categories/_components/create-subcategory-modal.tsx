@@ -17,6 +17,7 @@ import { useCategory } from "../hooks/use-category";
 import { Loader } from "lucide-react";
 import { SubCategory } from "./subCategoryTable/columns";
 import { useAlertDialog } from "../hooks/user-alert-dialog";
+import { isAxiosError } from "axios";
 
 interface CreateSubcategoryModalProps {
     categories: Category[];
@@ -59,13 +60,13 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
 
     const hanelSubCategory = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (subCategoryData.title === "" || subCategoryData.image === "" || subCategoryData.categoryId === "") {
+        if (subCategoryData.title.trim() === "" || subCategoryData.image === "" || subCategoryData.categoryId === "") {
             toast.error("All fields are required");
             return;
         } else if(subCategoryId){
              setIsLoading(true);
              const subCategoryDataforUpdate = {
-                title : subCategoryData.title,
+                title : subCategoryData.title.trim(),
                 image : subCategoryData.image,
                 categoryId : subCategoryData.categoryId,
                 id : subCategoryId 
@@ -84,7 +85,11 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
 
             } catch (err) {
                 console.log(err);
-                toast.error("Something went wrong");
+                const message =
+                    isAxiosError(err) && err.response?.data?.error
+                        ? String(err.response.data.error)
+                        : "Something went wrong";
+                toast.error(message);
             } finally {
                 setIsLoading(false);
             }
@@ -92,7 +97,10 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
         else {
             setIsLoading(true);
             try {
-                const response = await postData<typeof subCategoryData, SubCategoryPost>('category/sub-category', subCategoryData);
+                const response = await postData<typeof subCategoryData, SubCategoryPost>('category/sub-category', {
+                    ...subCategoryData,
+                    title: subCategoryData.title.trim(),
+                });
                 toast.success(response.message);
                 handelGetSubCategories(response.categoryId);
                 setCategoryIdforSubcat(response.categoryId);
@@ -106,7 +114,11 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
 
             } catch (err) {
                 console.log(err);
-                toast.error("Something went wrong");
+                const message =
+                    isAxiosError(err) && err.response?.data?.error
+                        ? String(err.response.data.error)
+                        : "Something went wrong";
+                toast.error(message);
             } finally {
                 setIsLoading(false);
             }

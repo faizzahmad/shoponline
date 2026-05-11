@@ -9,7 +9,8 @@ export type UserRow = {
     _id: string;
     firstName: string;
     lastName: string;
-    phoneNumber: string;
+    email?: string;
+    phoneNumber?: string;
     role: string;
     createdAt?: string;
 };
@@ -42,17 +43,30 @@ export const Usercolumns: ColumnDef<UserRow>[] = [
         },
     },
     {
-        accessorKey: "phoneNumber",
+        accessorKey: "email",
         header: ({ column }) => (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-                Phone
+                Email
                 <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
-        cell: ({ row }) => <span className="pl-2">{row.original.phoneNumber}</span>,
+        cell: ({ row }) => (
+            <span className="pl-2 max-w-[220px] truncate block" title={row.original.email ?? ""}>
+                {row.original.email?.trim() ? row.original.email : "—"}
+            </span>
+        ),
+    },
+    {
+        accessorKey: "phoneNumber",
+        header: "Phone",
+        cell: ({ row }) => (
+            <span className="pl-2 text-muted-foreground text-sm">
+                {row.original.phoneNumber?.trim() ? row.original.phoneNumber : "—"}
+            </span>
+        ),
     },
     {
         accessorKey: "role",

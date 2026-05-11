@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 
 const orderSchema = new mongoose.Schema({
+    /** Delivery / Shiprocket contact phone */
     userPhone: { type: String, required: true },
+    /** Clerk account email when logged in — used for order history */
+    userEmail: { type: String, default: "", index: true },
     username  : { type: String, required: true },
     items: [
         {

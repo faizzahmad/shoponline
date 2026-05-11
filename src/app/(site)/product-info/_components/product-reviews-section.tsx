@@ -56,7 +56,7 @@ function StarPicker({
                     <button
                         key={n}
                         type="button"
-                        className="p-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+                        className="p-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#244d7c]"
                         onMouseEnter={() => setHover(n)}
                         onMouseLeave={() => setHover(0)}
                         onClick={() => onChange(n)}
@@ -162,14 +162,14 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
         <section className="mt-14 border-t border-neutral-200 pt-10">
             <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight text-neutral-900 exo">Customer reviews</h2>
+                    <h2 className="text-lg font-bold tracking-tight text-neutral-900 exo sm:text-2xl">Customer reviews</h2>
                     <p className="mt-1 text-sm text-neutral-600 raleway">
                         Honest feedback from shoppers who purchased this product.
                     </p>
                 </div>
                 {!loading && reviewCount > 0 && (
                     <div className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm">
-                        <span className="text-3xl font-bold text-neutral-900">{averageRating.toFixed(1)}</span>
+                        <span className="text-2xl font-bold text-neutral-900 sm:text-3xl">{averageRating.toFixed(1)}</span>
                         <div>
                             <StarsDisplay rating={Math.min(5, Math.max(1, Math.round(averageRating)))} />
                             <p className="mt-0.5 text-xs text-neutral-500">
@@ -183,9 +183,9 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
             {isLoaded && isSignedIn && (
                 <form
                     onSubmit={handleSubmit}
-                    className="mb-10 rounded-2xl border border-neutral-200 bg-indigo-50/40 p-5 sm:p-6"
+                    className="mb-10 rounded-2xl border border-neutral-200 bg-[#eef4fb]/40 p-5 sm:p-6"
                 >
-                    <h3 className="text-lg font-semibold text-neutral-900 raleway">
+                    <h3 className="text-base font-semibold text-neutral-900 raleway sm:text-lg">
                         {myReview ? "Update your review" : "Write a review"}
                     </h3>
                     <p className="mt-1 text-sm text-neutral-600">
@@ -246,7 +246,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
                         <Button
                             type="submit"
                             disabled={submitting}
-                            className="bg-rose-600 hover:bg-rose-700"
+                            className="bg-[#244d7c] hover:bg-[#426b9a]"
                         >
                             {submitting ? (
                                 <>
@@ -266,7 +266,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
             {isLoaded && !isSignedIn && (
                 <div className="mb-10 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center">
                     <p className="text-neutral-700 raleway">
-                        <Link href="/sign-in" className="font-semibold text-rose-600 underline">
+                        <Link href="/sign-in" className="font-semibold text-[#244d7c] underline">
                             Sign in
                         </Link>{" "}
                         to leave a review with photos and a star rating.
@@ -290,7 +290,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
                             key={r._id}
                             className={cn(
                                 "rounded-xl border border-neutral-200 bg-white p-5 shadow-sm",
-                                user?.id === r.authorUserId && "ring-2 ring-rose-100"
+                                user?.id === r.authorUserId && "ring-2 ring-[#244d7c]/15"
                             )}
                         >
                             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -306,7 +306,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
                                     </div>
                                 </div>
                                 {user?.id === r.authorUserId && (
-                                    <span className="rounded-full bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700">
+                                    <span className="rounded-full bg-[#eef4fb] px-2 py-0.5 text-xs font-medium text-[#244d7c]">
                                         Your review
                                     </span>
                                 )}

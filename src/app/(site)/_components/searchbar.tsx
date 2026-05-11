@@ -83,7 +83,7 @@ export const SearchBar = () => {
             <Button variant={'icon'} className=" bg-transparent ">
                 <SearchIcon className="size-5" />
             </Button>
-            <Input value={search} onChange={(e) => setSearch(e.target.value)} className="bg-transparent border-none rounded-none shadow-none flex-shrink md:text-base text-sm " placeholder="Search Balloons, Party Caps, Candles, Decorations, Gifts..." />
+            <Input value={search} onChange={(e) => setSearch(e.target.value)} className="bg-transparent border-none rounded-none shadow-none flex-shrink md:text-base text-sm " placeholder="Search t-shirts, jeans, shirts, ethnic wear, jackets..." />
 
             {
                 show && (
@@ -112,7 +112,7 @@ export const SearchBar = () => {
 
 
                                                             <span className="md:text-sm text-xs exo font-[500]">{"\u20B9"} {product.originalPrice}</span>
-                                                            <Button variant={'link'} className="float-right md:text-xs text-[10px] text-rose-600 mt-3">View Details <ChevronRight /></Button>
+                                                            <Button variant={'link'} className="float-right md:text-xs text-[10px] text-[#244d7c] mt-3">View Details <ChevronRight /></Button>
                                                         </div>
                                                     </Link>
 

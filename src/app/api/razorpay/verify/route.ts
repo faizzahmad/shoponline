@@ -2,8 +2,27 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDb } from "@/lib/connectToDb";
 import Order from "@/lib/models/order-model";
+import Cart from "@/lib/models/cart-model";
 import { decrementStockForOrderItems } from "@/lib/inventory";
 import { syncOrderToShiprocket } from "@/lib/shiprocket";
+
+async function removeOrderedLinesFromCart(
+    userEmail: string,
+    lines: Array<{ productId: string; variantId?: string }>
+) {
+    const email = userEmail.trim().toLowerCase();
+    if (!email) return;
+    const cart = await Cart.findOne({ userEmail: email });
+    if (!cart || !Array.isArray(cart.items) || cart.items.length === 0) return;
+    const orderedKeys = new Set(
+        lines.map((i) => `${String(i.productId)}::${String(i.variantId ?? "")}`)
+    );
+    cart.items = cart.items.filter((item: { productId: unknown; variantId?: unknown }) => {
+        const key = `${String(item.productId)}::${String(item.variantId ?? "")}`;
+        return !orderedKeys.has(key);
+    });
+    await cart.save();
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -54,7 +73,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Order mismatch" }, { status: 400 });
         }
 
+        const cartRemovalLines = Array.isArray(order.items)
+            ? order.items.map(
+                  (line: { productId: unknown; variantId?: unknown }) => ({
+                      productId: String(line.productId),
+                      variantId: line.variantId ? String(line.variantId) : "",
+                  })
+              )
+            : [];
+
         if (order.paymentStatus === "Paid" && order.inventoryAdjusted) {
+            await removeOrderedLinesFromCart(String(order.userEmail ?? ""), cartRemovalLines);
             void syncOrderToShiprocket(orderId).catch((err) =>
                 console.error("[Shiprocket] Prepaid retry sync failed:", err)
             );
@@ -93,6 +122,8 @@ export async function POST(request: NextRequest) {
                 razorpayPaymentId: razorpay_payment_id,
             });
         }
+
+        await removeOrderedLinesFromCart(String(order.userEmail ?? ""), cartRemovalLines);
 
         void syncOrderToShiprocket(orderId).catch((err) =>
             console.error("[Shiprocket] Prepaid sync failed:", err)

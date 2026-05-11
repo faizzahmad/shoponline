@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash } from "lucide-react";
+import { ArrowLeft, GripVertical, Trash } from "lucide-react";
 import { useProductAdmin } from "../hooks/use-product-admin";
 import { UploadDropzone } from "@/utils/uploadthing";
 import { toast } from "sonner";
@@ -8,10 +8,18 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchData, postData, updateDataWithData } from "@/utils/apiCall";
 import { FixedLoader } from "@/components/custom/fixed-loader";
 import { cn } from "@/lib/utils";
+import { RichTextEditor } from "./rich-text-editor";
+
+function reorderImages(images: string[], fromIndex: number, toIndex: number): string[] {
+    const next = [...images];
+    const [removed] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, removed);
+    return next;
+}
 
 type ProductData = {
     productName: string;
@@ -159,6 +167,9 @@ export const ProductDescription = () => {
     const [colorOptionsInput, setColorOptionsInput] = useState("");
     const [sizeOptionsInput, setSizeOptionsInput] = useState("");
     const [variantRows, setVariantRows] = useState<VariantRow[]>([]);
+    const [dragImageIndex, setDragImageIndex] = useState<number | null>(null);
+    const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+    const dragImageIndexRef = useRef<number | null>(null);
 
     const parseOptions = (value: string): string[] =>
         value
@@ -552,6 +563,9 @@ export const ProductDescription = () => {
                     <h5 className="mb-4 text-2xl font-semibold raleway">
                         Product Images
                     </h5>
+                    <p className="text-sm text-muted-foreground mb-3">
+                        Drag images by the grip to change order — the first image is the main thumbnail.
+                    </p>
                     <div className=" flex gap-8 items-center">
 
                         <div className="w-[350px]">
@@ -575,24 +589,73 @@ export const ProductDescription = () => {
 
                             {
                                 productData.images.map((image, index) => (
-                                    <div className="size-24 relative rounded-lg" key={index}>
-                                        <Image src={image} alt="partyImage"
+                                    <div
+                                        draggable
+                                        onDragStart={() => {
+                                            dragImageIndexRef.current = index;
+                                            setDragImageIndex(index);
+                                        }}
+                                        onDragEnd={() => {
+                                            dragImageIndexRef.current = null;
+                                            setDragImageIndex(null);
+                                            setDropTargetIndex(null);
+                                        }}
+                                        onDragOver={(e) => {
+                                            e.preventDefault();
+                                            e.dataTransfer.dropEffect = "move";
+                                            setDropTargetIndex(index);
+                                        }}
+                                        onDragLeave={() => setDropTargetIndex((t) => (t === index ? null : t))}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            const from = dragImageIndexRef.current;
+                                            dragImageIndexRef.current = null;
+                                            setDropTargetIndex(null);
+                                            setDragImageIndex(null);
+                                            if (from === null || from === index) return;
+                                            setProductData((prev) => ({
+                                                ...prev,
+                                                images: reorderImages(prev.images, from, index),
+                                            }));
+                                        }}
+                                        className={cn(
+                                            "size-24 relative rounded-lg cursor-grab active:cursor-grabbing outline-none ring-offset-2 transition",
+                                            dragImageIndex === index && "opacity-50 scale-[0.98]",
+                                            dropTargetIndex === index &&
+                                                dragImageIndex !== null &&
+                                                dragImageIndex !== index &&
+                                                "ring-2 ring-[#244d7c]",
+                                        )}
+                                        key={`${image}-${index}`}
+                                    >
+                                        <span className="absolute left-0.5 top-0.5 z-10 flex items-center rounded bg-black/55 p-0.5 text-white">
+                                            <GripVertical className="size-4" aria-hidden />
+                                        </span>
+                                        <span className="absolute bottom-1 right-1 z-10 rounded bg-black/60 px-1.5 py-px text-[10px] font-semibold text-white">
+                                            {index + 1}
+                                        </span>
+                                        <Image src={image} alt="product"
                                             fill
                                             objectFit="cover"
-                                            className="h-full w-full rounded-lg"
+                                            className="h-full w-full rounded-lg pointer-events-none"
+                                            draggable={false}
                                         />
-                                        <div className="absolute top-0 left-0 h-full w-full flex items-center justify-center">
-                                            <button type="button" className="p-1 bg-rose-600 text-white rounded-full"
-                                                onClick={() => {
+                                        <div className="absolute top-1 right-1 z-10">
+                                            <button
+                                                type="button"
+                                                title="Remove image"
+                                                className="p-1 bg-[#244d7c] text-white rounded-full hover:bg-[#426b9a]"
+                                                onClick={(ev) => {
+                                                    ev.preventDefault();
+                                                    ev.stopPropagation();
                                                     setProductData((prev) => ({
                                                         ...prev,
-                                                        images: prev.images.filter((_, i) => i !== index)
+                                                        images: prev.images.filter((_, i) => i !== index),
                                                     }));
                                                 }}
                                             >
                                                 <Trash className="size-[12px]" />
                                             </button>
-
                                         </div>
                                     </div>
                                 ))
@@ -974,9 +1037,11 @@ export const ProductDescription = () => {
 
                     <div className="grid grid-cols-1 gap-1 mt-10">
                         <Label htmlFor='longDescription' className="mb-1">Long Description</Label>
-                        <Textarea id="longDescription" placeholder="Long Description" className="h-[200px]"
+                        <RichTextEditor
                             value={productData.longDescription}
-                            onChange={(e) => setProductData((prev) => ({ ...prev, longDescription: e.target.value }))}
+                            onChange={(html) =>
+                                setProductData((prev) => ({ ...prev, longDescription: html }))
+                            }
                         />
                     </div>
                 </div>

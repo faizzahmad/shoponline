@@ -7,18 +7,20 @@ import {
 import { syncCartWithProducts } from "@/actions/cart-sync";
 import Cart from "@/lib/models/cart-model";
 import Product from "@/lib/models/product-model";
+import { normalizeAccountEmail } from "@/utils/account-email";
 
 export async function POST(req: Request) {
     const body = await req.json();
-    const { phone, items } = body;
-    if (!phone || !items) {
-        return new Response(JSON.stringify({ error: "Phone number and items are required" }), {
+    const email = normalizeAccountEmail(body.email ?? body.phone);
+    const { items } = body;
+    if (!email || !items) {
+        return new Response(JSON.stringify({ error: "Email and items are required" }), {
             status: 400,
         });
     }
     await connectToDb();
     try {
-        const response = await AddtoCart(phone, items);
+        const response = await AddtoCart(email, items);
         return new Response(JSON.stringify(response), {
             status: 200,
         });
@@ -35,16 +37,16 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
     const url = new URL(req.url);
-    const phone = url.searchParams.get("phone");
-    if (!phone) {
-        return new Response(JSON.stringify({ error: "Phone number is required" }), {
+    const email = normalizeAccountEmail(url.searchParams.get("email") ?? url.searchParams.get("phone"));
+    if (!email) {
+        return new Response(JSON.stringify({ error: "Email is required" }), {
             status: 400,
         });
     }
     await connectToDb();
     try {
-        const warnings = await syncCartWithProducts(phone);
-        const cart = (await Cart.findOne({ userPhone: phone }).lean()) as {
+        const warnings = await syncCartWithProducts(email);
+        const cart = (await Cart.findOne({ userEmail: email }).lean()) as {
             items?: Array<Record<string, unknown>>;
         } | null;
         if (!cart || !cart.items?.length) {
@@ -105,15 +107,16 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
     const body = await req.json();
-    const { phone, productId, variantId } = body;
-    if (!phone || !productId) {
-        return new Response(JSON.stringify({ error: "Phone number and product ID are required" }), {
+    const email = normalizeAccountEmail(body.email ?? body.phone);
+    const { productId, variantId } = body;
+    if (!email || !productId) {
+        return new Response(JSON.stringify({ error: "Email and product ID are required" }), {
             status: 400,
         });
     }
     await connectToDb();
     try {
-        await handelRemoveItemFromcart(phone, productId, variantId);
+        await handelRemoveItemFromcart(email, productId, variantId);
         return new Response(JSON.stringify({ message: "Item removed from cart successfully"}), {
             status: 200,
         });
@@ -127,15 +130,16 @@ export async function DELETE(req: Request) {
 
 export async function PUT(req: Request) {
     const body = await req.json();
-    const { phone, productId, variantId, quantity } = body;
-    if (!phone || !productId || quantity === undefined) {   
-        return new Response(JSON.stringify({ error: "Phone number, product ID, and quantity are required" }), {
+    const email = normalizeAccountEmail(body.email ?? body.phone);
+    const { productId, variantId, quantity } = body;
+    if (!email || !productId || quantity === undefined) {   
+        return new Response(JSON.stringify({ error: "Email, product ID, and quantity are required" }), {
             status: 400,
         });
     }
     await connectToDb();
     try {
-        const response = await chnageCount(phone, productId, quantity, variantId);
+        const response = await chnageCount(email, productId, quantity, variantId);
         return new Response(JSON.stringify(response), {
             status: 200,
         });
