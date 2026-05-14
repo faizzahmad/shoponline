@@ -10,7 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { sortItems } from "@/lib/staticData";
 import { useLoader } from "@/store/use-loader";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCategoryDropdown } from "./hooks/use-category-dropdown";
 import { fetchData } from "@/utils/apiCall";
 import { ShoppingCart, X } from "lucide-react";
@@ -48,16 +48,72 @@ type ShopPageProps = {
     categories: CategoryFilterItem[];
 };
 
+type FilterChip =
+    | { kind: "sub"; id: string; label: string }
+    | { kind: "cat"; id: string; label: string };
+
+function buildFilterChips(
+    categories: CategoryFilterItem[],
+    category: string[],
+    subcategory: string[]
+): FilterChip[] {
+    const chips: FilterChip[] = [];
+
+    for (const catId of category) {
+        const cat = categories.find((c) => c.id === catId);
+        if (!cat) continue;
+        const subsInUrl = (cat.subCategories ?? []).filter((s) => subcategory.includes(s.id));
+        if (subsInUrl.length === 0) {
+            chips.push({ kind: "cat", id: catId, label: cat.name });
+        }
+    }
+
+    for (const subId of subcategory) {
+        const parent = categories.find((c) => c.subCategories?.some((s) => s.id === subId));
+        const sub = parent?.subCategories?.find((s) => s.id === subId);
+        const label = parent && sub ? `${parent.name}: ${sub.name}` : subId;
+        chips.push({ kind: "sub", id: subId, label });
+    }
+
+    return chips;
+}
+
 export const ShopPage = ({ categories }: ShopPageProps) => {
     const { isLoading, setLoading } = useLoader((state) => state);
-    const { category, subcategory, sortBy, setSortBy, page, setPage } = useCategoryDropdown();
+    const {
+        category,
+        subcategory,
+        setCategory,
+        setSubcategory,
+        sortBy,
+        setSortBy,
+        page,
+        setPage,
+    } = useCategoryDropdown();
     const [products, setProducts] = useState<GetProductDataprops[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [resetFilter, setResetFilter] = useState(false);
  
     const { search, setSearch } = useSearch();
 
+    const mobileFilterChips = useMemo(
+        () => buildFilterChips(categories, category, subcategory),
+        [categories, category, subcategory]
+    );
 
+    const dismissFilterChip = (chip: FilterChip) => {
+        if (chip.kind === "sub") {
+            setSubcategory((prev) => prev.filter((id) => id !== chip.id));
+        } else {
+            setCategory((prev) => prev.filter((id) => id !== chip.id));
+            const cat = categories.find((c) => c.id === chip.id);
+            const subIds = cat?.subCategories?.map((s) => s.id) ?? [];
+            if (subIds.length > 0) {
+                setSubcategory((prev) => prev.filter((id) => !subIds.includes(id)));
+            }
+        }
+        setPage(1);
+    };
     const handelGetProducts = async () => {
         setLoading(true);
         try {
@@ -91,7 +147,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
         setPage(1);
         setHasMore(true);
         setResetFilter(true);
-    }, [sortBy, JSON.stringify(subcategory), search]);
+    }, [sortBy, JSON.stringify(subcategory), JSON.stringify(category), search]);
 
     useEffect(() => {
         if (resetFilter) {
@@ -108,6 +164,31 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
             <div className="h-auto w-full">
                 <div className="w-full">
                     <ShopMobileCategoryFilter categories={categories} />
+                    {mobileFilterChips.length > 0 ? (
+                        <div
+                            className="mt-2 mb-3 md:hidden"
+                            aria-label="Active filters"
+                        >
+                            <div className="-mx-1 flex flex-nowrap gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                                {mobileFilterChips.map((chip) => (
+                                    <button
+                                        key={`${chip.kind}-${chip.id}`}
+                                        type="button"
+                                        className="max-w-[11rem] shrink-0 rounded px-2 py-1 text-left text-xs text-white raleway sm:max-w-[14rem] sm:px-3 sm:py-1.5 sm:text-sm bg-[#244d7c] flex items-center gap-2"
+                                        onClick={() => dismissFilterChip(chip)}
+                                        title={
+                                            chip.kind === "sub"
+                                                ? "Remove this subcategory"
+                                                : "Remove this category"
+                                        }
+                                    >
+                                        <span className="min-w-0 flex-1 truncate">{chip.label}</span>
+                                        <X className="size-3.5 shrink-0 sm:size-4" aria-hidden />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ) : null}
                     <div className="w-full flex flex-wrap items-center gap-2">
                         {
                             search && (

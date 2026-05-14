@@ -29,11 +29,12 @@ const categoriesData = categories.map((category) => ({
   })) || [],
 }));
     return ( 
-        <div className="w-full flex gap-5">
-           <div className="w-64 h-screen border-r p-5 overflow-y-auto hidden md:block">
+        <div className="flex w-full min-w-0 gap-5">
+           <div className="hidden h-screen w-64 shrink-0 overflow-y-auto border-r p-5 md:block">
             <ShopSidebar categories={categoriesData}/>
            </div>
-           <div className="flex-1 h-screen overflow-y-auto p-5">
+           {/* Mobile: one scroll on #site-scroll-root (no nested h-screen). md+: pane scrolls beside sidebar. */}
+           <div className="min-w-0 w-full flex-1 p-5 md:h-screen md:overflow-y-auto md:overflow-x-hidden">
             <ShopPage categories={categoriesData} />
            </div>
         </div>
