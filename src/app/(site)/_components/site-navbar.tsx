@@ -26,7 +26,7 @@ export const SiteNavbar = async () => {
   
     return (
         <header>
-            <nav className="bg-white/90 backdrop-blur-md py-2 xl:px-10 px-5 raleway lg:border-b border-b-[4px] border-[#244d7c]/30">
+            <nav className="relative bg-white/90 backdrop-blur-md py-2 xl:z-[120] xl:px-10 px-5 raleway lg:border-b border-b-[4px] border-[#244d7c]/30">
                 <div className="hidden lg:flex items-center justify-between">
                     <div className="flex xl:gap-16 gap-6 items-center">
                         <Link href={'/'}>
@@ -97,7 +97,7 @@ export const SiteNavbar = async () => {
                     <MobileSidebar />
                 </div>
             </nav>
-            <div className="w-full h-9 bg-[#244d7c] xl:text-base text-[1rem] hidden lg:flex items-center justify-center xl:gap-8 gap-5 text-white font-[500] raleway">
+            <div className="relative z-0 hidden h-9 w-full items-center justify-center gap-5 bg-[#244d7c] text-[1rem] font-[500] text-white raleway lg:flex xl:z-[100] xl:gap-8 xl:text-base">
 
                 {
                     categories.map((category) => (

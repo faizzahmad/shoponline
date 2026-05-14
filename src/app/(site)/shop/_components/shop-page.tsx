@@ -61,7 +61,16 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
     const handelGetProducts = async () => {
         setLoading(true);
         try {
-            const response = await fetchData<GetProductprops>(`products/filterProducts?category=${category.join(',')}&subcategory=${subcategory.join(',')}&sortBy=${sortBy}&page=${page}&search=${search}`);
+            const params = new URLSearchParams({
+                category: category.join(","),
+                subcategory: subcategory.join(","),
+                sortBy,
+                page: String(page),
+                search: search ?? "",
+            });
+            const response = await fetchData<GetProductprops>(
+                `products/filterProducts?${params.toString()}`
+            );
             if (response && response.products) {
                 setProducts((prev) => [...prev, ...response.products]);
                 setHasMore(page < response.totalPages);
