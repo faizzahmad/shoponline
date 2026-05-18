@@ -30,29 +30,14 @@ const isPublicRoute = createRouteMatcher([
     "/api/packages(.*)",
 ]);
 
-function isMobileUserAgent(userAgent: string | null): boolean {
-    if (!userAgent) return false;
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
-        userAgent
-    );
-}
-
 export default clerkMiddleware(async (auth, request) => {
-    const { pathname, searchParams } = request.nextUrl;
+    const { pathname } = request.nextUrl;
 
-    // Mobile-only search UI — send desktop visitors to the shop catalog.
+    // Keep the crawlable search entry point consolidated on the shop catalog.
     if (pathname === "/search" || pathname.startsWith("/search/")) {
-        if (!isMobileUserAgent(request.headers.get("user-agent"))) {
-            const shopUrl = request.nextUrl.clone();
-            shopUrl.pathname = "/shop";
-            const query = searchParams.get("search");
-            if (query) {
-                shopUrl.searchParams.set("search", query);
-            } else {
-                shopUrl.searchParams.delete("search");
-            }
-            return NextResponse.redirect(shopUrl);
-        }
+        const shopUrl = request.nextUrl.clone();
+        shopUrl.pathname = "/shop";
+        return NextResponse.redirect(shopUrl, 308);
     }
 
     if (!isPublicRoute(request)) {
