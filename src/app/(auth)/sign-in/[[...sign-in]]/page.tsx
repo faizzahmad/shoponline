@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Image from 'next/image';
+import { NOINDEX_METADATA } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
     title: "Sign in",
     description: "Sign in to your Najak Clothing account to track orders and check out faster.",
+    ...NOINDEX_METADATA,
 };
 import Link from 'next/link';
 import { redirect } from 'next/navigation';

@@ -19,9 +19,14 @@ type SubCategory = {
 };
 
 export const metadata: Metadata = {
-    title: "Home",
+    title: {
+        absolute: "Najak Clothing — Men's & Women's Fashion Online",
+    },
     description:
-        "Discover new arrivals, categories, offers, and bestsellers at Najak Clothing — contemporary apparel shipped across India.",
+        "Discover new arrivals, categories, offers, and bestsellers at Najak Clothing — contemporary men's and women's apparel shipped across India.",
+    alternates: {
+        canonical: "/",
+    },
 };
 
 export default async function Home() {

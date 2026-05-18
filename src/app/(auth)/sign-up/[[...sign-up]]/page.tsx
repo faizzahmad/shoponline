@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { currentUser } from "@clerk/nextjs/server";
+import { NOINDEX_METADATA } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
     title: "Create account",
     description: "Create a Najak Clothing account for order history and a faster checkout.",
+    ...NOINDEX_METADATA,
 };
 import Image from "next/image";
 import Link from "next/link";

@@ -76,6 +76,11 @@ Bihar, India
             <div className="w-full">
              <h4 className="text-lg font-[700] raleway sm:text-xl md:text-2xl">Shop</h4>
              <ul className=" md:mt-5 mt-3 flex gap-2 flex-col exo font-[300] md:text-[1rem] text-sm">
+                    <li className="transition hover:text-[#426b9a]">
+                        <Link href="/shop">
+                            Shop Najak Clothing online
+                        </Link>
+                    </li>
 {
     categories.map((category) => (
                             <li className="transition hover:text-[#426b9a]" key={category._id}>

@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { Button } from "@/components/ui/button";
-import { Loader, Minus, Plus, Share2 } from "lucide-react";
+import { Loader, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchData } from "@/utils/apiCall";
@@ -17,14 +17,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useIsChanged } from "@/store/use-ischnaged";
 import { useGuestCart } from "@/store/use-guest-cart";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { FaFacebook, FaWhatsapp } from "react-icons/fa";
+import { ShareProductMenu } from "@/components/custom/share-product-menu";
 
 
 
@@ -133,19 +126,6 @@ export const ProductInfoModal = () => {
     const { isSignedIn, isLoaded, user } = useUser();
     const router = useRouter();
 
-
-    const message = `
-${data?.productName}
-
-Price: {"\u20B9"}${data?.originalPrice}
-
-Description: ${data?.shortDescription}
-
-View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${data?._id}
-`;
-
-const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.NEXT_PUBLIC_API_URL + '/product-info/' + data?._id)}`;
 
     const stock = data ? Number(data.productStock) : 0;
     const activeStock = Number(selectedVariant?.productStock ?? stock);
@@ -261,33 +241,20 @@ const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURICom
                                 
                                 <div className="flex  justify-between items-center">
                                       <h4 className="raleway mt-4 text-base font-semibold sm:text-lg md:text-xl lg:text-2xl">{data?.productName}</h4>
-                                    <DropdownMenu>
-                                    <DropdownMenuTrigger className=" bg-white shadow-sm border rounded px-4 py-1 text-sm exo flex gap-2 items-center">Share  <Share2 className="size-4" /></DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel className="exo md:text-base text-sm">
-                                            Share this Products
-                                            <br />
-                                            <span className="raleway text-xs text-muted-foreground font-[300]">
-                                                 Share this product with your friends and family via social media or messaging apps.
-                                            </span>
-                                        </DropdownMenuLabel>
-                                     
-                                    
-                                       
-                                        <DropdownMenuItem className="w-full flex justify-center">
-                                            <Link target="_blank"
-                                            href={whatsappUrl}
-                                            className="size-12 flex items-center justify-center text-white bg-green-500 text-3xl rounded">
-                                             <FaWhatsapp/>
-                                            </Link>
-
-                                             <Link target="_blank" href={facebookUrl} className="size-12 flex items-center justify-center text-white bg-[#244d7c] text-3xl rounded">
-                                             <FaFacebook/>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                    <ShareProductMenu
+                                        productId={data?._id ?? ""}
+                                        productName={data?.productName ?? ""}
+                                        productImage={
+                                            (seletedImageIndex !== null
+                                                ? data?.images?.[seletedImageIndex]
+                                                : undefined) ||
+                                            selectedVariant?.image ||
+                                            data?.images?.[0]
+                                        }
+                                        price={activeOriginalPrice}
+                                        shortDescription={data?.shortDescription}
+                                        triggerVariant="outline"
+                                    />
                                 </div>
                                 <h5 className="mt-3 flex gap-3 text-base font-semibold text-[#244d7c] sm:gap-4 sm:text-lg lg:text-xl">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>

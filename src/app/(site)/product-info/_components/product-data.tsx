@@ -1,19 +1,17 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useIsChanged } from "@/store/use-ischnaged"
 import { useGuestCart } from "@/store/use-guest-cart"
 import { useUser } from "@clerk/nextjs"
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
 import Autoplay from "embla-carousel-autoplay"
-import { Loader, Minus, Plus, Share2, ShoppingBag, ShoppingBasket } from "lucide-react"
+import { Loader, Minus, Plus, ShoppingBag, ShoppingBasket } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
-import { FaFacebook, FaWhatsapp } from "react-icons/fa"
+import { ShareProductMenu } from "@/components/custom/share-product-menu"
 import { toast } from "sonner";
 import { ProductReviewsSection } from "./product-reviews-section";
 import { RelatedProductsSlider } from "./related-products-slider";
@@ -169,19 +167,6 @@ export const ProductData = ({ slug }: ProductDataProps) => {
         }
         return { name, options };
     });
-
-    const message = `
-${productInfo?.productName}
-
-Price: {"\u20B9"}${productInfo?.originalPrice}
-
-Description: ${productInfo?.shortDescription}
-
-View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id}
-`;
-
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(process.env.NEXT_PUBLIC_API_URL + '/product-info/' + productInfo?._id)}`;
 
     const stock = Number(productInfo?.productStock ?? 0);
     const activeStock = Number(selectedVariant?.productStock ?? stock);
@@ -399,33 +384,18 @@ View Product: ${process.env.NEXT_PUBLIC_API_URL}/product-info/${productInfo?._id
 
                                 {productInfo.productName}
                             </h4>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger className="bg-[#244d7c] text-white shadow-sm border border-[#244d7c] rounded-full px-4 py-1.5 md:text-sm text-xs exo flex gap-2 items-center hover:bg-[#426b9a] transition">Share  <Share2 className="size-4" /></DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuLabel className="exo text-sm sm:text-base">
-                                        Share this Products
-                                        <br />
-                                        <span className="raleway text-xs text-muted-foreground font-[300]">
-                                            Share this product with your friends and family via social media or messaging apps.
-                                        </span>
-                                    </DropdownMenuLabel>
-
-
-
-                                    <DropdownMenuItem className="w-full flex justify-center gap-3">
-                                        <Link target="_blank"
-                                            href={whatsappUrl}
-                                            className="size-12 flex items-center justify-center text-white bg-green-500 text-3xl rounded">
-                                            <FaWhatsapp />
-                                        </Link>
-
-                                        <Link target="_blank" href={facebookUrl} className="size-12 flex items-center justify-center text-white bg-[#244d7c] text-3xl rounded">
-                                            <FaFacebook />
-                                        </Link>
-                                    </DropdownMenuItem>
-
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <ShareProductMenu
+                                productId={productInfo._id}
+                                productName={productInfo.productName}
+                                productImage={
+                                    selectedVariant?.image ||
+                                    productInfo.images?.[selectedImageIndex ?? 0] ||
+                                    productInfo.images?.[0]
+                                }
+                                price={activeOriginalPrice}
+                                shortDescription={productInfo.shortDescription}
+                                triggerVariant="brand"
+                            />
                         </div>
 
                         <div className="mt-4 rounded-xl bg-[#f4f8fc] p-4 border border-[#244d7c]/10">
