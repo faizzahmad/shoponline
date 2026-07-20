@@ -10,7 +10,7 @@ const MobileSidebar = async() => {
  const externalUser = await currentUser();
     return ( 
     <div>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
         <Link href={'/'} className="shrink-0">
          <Image
            src={'/images/web/logo.png'}
