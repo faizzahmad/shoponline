@@ -29,7 +29,7 @@ function getProductUrl(productId: string): string {
         typeof window !== "undefined"
             ? window.location.origin
             : (process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
-              "https://www.najakclothing.com");
+              "https://www.shoponline.com");
     return `${base}/product-info/${productId}`;
 }
 
@@ -144,7 +144,7 @@ export function ShareProductMenu({
                 onClick: copyLink,
                 icon: <Copy className="size-3.5 sm:size-4" aria-hidden />,
                 className:
-                    "bg-[#eef4fb] text-[#244d7c] border border-[#244d7c]/15 hover:bg-[#e2ecf7]",
+                    "bg-[#FAFAFA] text-[#212121] border border-[#212121]/15 hover:bg-[#EEEEEE]",
             },
         ],
         [shareMessage, productUrl, copyLink, copyForInstagram]
@@ -152,8 +152,8 @@ export function ShareProductMenu({
 
     const triggerStyles =
         triggerVariant === "brand"
-            ? "bg-[#244d7c] text-white border border-[#244d7c] shadow-sm hover:bg-[#426b9a]"
-            : "bg-white text-[#244d7c] border border-[#244d7c]/20 shadow-sm hover:bg-[#f4f8fc]";
+            ? "bg-[#212121] text-white border border-[#212121] shadow-sm hover:bg-[#FBC02D]"
+            : "bg-white text-[#212121] border border-[#212121]/20 shadow-sm hover:bg-[#FAFAFA]";
 
     useEffect(() => {
         if (!isOpen) return;
@@ -187,7 +187,7 @@ export function ShareProductMenu({
             <button
                 type="button"
                 className={cn(
-                    "exo flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#244d7c]/40 sm:gap-2 sm:px-4 sm:text-sm",
+                    "exo flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#212121]/40 sm:gap-2 sm:px-4 sm:text-sm",
                     triggerStyles,
                     triggerClassName
                 )}
@@ -199,10 +199,10 @@ export function ShareProductMenu({
             </button>
 
             {isOpen ? (
-                <div className="absolute right-0 top-full z-[140] mt-2 w-[min(calc(100vw-1.25rem),17rem)] overflow-hidden rounded-xl border border-[#244d7c]/10 bg-white p-0 text-popover-foreground shadow-xl sm:w-[20rem]">
-                <div className="flex gap-2 border-b border-[#244d7c]/10 bg-[#f4f8fc] p-2.5 sm:gap-3 sm:p-3.5">
+                <div className="absolute right-0 top-full z-[140] mt-2 w-[min(calc(100vw-1.25rem),17rem)] overflow-hidden rounded-xl border border-[#212121]/10 bg-white p-0 text-popover-foreground shadow-xl sm:w-[20rem]">
+                <div className="flex gap-2 border-b border-[#212121]/10 bg-[#FAFAFA] p-2.5 sm:gap-3 sm:p-3.5">
                     {productImage ? (
-                        <div className="relative size-14 shrink-0 overflow-hidden rounded-lg border border-[#244d7c]/10 bg-white sm:size-[4.5rem]">
+                        <div className="relative size-14 shrink-0 overflow-hidden rounded-lg border border-[#212121]/10 bg-white sm:size-[4.5rem]">
                             <Image
                                 src={productImage}
                                 alt={productName}
@@ -212,19 +212,19 @@ export function ShareProductMenu({
                             />
                         </div>
                     ) : (
-                        <div className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-dashed border-[#244d7c]/20 bg-white text-[9px] text-[#426b9a] sm:size-[4.5rem] sm:text-[10px]">
+                        <div className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-dashed border-[#212121]/20 bg-white text-[9px] text-[#FBC02D] sm:size-[4.5rem] sm:text-[10px]">
                             No image
                         </div>
                     )}
                     <div className="min-w-0 flex-1">
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#426b9a] raleway sm:text-[10px] sm:tracking-[0.14em]">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#FBC02D] raleway sm:text-[10px] sm:tracking-[0.14em]">
                             Share product
                         </p>
-                        <p className="mt-0.5 line-clamp-2 text-xs font-semibold leading-snug text-[#244d7c] exo sm:text-sm">
+                        <p className="mt-0.5 line-clamp-2 text-xs font-semibold leading-snug text-[#212121] exo sm:text-sm">
                             {productName}
                         </p>
                         {price !== undefined && price !== "" ? (
-                            <p className="mt-0.5 text-xs font-bold text-[#244d7c] exo sm:mt-1 sm:text-sm">
+                            <p className="mt-0.5 text-xs font-bold text-[#212121] exo sm:mt-1 sm:text-sm">
                                 ₹{price}
                             </p>
                         ) : null}
@@ -232,7 +232,7 @@ export function ShareProductMenu({
                 </div>
 
                 <div className="p-2.5 sm:p-3.5">
-                    <p className="text-xs font-semibold text-[#244d7c] exo sm:text-sm">
+                    <p className="text-xs font-semibold text-[#212121] exo sm:text-sm">
                         Share with friends
                     </p>
                     <p className="mt-0.5 text-[10px] leading-relaxed text-neutral-500 raleway sm:mt-1 sm:text-xs">
@@ -251,7 +251,7 @@ export function ShareProductMenu({
                                     >
                                         {channel.icon}
                                     </span>
-                                    <span className="mt-1 block text-center text-[9px] font-medium leading-tight text-[#426b9a] raleway sm:mt-1.5 sm:text-[10px]">
+                                    <span className="mt-1 block text-center text-[9px] font-medium leading-tight text-[#FBC02D] raleway sm:mt-1.5 sm:text-[10px]">
                                         {channel.label}
                                     </span>
                                 </>
@@ -264,7 +264,7 @@ export function ShareProductMenu({
                                         href={channel.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex flex-col items-center rounded-lg p-0.5 transition hover:bg-[#f4f8fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#244d7c]/30 sm:p-1"
+                                        className="flex flex-col items-center rounded-lg p-0.5 transition hover:bg-[#FAFAFA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#212121]/30 sm:p-1"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         {inner}
@@ -276,7 +276,7 @@ export function ShareProductMenu({
                                 <button
                                     key={channel.id}
                                     type="button"
-                                    className="flex flex-col items-center rounded-lg p-0.5 transition hover:bg-[#f4f8fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#244d7c]/30 sm:p-1"
+                                    className="flex flex-col items-center rounded-lg p-0.5 transition hover:bg-[#FAFAFA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#212121]/30 sm:p-1"
                                     onClick={() => {
                                         channel.onClick?.();
                                         setIsOpen(false);

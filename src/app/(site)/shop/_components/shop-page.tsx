@@ -13,11 +13,12 @@ import { useLoader } from "@/store/use-loader";
 import { useEffect, useMemo, useState } from "react";
 import { useCategoryDropdown } from "./hooks/use-category-dropdown";
 import { fetchData } from "@/utils/apiCall";
-import { ShoppingCart, X } from "lucide-react";
+import { Filter, ShoppingCart, X } from "lucide-react";
 import { Waypoint } from 'react-waypoint';
 import { ProductInfoModal } from "./product-info-modal";
 import { useSearch } from "../../_components/hooks/use-search";
-import { ShopMobileCategoryFilter } from "./shop-mobile-category-filter";
+import { ShopFilterSheet } from "./shop-filter-sheet";
+import { Button } from "@/components/ui/button";
 import type { CategoryFilterItem } from "./category-filter-list";
 
 
@@ -50,7 +51,11 @@ type ShopPageProps = {
 
 type FilterChip =
     | { kind: "sub"; id: string; label: string }
-    | { kind: "cat"; id: string; label: string };
+    | { kind: "cat"; id: string; label: string }
+    | { kind: "price"; label: string }
+    | { kind: "inStock"; label: string }
+    | { kind: "onSale"; label: string }
+    | { kind: "variant"; id: string; label: string };
 
 function buildFilterChips(
     categories: CategoryFilterItem[],
@@ -89,31 +94,96 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
         setSortBy,
         page,
         setPage,
+        minPrice,
+        maxPrice,
+        inStock,
+        onSale,
+        setMinPrice,
+        setMaxPrice,
+        setInStock,
+        setOnSale,
+        variantFilterEntries,
+        variantFilters,
+        toggleVariantFilter,
     } = useCategoryDropdown();
     const [products, setProducts] = useState<GetProductDataprops[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [resetFilter, setResetFilter] = useState(false);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [filterSheetOpen, setFilterSheetOpen] = useState(false);
  
     const { search, setSearch } = useSearch();
 
-    const mobileFilterChips = useMemo(
-        () => buildFilterChips(categories, category, subcategory),
-        [categories, category, subcategory]
-    );
+    const activeFilterCount = useMemo(() => {
+        let count = category.length + subcategory.length + variantFilterEntries.length;
+        if (minPrice != null || maxPrice != null) count += 1;
+        if (inStock) count += 1;
+        if (onSale) count += 1;
+        return count;
+    }, [
+        category.length,
+        subcategory.length,
+        variantFilterEntries.length,
+        minPrice,
+        maxPrice,
+        inStock,
+        onSale,
+    ]);
+
+    const mobileFilterChips = useMemo(() => {
+        const chips = buildFilterChips(categories, category, subcategory);
+
+        if (minPrice != null || maxPrice != null) {
+            const lo = minPrice != null ? `₹${minPrice}` : "Any";
+            const hi = maxPrice != null ? `₹${maxPrice}` : "Any";
+            chips.push({ kind: "price", label: `Price: ${lo} – ${hi}` });
+        }
+        if (inStock) chips.push({ kind: "inStock", label: "In stock" });
+        if (onSale) chips.push({ kind: "onSale", label: "On sale" });
+
+        for (const [name, values] of Object.entries(variantFilters)) {
+            for (const value of values) {
+                chips.push({
+                    kind: "variant",
+                    id: `${name}:${value}`,
+                    label: `${name}: ${value}`,
+                });
+            }
+        }
+
+        return chips;
+    }, [categories, category, subcategory, minPrice, maxPrice, inStock, onSale, variantFilters]);
 
     const dismissFilterChip = (chip: FilterChip) => {
         if (chip.kind === "sub") {
             setSubcategory((prev) => prev.filter((id) => id !== chip.id));
-        } else {
+        } else if (chip.kind === "cat") {
             setCategory((prev) => prev.filter((id) => id !== chip.id));
             const cat = categories.find((c) => c.id === chip.id);
             const subIds = cat?.subCategories?.map((s) => s.id) ?? [];
             if (subIds.length > 0) {
                 setSubcategory((prev) => prev.filter((id) => !subIds.includes(id)));
             }
+        } else if (chip.kind === "price") {
+            setMinPrice(null);
+            setMaxPrice(null);
+        } else if (chip.kind === "inStock") {
+            setInStock(false);
+        } else if (chip.kind === "onSale") {
+            setOnSale(false);
+        } else if (chip.kind === "variant") {
+            const sep = chip.id.indexOf(":");
+            if (sep > 0) {
+                toggleVariantFilter(
+                    chip.id.slice(0, sep),
+                    chip.id.slice(sep + 1),
+                    false
+                );
+            }
         }
         setPage(1);
     };
+
     const handelGetProducts = async () => {
         setLoading(true);
         try {
@@ -124,14 +194,23 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                 page: String(page),
                 search: search ?? "",
             });
+            if (minPrice != null) params.set("minPrice", String(minPrice));
+            if (maxPrice != null) params.set("maxPrice", String(maxPrice));
+            if (inStock) params.set("inStock", "true");
+            if (onSale) params.set("onSale", "true");
+            for (const entry of variantFilterEntries) {
+                params.append("vf", entry);
+            }
+
             const response = await fetchData<GetProductprops>(
                 `products/filterProducts?${params.toString()}`
             );
             if (response && response.products) {
-                setProducts((prev) => [...prev, ...response.products]);
+                setProducts((prev) =>
+                    page <= 1 ? response.products : [...prev, ...response.products]
+                );
+                setTotalProducts(response.totalProducts);
                 setHasMore(page < response.totalPages);
-
-
             }
 
         } catch (error) {
@@ -147,7 +226,17 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
         setPage(1);
         setHasMore(true);
         setResetFilter(true);
-    }, [sortBy, JSON.stringify(subcategory), JSON.stringify(category), search]);
+    }, [
+        sortBy,
+        JSON.stringify(subcategory),
+        JSON.stringify(category),
+        search,
+        minPrice,
+        maxPrice,
+        inStock,
+        onSale,
+        variantFilterEntries.join(","),
+    ]);
 
     useEffect(() => {
         if (resetFilter) {
@@ -161,26 +250,30 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
     return (
         <>
             <ProductInfoModal />
+            <ShopFilterSheet
+                open={filterSheetOpen}
+                onOpenChange={setFilterSheetOpen}
+            />
             <div className="h-auto w-full">
                 <div className="w-full">
-                    <ShopMobileCategoryFilter categories={categories} />
                     {mobileFilterChips.length > 0 ? (
                         <div
-                            className="mt-2 mb-3 md:hidden"
+                            className="mt-2 mb-3"
                             aria-label="Active filters"
                         >
                             <div className="-mx-1 flex flex-nowrap gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                                 {mobileFilterChips.map((chip) => (
                                     <button
-                                        key={`${chip.kind}-${chip.id}`}
-                                        type="button"
-                                        className="max-w-[11rem] shrink-0 rounded px-2 py-1 text-left text-xs text-white raleway sm:max-w-[14rem] sm:px-3 sm:py-1.5 sm:text-sm bg-[#244d7c] flex items-center gap-2"
-                                        onClick={() => dismissFilterChip(chip)}
-                                        title={
-                                            chip.kind === "sub"
-                                                ? "Remove this subcategory"
-                                                : "Remove this category"
+                                        key={
+                                            chip.kind === "sub" ||
+                                            chip.kind === "cat" ||
+                                            chip.kind === "variant"
+                                                ? `${chip.kind}-${chip.id}`
+                                                : chip.kind
                                         }
+                                        type="button"
+                                        className="max-w-[11rem] shrink-0 rounded px-2 py-1 text-left text-xs text-white raleway sm:max-w-[14rem] sm:px-3 sm:py-1.5 sm:text-sm bg-[#212121] flex items-center gap-2"
+                                        onClick={() => dismissFilterChip(chip)}
                                     >
                                         <span className="min-w-0 flex-1 truncate">{chip.label}</span>
                                         <X className="size-3.5 shrink-0 sm:size-4" aria-hidden />
@@ -192,7 +285,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                     <div className="w-full flex flex-wrap items-center gap-2">
                         {
                             search && (
-                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-[#244d7c] text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
+                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-[#212121] text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
                                     setSearch('');
                                     setPage(1);
 
@@ -201,12 +294,31 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                                 </div>
                             )
                         }
-                        <div className=" ms-auto text-neutral-800 exo">
+                        {totalProducts > 0 ? (
+                            <p className="text-xs text-neutral-600 exo sm:text-sm">
+                                {totalProducts} product{totalProducts === 1 ? "" : "s"}
+                            </p>
+                        ) : null}
+                        <div className="ms-auto flex items-center gap-2 text-neutral-800 exo">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="h-9 gap-2 border-gray-500 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
+                                onClick={() => setFilterSheetOpen(true)}
+                            >
+                                <Filter className="size-4 shrink-0" />
+                                Filter
+                                {activeFilterCount > 0 ? (
+                                    <span className="rounded-full bg-[#212121] px-1.5 py-0.5 text-[10px] font-medium text-white">
+                                        {activeFilterCount}
+                                    </span>
+                                ) : null}
+                            </Button>
                             <Select value={sortBy} onValueChange={(value) => {
-                                setPage(1); // Reset to first page on sort change
+                                setPage(1);
                                 setSortBy(value)
                             }}>
-                                <SelectTrigger className="focus:ring-0 border-gray-500 sm:w-56 w-44 sm:text-base text-xs">
+                                <SelectTrigger className="h-9 focus:ring-0 border-gray-500 w-44 text-xs sm:h-10 sm:w-56 sm:text-base">
                                     <SelectValue placeholder="Sort by : Recommended" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -283,7 +395,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
 
 const ProductCardSkeleton = () => {
     return (
-        <div className="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4 shadow-sm rounded-2xl bg-white border border-[#244d7c]/15">
+        <div className="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4 shadow-sm rounded-2xl bg-white border border-[#212121]/15">
             <div className="w-full aspect-[3/4] min-[377px]:aspect-[4/5] rounded-xl overflow-hidden">
                 <Skeleton className='w-full h-full' />
             </div>

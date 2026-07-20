@@ -26,7 +26,7 @@ export const CategoryFilterList = ({
     categories,
     className,
 }: CategoryFilterListProps) => {
-    const { category, subcategory, setSubcategory } = useCategoryDropdown();
+    const { category, subcategory, setSubcategory, setPage } = useCategoryDropdown();
     const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>(
         [],
     );
@@ -54,7 +54,7 @@ export const CategoryFilterList = ({
                     )}
                 >
                     <div
-                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#244d7c] raleway"
+                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#212121] raleway"
                         onClick={() => {
                             setExpandedCategoryIds((prev) =>
                                 prev.includes(items.id)
@@ -84,7 +84,7 @@ export const CategoryFilterList = ({
                     >
                         <div className="flex items-center gap-4">
                             <Checkbox
-                                className="data-[state=checked]:border-[#244d7c] data-[state=checked]:bg-[#244d7c]"
+                                className="data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
                                 onCheckedChange={(checked) => {
                                     const subCategoryIds =
                                         items.subCategories?.map((sub) => sub.id) ||
@@ -101,6 +101,7 @@ export const CategoryFilterList = ({
                                             ),
                                         );
                                     }
+                                    setPage(1);
                                 }}
                                 checked={
                                     items.subCategories?.every((sub) =>
@@ -124,7 +125,7 @@ export const CategoryFilterList = ({
                             >
                                 <Checkbox
                                     id={subItems.id}
-                                    className="data-[state=checked]:border-[#244d7c] data-[state=checked]:bg-[#244d7c]"
+                                    className="data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
                                     checked={subcategory.includes(subItems.id)}
                                     onCheckedChange={(checked) => {
                                         if (checked) {
@@ -139,6 +140,7 @@ export const CategoryFilterList = ({
                                                 ),
                                             );
                                         }
+                                        setPage(1);
                                     }}
                                 />
                                 <label

@@ -5,7 +5,7 @@ import { NOINDEX_METADATA } from "@/lib/site-metadata";
 export const metadata: Metadata = {
     title: "Cart",
     description:
-        "Review your bag, apply coupons, and check out securely at Najak Clothing.",
+        "Review your bag, apply coupons, and check out securely at ShopOnline.",
     ...NOINDEX_METADATA,
 };
 

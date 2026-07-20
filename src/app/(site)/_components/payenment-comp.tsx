@@ -64,7 +64,7 @@ export const PaymentComponent = ({
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                 amount: data.amount,
                 currency: data.currency ?? "INR",
-                name: "The Najak",
+                name: "ShopOnline",
                 description: "Secure payment for your order",
                 ...(brandLogo ? { image: brandLogo } : {}),
                 order_id: data.id,
@@ -91,7 +91,7 @@ export const PaymentComponent = ({
                             toast.error(
                                 typeof err?.error === "string"
                                     ? err.error
-                                    : "Payment could not be verified. Email najakclothing@gmail.com with your order ID."
+                                    : "Payment could not be verified. Email johndoe@shoponline.com with your order ID."
                             );
                             return;
                         }
@@ -105,7 +105,7 @@ export const PaymentComponent = ({
                     }
                 },
                 theme: {
-                    color: "#244d7c",
+                    color: "#212121",
                 },
                 modal: {
                     ondismiss: () => {

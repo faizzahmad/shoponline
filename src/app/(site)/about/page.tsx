@@ -8,48 +8,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { BRAND_NAME } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "About us & reviews",
   description:
-    "Learn about Najak Clothing and read what customers say about our apparel, quality, and service.",
+    "Learn about ShopOnline — shop clothes, footwear, furniture, electronics, and more in one online store.",
 };
 
 const DUMMY_REVIEWS = [
   {
-    name: "Sarah M.",
-    location: "New York, NY",
+    name: "John Doe",
+    location: "Mumbai, IN",
     date: "March 2026",
     rating: 5,
-    text: "Ordered balloons and a banner for my daughter’s birthday. Everything arrived on time and looked exactly like the photos. Will shop again!",
+    text: "Ordered sneakers and a desk lamp in one cart. Everything arrived neatly packed and looked exactly like the product photos.",
   },
   {
-    name: "James K.",
-    location: "Austin, TX",
+    name: "Jane Smith",
+    location: "Bengaluru, IN",
     date: "February 2026",
     rating: 5,
-    text: "Great selection of themed tableware. Checkout was smooth and customer support answered my sizing question within a few hours.",
+    text: "Great mix of categories — clothes, gadgets, and home items. Checkout was smooth and support answered quickly.",
   },
   {
-    name: "Priya S.",
-    location: "Chicago, IL",
+    name: "Priya Sharma",
+    location: "Delhi, IN",
     date: "February 2026",
     rating: 4,
-    text: "Solid quality for the price. One item was back-ordered but they notified me early and offered a substitute that worked perfectly.",
+    text: "Filters and category browsing made it easy to find electronics and furniture pieces. Solid shopping experience overall.",
   },
   {
-    name: "Daniel R.",
-    location: "Seattle, WA",
+    name: "Alex Rivera",
+    location: "Hyderabad, IN",
     date: "January 2026",
     rating: 5,
-    text: "Used Buyora for our office holiday party. Bulk packs were well packaged and the rose-gold accents matched our branding.",
+    text: "Used ShopOnline for a home refresh. Product cards were clear and delivery updates were timely.",
   },
   {
-    name: "Emily T.",
-    location: "Miami, FL",
+    name: "Emily Chen",
+    location: "Pune, IN",
     date: "January 2026",
     rating: 5,
-    text: "Fast shipping and easy returns process. The photo booth props were a hit—guests are still talking about the party.",
+    text: "Fast browsing and clear product details. Loved being able to shop fashion and home essentials in the same place.",
   },
 ] as const;
 
@@ -72,47 +73,46 @@ export default function AboutPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-2xl font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-3xl md:text-4xl">
+        <h1 className="raleway text-2xl font-bold text-[#212121] border-b-4 border-[#212121] pb-3 inline-block sm:text-3xl md:text-4xl">
           About us
         </h1>
       </header>
 
       <div className="mt-6 exo text-neutral-700 leading-relaxed space-y-4 text-sm sm:mt-8 sm:text-[0.95rem] md:text-base">
         <p>
-          Buyora is your online destination for party supplies, decorations, and
-          essentials that help you celebrate without the stress. We curate
-          products for birthdays, holidays, baby showers, and corporate events so
-          you can focus on the people—not the logistics.
+          {BRAND_NAME} is your online destination for clothes, footwear,
+          furniture, electronics, and everyday essentials — all in one place.
+          We bring together trusted products across categories so you can shop
+          fashion, home, and gadgets without switching between stores.
         </p>
         <p>
-          Our team works with trusted suppliers to offer a mix of trending themes
-          and everyday staples, with clear photos and descriptions so you know
-          what you are ordering. We are always improving our catalog based on
-          customer feedback and seasonal demand.
+          Our catalog is curated for clear photos, honest descriptions, and
+          simple browsing by category. Whether you are updating your wardrobe,
+          furnishing a room, or picking up a new gadget, we aim to make the
+          journey smooth from browse to checkout.
         </p>
         <p>
-          Whether you are planning a small gathering or a large celebration, we
-          aim to make shopping simple: browse by category, compare options, and
-          check out securely. Thank you for letting us be part of your special
-          moments.
+          Thank you for shopping with {BRAND_NAME}. We are always improving our
+          selection based on customer feedback and seasonal demand — and we are
+          glad to be part of your next order.
         </p>
       </div>
 
       <section className="mt-14 md:mt-16" aria-labelledby="reviews-heading">
         <h2
           id="reviews-heading"
-          className="raleway text-lg font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-2xl md:text-3xl"
+          className="raleway text-lg font-bold text-[#212121] border-b-4 border-[#212121] pb-3 inline-block sm:text-2xl md:text-3xl"
         >
           Reviews
         </h2>
         <p className="mt-3 exo text-xs text-neutral-600 sm:mt-4 sm:text-sm md:text-[0.95rem]">
-          Recent feedback from shoppers (sample data for demonstration).
+          Recent feedback from shoppers.
         </p>
 
         <ul className="mt-8 grid gap-5 sm:grid-cols-2">
           {DUMMY_REVIEWS.map((review) => (
             <li key={`${review.name}-${review.date}`}>
-              <Card className="h-full border-[#244d7c]/20/80 bg-white/90 shadow-sm transition hover:shadow-md">
+              <Card className="h-full border-[#212121]/20/80 bg-white/90 shadow-sm transition hover:shadow-md">
                 <CardHeader className="space-y-2 pb-2">
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="raleway text-base font-semibold text-neutral-900 sm:text-lg">

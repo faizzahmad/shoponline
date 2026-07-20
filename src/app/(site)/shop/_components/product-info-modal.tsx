@@ -36,6 +36,12 @@ type Products = {
     shortDescription: string;
     longDescription: string;
     varients: any[];
+    variantDisplayMode?: "image" | "text";
+    variantAttributes?: Array<{
+        name: string;
+        options?: string[];
+        displayMode?: "image" | "text";
+    }>;
     variantCombinations?: Array<{
         variantId: string;
         attributes: Array<{ name: string; value: string }>;
@@ -161,7 +167,10 @@ export const ProductInfoModal = () => {
             )?.image;
             options.push({ value: attr.value, image });
         }
-        return { name, options };
+        const meta = (data?.variantAttributes ?? []).find((a) => a.name === name);
+        const displayMode: "image" | "text" =
+            meta?.displayMode === "image" ? "image" : "text";
+        return { name, options, displayMode };
     });
 
     return (
@@ -218,7 +227,7 @@ export const ProductInfoModal = () => {
                                                         onClick={() => setSelectedImageIndex(index)}
                                                         className={`lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl cursor-pointer border-2 ${
                                                             seletedImageIndex === index
-                                                                ? "border-[#244d7c]"
+                                                                ? "border-[#212121]"
                                                                 : "border-transparent"
                                                         }`}
                                                     >
@@ -256,11 +265,11 @@ export const ProductInfoModal = () => {
                                         triggerVariant="outline"
                                     />
                                 </div>
-                                <h5 className="mt-3 flex gap-3 text-base font-semibold text-[#244d7c] sm:gap-4 sm:text-lg lg:text-xl">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
+                                <h5 className="mt-3 flex gap-3 text-base font-semibold text-[#212121] sm:gap-4 sm:text-lg lg:text-xl">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>
 
                                 {isSelectedOutOfStock ? (
-                                    <p className="text-sm font-medium text-[#244d7c] raleway rounded-md border border-[#244d7c]/20 bg-[#eef4fb] px-3 py-2 mb-2">
+                                    <p className="text-sm font-medium text-[#212121] raleway rounded-md border border-[#212121]/20 bg-[#FAFAFA] px-3 py-2 mb-2">
                                         This product is out of stock.
                                     </p>
                                 ) : null}
@@ -271,19 +280,18 @@ export const ProductInfoModal = () => {
                                             <div className="flex flex-wrap gap-2">
                                                 {group.options.map((option) => {
                                                     const isSelected = selectedAttributes[group.name] === option.value;
-                                                    const isColorAttr =
-                                                        ["color", "colour"].includes(
-                                                            group.name.trim().toLowerCase()
-                                                        );
-                                                    if (isColorAttr && option.image) {
+                                                    const showAsImage =
+                                                        group.displayMode === "image" &&
+                                                        Boolean(option.image);
+                                                    if (showAsImage && option.image) {
                                                         return (
                                                             <button
                                                                 key={`${group.name}-${option.value}`}
                                                                 type="button"
-                                                                className={`flex flex-col items-center gap-1 rounded-md border p-1 transition ${
+                                                                className={`flex flex-col items-center gap-1 rounded-md border p-1.5 transition ${
                                                                     isSelected
-                                                                        ? "border-[#244d7c] bg-[#eef4fb]"
-                                                                        : "border-neutral-300"
+                                                                        ? "border-[#212121] bg-[#FAFAFA] shadow-sm"
+                                                                        : "border-neutral-300 hover:border-neutral-400"
                                                                 }`}
                                                                 onClick={() => {
                                                                     setSelectedAttributes((prev) => ({
@@ -304,7 +312,7 @@ export const ProductInfoModal = () => {
                                                                 </div>
                                                                 <span
                                                                     className={`text-xs capitalize ${
-                                                                        isSelected ? "text-[#244d7c]" : "text-neutral-700"
+                                                                        isSelected ? "text-[#212121]" : "text-neutral-700"
                                                                     }`}
                                                                 >
                                                                     {option.value}
@@ -316,10 +324,10 @@ export const ProductInfoModal = () => {
                                                         <button
                                                             key={`${group.name}-${option.value}`}
                                                             type="button"
-                                                            className={`px-3 py-1.5 rounded border text-sm ${
+                                                            className={`min-w-[2.75rem] rounded-md border px-3.5 py-2 text-sm capitalize transition ${
                                                                 isSelected
-                                                                    ? "border-[#244d7c] text-[#244d7c] bg-[#eef4fb]"
-                                                                    : "border-neutral-300 text-neutral-700"
+                                                                    ? "border-[#212121] bg-[#212121] text-white"
+                                                                    : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
                                                             }`}
                                                             onClick={() => {
                                                                 setSelectedAttributes((prev) => ({
@@ -372,7 +380,7 @@ export const ProductInfoModal = () => {
                                                 <div key={product.productId} className="flex flex-col items-center">
                                                     <Link href={`/product-info/${product.productId}`} target="_blank">
                                                         <div className="w-[60px]">
-                                                            <div className="w-full h-[60px] relative border-2 border-[#244d7c] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
+                                                            <div className="w-full h-[60px] relative border-2 border-[#212121] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
                                                                 <Image
                                                                     src={product.image}
                                                                     alt={product.pname}

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, GripVertical, Trash } from "lucide-react";
+import { ArrowLeft, GripVertical, ImageIcon, Layers, Plus, Trash } from "lucide-react";
 import { useProductAdmin } from "../hooks/use-product-admin";
 import { UploadDropzone } from "@/utils/uploadthing";
 import { toast } from "sonner";
@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchData, postData, updateDataWithData } from "@/utils/apiCall";
 import { FixedLoader } from "@/components/custom/fixed-loader";
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from "./rich-text-editor";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function reorderImages(images: string[], fromIndex: number, toIndex: number): string[] {
     const next = [...images];
@@ -20,6 +21,14 @@ function reorderImages(images: string[], fromIndex: number, toIndex: number): st
     next.splice(toIndex, 0, removed);
     return next;
 }
+
+type VariantAttrDisplay = "image" | "text";
+
+type VariantAttributeInput = {
+    name: string;
+    options: string[];
+    displayMode?: VariantAttrDisplay;
+};
 
 type ProductData = {
     productName: string;
@@ -34,7 +43,7 @@ type ProductData = {
     shortDescription: string;
     longDescription: string;
     varients: any[];
-    variantAttributes?: Array<{ name: string; options: string[] }>;
+    variantAttributes?: VariantAttributeInput[];
     variantCombinations?: Array<{
         variantId: string;
         attributes: Array<{ name: string; value: string }>;
@@ -65,7 +74,8 @@ type GetProductDataprops = {
     shortDescription: string;
     longDescription: string;
     varients: any[];
-    variantAttributes?: Array<{ name: string; options: string[] }>;
+    variantDisplayMode?: VariantAttrDisplay;
+    variantAttributes?: VariantAttributeInput[];
     variantCombinations?: Array<{
         variantId: string;
         attributes: Array<{ name: string; value: string }>;
@@ -81,15 +91,65 @@ type GetProductDataprops = {
     weight?: number;
 };
 
+type AttrEditor = {
+    id: string;
+    name: string;
+    optionsInput: string;
+    showAsImage: boolean;
+};
+
 type VariantRow = {
     variantId: string;
-    color: string;
-    size: string;
+    attributes: Array<{ name: string; value: string }>;
     image: string;
     productStock: string;
     originalPrice: string;
     discountPrice: string;
     isDefault: boolean;
+};
+
+const newAttrEditor = (partial?: Partial<AttrEditor>): AttrEditor => ({
+    id: `attr-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    name: "",
+    optionsInput: "",
+    showAsImage: false,
+    ...partial,
+});
+
+const parseOptions = (value: string): string[] =>
+    value
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+
+const comboKey = (attrs: Array<{ name: string; value: string }>) =>
+    attrs.map((a) => `${a.name}:${a.value}`).join("|");
+
+const buildCombinations = (
+    editors: AttrEditor[]
+): Array<Array<{ name: string; value: string }>> => {
+    const active = editors
+        .map((e) => ({
+            name: e.name.trim(),
+            options: parseOptions(e.optionsInput),
+        }))
+        .filter((e) => e.name && e.options.length > 0);
+
+    if (!active.length) return [];
+
+    return active.reduce<Array<Array<{ name: string; value: string }>>>(
+        (acc, attr) => {
+            const base = acc.length ? acc : [[]];
+            const next: Array<Array<{ name: string; value: string }>> = [];
+            for (const combo of base) {
+                for (const value of attr.options) {
+                    next.push([...combo, { name: attr.name, value }]);
+                }
+            }
+            return next;
+        },
+        []
+    );
 };
 
 // interface ProductDescriptionProps {
@@ -164,18 +224,11 @@ export const ProductDescription = () => {
     const [loader, setLoader] = useState<boolean>(false);
     const [products, setProducts] = useState<GetProductDataprops[]>([]); // Assuming products is an array of objects
     const [productData, setProductData] = useState<ProductData>(emptyProductData());
-    const [colorOptionsInput, setColorOptionsInput] = useState("");
-    const [sizeOptionsInput, setSizeOptionsInput] = useState("");
+    const [attrEditors, setAttrEditors] = useState<AttrEditor[]>([newAttrEditor({ name: "Size" })]);
     const [variantRows, setVariantRows] = useState<VariantRow[]>([]);
     const [dragImageIndex, setDragImageIndex] = useState<number | null>(null);
     const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
     const dragImageIndexRef = useRef<number | null>(null);
-
-    const parseOptions = (value: string): string[] =>
-        value
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean);
 
     // 'color' or 'size'
     const [colorVarient, setColorVarient] = useState(
@@ -190,6 +243,19 @@ export const ProductDescription = () => {
             type: 'size',
             products: [] as { size: string; productId: string; pname: string; image: string }[]
         }
+    );
+
+    const anyImageAttr = useMemo(
+        () => attrEditors.some((a) => a.showAsImage),
+        [attrEditors]
+    );
+
+    const activeAttrNames = useMemo(
+        () =>
+            attrEditors
+                .filter((e) => e.name.trim() && parseOptions(e.optionsInput).length > 0)
+                .map((e) => e.name.trim()),
+        [attrEditors]
     );
 
     const handelGetCategories = async () => {
@@ -227,8 +293,7 @@ export const ProductDescription = () => {
         setProductData(emptyProductData());
         setColorVarient({ type: "color", products: [] });
         setSizeVarient({ type: "size", products: [] });
-        setColorOptionsInput("");
-        setSizeOptionsInput("");
+        setAttrEditors([newAttrEditor({ name: "Size" })]);
         setVariantRows([]);
         setSubCategories([]);
     }, [descriptionPage, editProductId]);
@@ -264,23 +329,26 @@ export const ProductDescription = () => {
                     weight: p.weight != null ? String(p.weight) : "",
                 });
 
-                const colorAttr = (p.variantAttributes ?? []).find(
-                    (a) => a.name.toLowerCase() === "color"
+                const loadedAttrs = (p.variantAttributes ?? []).filter(
+                    (a) => a.name && Array.isArray(a.options) && a.options.length > 0
                 );
-                const sizeAttr = (p.variantAttributes ?? []).find(
-                    (a) => a.name.toLowerCase() === "size"
-                );
-                setColorOptionsInput((colorAttr?.options ?? []).join(", "));
-                setSizeOptionsInput((sizeAttr?.options ?? []).join(", "));
+                if (loadedAttrs.length > 0) {
+                    setAttrEditors(
+                        loadedAttrs.map((a) =>
+                            newAttrEditor({
+                                name: a.name,
+                                optionsInput: (a.options ?? []).join(", "),
+                                showAsImage: a.displayMode === "image",
+                            })
+                        )
+                    );
+                } else {
+                    setAttrEditors([newAttrEditor({ name: "Size" })]);
+                }
                 setVariantRows(
                     (p.variantCombinations ?? []).map((combo, idx) => ({
                         variantId: combo.variantId || `v-${idx + 1}`,
-                        color:
-                            combo.attributes.find((a) => a.name.toLowerCase() === "color")?.value ??
-                            "",
-                        size:
-                            combo.attributes.find((a) => a.name.toLowerCase() === "size")?.value ??
-                            "",
+                        attributes: Array.isArray(combo.attributes) ? combo.attributes : [],
                         image: combo.image ?? "",
                         productStock: String(combo.productStock ?? 0),
                         originalPrice: String(combo.originalPrice ?? 0),
@@ -345,31 +413,20 @@ export const ProductDescription = () => {
     }, [editProductId, productData.productCategoryId, categories]);
 
     useEffect(() => {
-        const colors = parseOptions(colorOptionsInput);
-        const sizes = parseOptions(sizeOptionsInput);
-        if (!colors.length && !sizes.length) {
+        const nextCombos = buildCombinations(attrEditors);
+        if (!nextCombos.length) {
             setVariantRows([]);
             return;
         }
-        const nextKeys: Array<{ color: string; size: string }> = [];
-        if (colors.length && sizes.length) {
-            for (const color of colors) {
-                for (const size of sizes) nextKeys.push({ color, size });
-            }
-        } else if (colors.length) {
-            for (const color of colors) nextKeys.push({ color, size: "" });
-        } else {
-            for (const size of sizes) nextKeys.push({ color: "", size });
-        }
 
         setVariantRows((prev) =>
-            nextKeys.map((key, index) => {
-                const found = prev.find((p) => p.color === key.color && p.size === key.size);
+            nextCombos.map((attributes, index) => {
+                const key = comboKey(attributes);
+                const found = prev.find((p) => comboKey(p.attributes) === key);
                 return (
                     found ?? {
                         variantId: `v-${index + 1}`,
-                        color: key.color,
-                        size: key.size,
+                        attributes,
                         image: "",
                         productStock: "",
                         originalPrice: productData.originalPrice || "",
@@ -379,7 +436,7 @@ export const ProductDescription = () => {
                 );
             })
         );
-    }, [colorOptionsInput, sizeOptionsInput, productData.originalPrice, productData.discountPrice]);
+    }, [attrEditors, productData.originalPrice, productData.discountPrice]);
 
     const handelAddProduct = async () => {
         if (
@@ -422,20 +479,31 @@ export const ProductDescription = () => {
             return;
         }
 
+        const namedAttrs = attrEditors.filter((e) => e.name.trim());
+        const duplicateNames = namedAttrs
+            .map((e) => e.name.trim().toLowerCase())
+            .filter((name, i, arr) => arr.indexOf(name) !== i);
+        if (duplicateNames.length > 0) {
+            toast.error("Variant type names must be unique");
+            return;
+        }
+
         setLoader(true);
 
-        const variantAttributes = [
-            { name: "color", options: parseOptions(colorOptionsInput) },
-            { name: "size", options: parseOptions(sizeOptionsInput) },
-        ].filter((item) => item.options.length > 0);
+        const variantAttributes = attrEditors
+            .map((e) => ({
+                name: e.name.trim(),
+                options: parseOptions(e.optionsInput),
+                displayMode: (e.showAsImage ? "image" : "text") as VariantAttrDisplay,
+            }))
+            .filter((item) => item.name && item.options.length > 0);
+
         const normalizedRows = variantRows.filter((r) => r.originalPrice && r.productStock);
         const variantCombinations = normalizedRows.map((row) => ({
             variantId: row.variantId,
-            attributes: [
-                ...(row.color ? [{ name: "color", value: row.color }] : []),
-                ...(row.size ? [{ name: "size", value: row.size }] : []),
-            ],
-            image: row.image || productData.images[0] || "",
+            attributes: row.attributes,
+            // Only keep an image if the admin picked one — never auto-fill main product image
+            image: row.image || "",
             productStock: Number(row.productStock || 0),
             originalPrice: Number(row.originalPrice || 0),
             discountPrice: Number(row.discountPrice || 0),
@@ -560,25 +628,32 @@ export const ProductDescription = () => {
                 </div>
 
                 <div className="bg-white rounded-lg border p-5">
-                    <h5 className="mb-4 text-2xl font-semibold raleway">
+                    <h5 className="mb-1 text-2xl font-semibold raleway">
                         Product Images
                     </h5>
                     <p className="text-sm text-muted-foreground mb-3">
-                        Drag images by the grip to change order — the first image is the main thumbnail.
+                        Upload up to 8 images at once. Drag by the grip to reorder — the first image is the main thumbnail.
                     </p>
-                    <div className=" flex gap-8 items-center">
+                    <div className=" flex gap-8 items-start flex-wrap">
 
-                        <div className="w-[350px]">
-                            <UploadDropzone endpoint={"imageUploader"}
+                        <div className="w-full max-w-[380px]">
+                            <UploadDropzone
+                                endpoint="productImages"
                                 onClientUploadComplete={(res) => {
-                                    if (res && res.length > 0) {
-                                        console.log(res[0].ufsUrl)
-                                        setProductData((prev) => ({
-                                            ...prev,
-                                            images: [...prev.images, res[0].ufsUrl]
-                                        }))
-                                    }
-
+                                    if (!res?.length) return;
+                                    const urls = res
+                                        .map((file) => file.ufsUrl)
+                                        .filter(Boolean);
+                                    if (!urls.length) return;
+                                    setProductData((prev) => ({
+                                        ...prev,
+                                        images: [...prev.images, ...urls],
+                                    }));
+                                    toast.success(
+                                        urls.length === 1
+                                            ? "1 image uploaded"
+                                            : `${urls.length} images uploaded`
+                                    );
                                 }}
                                 onUploadError={(error: Error) => {
                                     toast.error(error.message)
@@ -624,7 +699,7 @@ export const ProductDescription = () => {
                                             dropTargetIndex === index &&
                                                 dragImageIndex !== null &&
                                                 dragImageIndex !== index &&
-                                                "ring-2 ring-[#244d7c]",
+                                                "ring-2 ring-[#212121]",
                                         )}
                                         key={`${image}-${index}`}
                                     >
@@ -644,7 +719,7 @@ export const ProductDescription = () => {
                                             <button
                                                 type="button"
                                                 title="Remove image"
-                                                className="p-1 bg-[#244d7c] text-white rounded-full hover:bg-[#426b9a]"
+                                                className="p-1 bg-[#212121] text-white rounded-full hover:bg-[#FBC02D]"
                                                 onClick={(ev) => {
                                                     ev.preventDefault();
                                                     ev.stopPropagation();
@@ -821,111 +896,280 @@ export const ProductDescription = () => {
                 </div>
 
                 <div className="bg-white rounded-lg border p-5 pb-10 raleway">
-                    <h5 className="mb-4 text-2xl font-semibold ">
-                        Product Varients
-                    </h5>
-
-                    <p className="text-sm text-muted-foreground mb-4">
-                        Create Myntra/Flipkart-style combinations (Color x Size) with per-variant
-                        stock and price.
-                    </p>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
                         <div>
-                            <Label className="mb-1">Color options (comma separated)</Label>
-                            <Input
-                                value={colorOptionsInput}
-                                onChange={(e) => setColorOptionsInput(e.target.value)}
-                                placeholder="Black, White, Blue"
-                            />
+                            <h5 className="flex items-center gap-2 text-2xl font-semibold">
+                                <Layers className="size-5 text-[#212121]" aria-hidden />
+                                Product Variants
+                            </h5>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                Add only the variant types you need (e.g. Size or Pack). Check “Show as image” per type if you want image swatches.
+                            </p>
                         </div>
-                        <div>
-                            <Label className="mb-1">Size options (comma separated)</Label>
-                            <Input
-                                value={sizeOptionsInput}
-                                onChange={(e) => setSizeOptionsInput(e.target.value)}
-                                placeholder="S, M, L, XL"
-                            />
+                        <div className="flex items-center gap-2">
+                            {variantRows.length > 0 ? (
+                                <span className="rounded-full border border-[#212121]/15 bg-[#FAFAFA] px-3 py-1 text-xs font-medium text-[#212121]">
+                                    {variantRows.length} combination{variantRows.length === 1 ? "" : "s"}
+                                </span>
+                            ) : null}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={() => setAttrEditors((prev) => [...prev, newAttrEditor()])}
+                            >
+                                <Plus className="size-4" />
+                                Add type
+                            </Button>
                         </div>
                     </div>
-                    {variantRows.length > 0 ? (
-                        <div className="border rounded-md overflow-hidden mb-6">
-                            <div className="grid grid-cols-7 gap-2 px-3 py-2 text-xs font-semibold bg-neutral-50 border-b">
-                                <span>Color</span>
-                                <span>Size</span>
-                                <span>Stock</span>
-                                <span>Selling Price</span>
-                                <span>MRP</span>
-                                <span>Image URL</span>
-                                <span>Default</span>
-                            </div>
-                            <div className="max-h-[340px] overflow-y-auto">
-                                {variantRows.map((row, idx) => (
-                                    <div
-                                        key={`${row.color}-${row.size}-${idx}`}
-                                        className="grid grid-cols-7 gap-2 px-3 py-2 border-b last:border-b-0"
-                                    >
-                                        <Input value={row.color} disabled />
-                                        <Input value={row.size} disabled />
-                                        <Input
-                                            type="number"
-                                            value={row.productStock}
-                                            onChange={(e) =>
-                                                setVariantRows((prev) =>
-                                                    prev.map((v, i) =>
-                                                        i === idx ? { ...v, productStock: e.target.value } : v
-                                                    )
-                                                )
-                                            }
-                                        />
-                                        <Input
-                                            type="number"
-                                            value={row.originalPrice}
-                                            onChange={(e) =>
-                                                setVariantRows((prev) =>
-                                                    prev.map((v, i) =>
-                                                        i === idx ? { ...v, originalPrice: e.target.value } : v
-                                                    )
-                                                )
-                                            }
-                                        />
-                                        <Input
-                                            type="number"
-                                            value={row.discountPrice}
-                                            onChange={(e) =>
-                                                setVariantRows((prev) =>
-                                                    prev.map((v, i) =>
-                                                        i === idx ? { ...v, discountPrice: e.target.value } : v
-                                                    )
-                                                )
-                                            }
-                                        />
-                                        <Input
-                                            value={row.image}
-                                            onChange={(e) =>
-                                                setVariantRows((prev) =>
-                                                    prev.map((v, i) =>
-                                                        i === idx ? { ...v, image: e.target.value } : v
-                                                    )
-                                                )
-                                            }
-                                            placeholder="https://..."
-                                        />
+
+                    <div className="mb-6 space-y-3">
+                        {attrEditors.map((editor, editorIdx) => (
+                            <div
+                                key={editor.id}
+                                className="rounded-xl border border-[#212121]/10 bg-[#FAFAFA] p-4"
+                            >
+                                <div className="mb-3 flex items-center justify-between gap-2">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                                        Variant type {editorIdx + 1}
+                                    </p>
+                                    {attrEditors.length > 1 ? (
                                         <Button
                                             type="button"
-                                            variant={row.isDefault ? "default" : "outline"}
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 text-neutral-500 hover:text-red-600"
                                             onClick={() =>
-                                                setVariantRows((prev) =>
-                                                    prev.map((v, i) => ({ ...v, isDefault: i === idx }))
+                                                setAttrEditors((prev) =>
+                                                    prev.filter((e) => e.id !== editor.id)
                                                 )
                                             }
                                         >
-                                            {row.isDefault ? "Default" : "Make default"}
+                                            <Trash className="size-3.5" />
+                                            Remove
                                         </Button>
+                                    ) : null}
+                                </div>
+                                <div className="grid gap-3 sm:grid-cols-[1fr_1.4fr]">
+                                    <div>
+                                        <Label className="mb-1.5 text-sm font-medium">Type name</Label>
+                                        <Input
+                                            value={editor.name}
+                                            onChange={(e) =>
+                                                setAttrEditors((prev) =>
+                                                    prev.map((item) =>
+                                                        item.id === editor.id
+                                                            ? { ...item, name: e.target.value }
+                                                            : item
+                                                    )
+                                                )
+                                            }
+                                            placeholder="e.g. Size, Pack, Color"
+                                            className="bg-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label className="mb-1.5 text-sm font-medium">Options</Label>
+                                        <Input
+                                            value={editor.optionsInput}
+                                            onChange={(e) =>
+                                                setAttrEditors((prev) =>
+                                                    prev.map((item) =>
+                                                        item.id === editor.id
+                                                            ? { ...item, optionsInput: e.target.value }
+                                                            : item
+                                                    )
+                                                )
+                                            }
+                                            placeholder="PackOf1, PackOf2, PackOf3"
+                                            className="bg-white"
+                                        />
+                                        <p className="mt-1.5 text-xs text-muted-foreground">
+                                            Comma-separated values
+                                        </p>
+                                    </div>
+                                </div>
+                                <label
+                                    htmlFor={`show-image-${editor.id}`}
+                                    className="mt-3 flex cursor-pointer items-start gap-3 rounded-lg border border-[#212121]/10 bg-white px-3 py-2.5"
+                                >
+                                    <Checkbox
+                                        id={`show-image-${editor.id}`}
+                                        checked={editor.showAsImage}
+                                        onCheckedChange={(checked) =>
+                                            setAttrEditors((prev) =>
+                                                prev.map((item) =>
+                                                    item.id === editor.id
+                                                        ? { ...item, showAsImage: Boolean(checked) }
+                                                        : item
+                                                )
+                                            )
+                                        }
+                                        className="mt-0.5"
+                                    />
+                                    <span className="space-y-0.5">
+                                        <span className="block text-sm font-semibold text-[#212121]">
+                                            Show as image
+                                        </span>
+                                        <span className="block text-xs text-muted-foreground">
+                                            {editor.showAsImage
+                                                ? "Options for this type render as image cards on the product page."
+                                                : "Options for this type render as text cards on the product page."}
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+
+                    {variantRows.length > 0 ? (
+                        <div className="overflow-hidden rounded-xl border border-[#212121]/10">
+                            <div className="max-h-[420px] overflow-y-auto divide-y">
+                                {variantRows.map((row, idx) => (
+                                    <div
+                                        key={`${comboKey(row.attributes)}-${idx}`}
+                                        className="grid grid-cols-1 gap-3 px-3 py-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:items-end"
+                                    >
+                                        {activeAttrNames.map((name) => {
+                                            const value =
+                                                row.attributes.find((a) => a.name === name)?.value ??
+                                                "";
+                                            return (
+                                                <div key={`${row.variantId}-${name}`}>
+                                                    <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">
+                                                        {name}
+                                                    </p>
+                                                    <Input value={value} disabled className="bg-neutral-50" />
+                                                </div>
+                                            );
+                                        })}
+                                        <div>
+                                            <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">Stock</p>
+                                            <Input
+                                                type="number"
+                                                value={row.productStock}
+                                                onChange={(e) =>
+                                                    setVariantRows((prev) =>
+                                                        prev.map((v, i) =>
+                                                            i === idx ? { ...v, productStock: e.target.value } : v
+                                                        )
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">Selling</p>
+                                            <Input
+                                                type="number"
+                                                value={row.originalPrice}
+                                                onChange={(e) =>
+                                                    setVariantRows((prev) =>
+                                                        prev.map((v, i) =>
+                                                            i === idx ? { ...v, originalPrice: e.target.value } : v
+                                                        )
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">MRP</p>
+                                            <Input
+                                                type="number"
+                                                value={row.discountPrice}
+                                                onChange={(e) =>
+                                                    setVariantRows((prev) =>
+                                                        prev.map((v, i) =>
+                                                            i === idx ? { ...v, discountPrice: e.target.value } : v
+                                                        )
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        {anyImageAttr ? (
+                                            <div>
+                                                <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">
+                                                    Variant image
+                                                </p>
+                                                <div className="flex items-center gap-2">
+                                                    {row.image ? (
+                                                        <div className="relative size-9 shrink-0 overflow-hidden rounded border">
+                                                            <Image
+                                                                src={row.image}
+                                                                alt=""
+                                                                fill
+                                                                sizes="36px"
+                                                                className="object-cover"
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex size-9 shrink-0 items-center justify-center rounded border border-dashed text-neutral-400">
+                                                            <ImageIcon className="size-3.5" />
+                                                        </div>
+                                                    )}
+                                                    <Select
+                                                        value={row.image || "__none__"}
+                                                        onValueChange={(value) =>
+                                                            setVariantRows((prev) =>
+                                                                prev.map((v, i) =>
+                                                                    i === idx
+                                                                        ? {
+                                                                              ...v,
+                                                                              image:
+                                                                                  value === "__none__"
+                                                                                      ? ""
+                                                                                      : value,
+                                                                          }
+                                                                        : v
+                                                                )
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger className="h-9 w-full min-w-0">
+                                                            <SelectValue placeholder="Pick image" />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="z-[120]">
+                                                            <SelectItem value="__none__">No image</SelectItem>
+                                                            {productData.images.map((img, imgIdx) => (
+                                                                <SelectItem key={`${img}-${imgIdx}`} value={img}>
+                                                                    Image {imgIdx + 1}
+                                                                    {imgIdx === 0 ? " (main)" : ""}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        ) : null}
+                                        <div className="flex items-end">
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                variant={row.isDefault ? "default" : "outline"}
+                                                className="w-full"
+                                                onClick={() =>
+                                                    setVariantRows((prev) =>
+                                                        prev.map((v, i) => ({ ...v, isDefault: i === idx }))
+                                                    )
+                                                }
+                                            >
+                                                {row.isDefault ? "Default" : "Set default"}
+                                            </Button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    ) : null}
+                    ) : (
+                        <div className="rounded-xl border border-dashed border-neutral-300 bg-[#FAFAFA] px-4 py-10 text-center">
+                            <Layers className="mx-auto mb-2 size-8 text-neutral-400" aria-hidden />
+                            <p className="text-sm font-medium text-neutral-700">No variants yet</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                                Enter a type name and options above to generate combinations.
+                            </p>
+                        </div>
+                    )}
 
                     <div className="hidden">
                         {

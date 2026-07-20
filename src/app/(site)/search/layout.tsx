@@ -3,7 +3,7 @@ import { getMetadataBase, NOINDEX_METADATA } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
     title: "Search",
-    description: "Search Najak Clothing products by name or keyword.",
+    description: "Search ShopOnline products by name or keyword.",
     ...NOINDEX_METADATA,
     alternates: {
         canonical: new URL("/shop", getMetadataBase()).toString(),

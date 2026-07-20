@@ -4,33 +4,33 @@ import { SiteContentShell } from "../_components/site-content-shell";
 export const metadata: Metadata = {
   title: "Return, privacy & shipping",
   description:
-    "Return and refund, privacy, and shipping policies for Najak Clothing customers.",
+    "Return and refund, privacy, and shipping policies for ShopOnline customers.",
 };
 
 export default function PoliciesPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-2xl font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-3xl md:text-4xl">
+        <h1 className="raleway text-2xl font-bold text-[#212121] border-b-4 border-[#212121] pb-3 inline-block sm:text-3xl md:text-4xl">
           Store policies
         </h1>
         <p className="mt-4 exo text-sm text-neutral-500">
-          Return & refund, privacy, and shipping for The Najak — men&apos;s and
-          women&apos;s apparel and accessories.
+          Return & refund, privacy, and shipping for ShopOnline — clothes,
+          footwear, furniture, electronics, and more.
         </p>
       </header>
 
       <div className="mt-8 exo text-neutral-700 leading-relaxed space-y-10 text-sm sm:mt-10 sm:space-y-14 sm:text-[0.95rem] md:text-base">
         <section id="return-refund-policy" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#212121] border-b-2 border-[#212121]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Return & refund policy
           </h2>
           <div className="space-y-4">
             <p>
               We want you to love your purchase from{" "}
-              <strong className="font-semibold text-neutral-900">The Najak</strong>.
+              <strong className="font-semibold text-neutral-900">ShopOnline</strong>.
               If an item is not right, you may request a return or exchange for
-              eligible clothing and accessories within{" "}
+              eligible products within{" "}
               <strong className="font-semibold text-neutral-900">14 days</strong> of
               delivery, subject to the rules below.
             </p>
@@ -48,13 +48,13 @@ export default function PoliciesPage() {
               </li>
               <li>
                 For hygiene reasons, certain categories (for example innerwear,
-                socks, or opened personal-care items sold with apparel) may be marked
+                socks, or opened personal-care items) may be marked
                 non-returnable on the product page. Clearance or final-sale items
                 marked as non-returnable cannot be returned unless they are
                 defective.
               </li>
               <li>
-                If you receive the wrong item, a damaged garment, or a manufacturing
+                If you receive the wrong item, a damaged product, or a manufacturing
                 defect, contact us as soon as possible with your order number and
                 photos; we will help with a replacement or refund as appropriate.
               </li>
@@ -62,17 +62,17 @@ export default function PoliciesPage() {
             <p>
               To start a return or exchange, email{" "}
               <a
-                href="mailto:najakclothing@gmail.com"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="mailto:johndoe@shoponline.com"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                najakclothing@gmail.com
+                johndoe@shoponline.com
               </a>{" "}
               or call{" "}
               <a
-                href="tel:+919572908188"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="tel:+919876543210"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                +91 95729 08188
+                +91 98765 43210
               </a>{" "}
               with your order number and reason. We will share return instructions
               (including the return address). Refunds, when approved, are processed
@@ -84,7 +84,7 @@ export default function PoliciesPage() {
         </section>
 
         <section id="privacy-policy" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#212121] border-b-2 border-[#212121]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Privacy policy
           </h2>
           <p className="mb-4 text-sm text-neutral-500">
@@ -93,9 +93,9 @@ export default function PoliciesPage() {
           <div className="space-y-4">
             <p>
               This policy explains how{" "}
-              <strong className="font-semibold text-neutral-900">The Najak</strong>{" "}
-              collects, uses, and protects personal information when you shop
-              clothing and accessories on najakclothing.com.
+              <strong className="font-semibold text-neutral-900">ShopOnline</strong>{" "}
+              collects, uses, and protects personal information when you shop on
+              shoponline.com.
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">
@@ -129,17 +129,17 @@ export default function PoliciesPage() {
               you can update certain account details where the platform allows it,
               opt out of non-essential marketing where offered, or email{" "}
               <a
-                href="mailto:najakclothing@gmail.com"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="mailto:johndoe@shoponline.com"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                najakclothing@gmail.com
+                johndoe@shoponline.com
               </a>{" "}
               or call{" "}
               <a
-                href="tel:+919572908188"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="tel:+919876543210"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                +91 95729 08188
+                +91 98765 43210
               </a>{" "}
               for privacy-related requests (such as access or deletion) where
               applicable law gives you those rights.
@@ -153,7 +153,7 @@ export default function PoliciesPage() {
         </section>
 
         <section id="shipping-policy" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#212121] border-b-2 border-[#212121]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Shipping policy
           </h2>
           <div className="space-y-4">
@@ -188,17 +188,17 @@ export default function PoliciesPage() {
               please check your parcel when it arrives. If the package is damaged
               or an item is missing, email{" "}
               <a
-                href="mailto:najakclothing@gmail.com"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="mailto:johndoe@shoponline.com"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                najakclothing@gmail.com
+                johndoe@shoponline.com
               </a>{" "}
               or call{" "}
               <a
-                href="tel:+919572908188"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="tel:+919876543210"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                +91 95729 08188
+                +91 98765 43210
               </a>{" "}
               within 48 hours with your order number and photos if possible so we
               can assist.
@@ -207,30 +207,34 @@ export default function PoliciesPage() {
         </section>
 
         <section id="contact" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#244d7c] border-b-2 border-[#244d7c]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#212121] border-b-2 border-[#212121]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Contact
           </h2>
           <div className="space-y-2">
             <p>
-              <strong className="font-semibold text-neutral-900">Brand:</strong> The
-              Najak — najakclothing.com
+              <strong className="font-semibold text-neutral-900">Contact:</strong>{" "}
+              John Doe
+            </p>
+            <p>
+              <strong className="font-semibold text-neutral-900">Brand:</strong>{" "}
+              ShopOnline — shoponline.com
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">Email:</strong>{" "}
               <a
-                href="mailto:najakclothing@gmail.com"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="mailto:johndoe@shoponline.com"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                najakclothing@gmail.com
+                johndoe@shoponline.com
               </a>
             </p>
             <p>
               <strong className="font-semibold text-neutral-900">Phone:</strong>{" "}
               <a
-                href="tel:+919572908188"
-                className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+                href="tel:+919876543210"
+                className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
               >
-                +91 95729 08188
+                +91 98765 43210
               </a>
             </p>
           </div>

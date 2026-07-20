@@ -60,8 +60,8 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
 
     const hanelSubCategory = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (subCategoryData.title.trim() === "" || subCategoryData.image === "" || subCategoryData.categoryId === "") {
-            toast.error("All fields are required");
+        if (subCategoryData.title.trim() === "" || subCategoryData.categoryId === "") {
+            toast.error("Title and category are required");
             return;
         } else if(subCategoryId){
              setIsLoading(true);
@@ -126,14 +126,16 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
     }
 
     return (
-        <CustomModal open={isOpen} onOpenChange={() => {
-            setIsOpen(false);
-            setSubCategoryId("");
-            setSubCategoryData({
-                title: "",
-                image: "",
-                categoryId: "",
-            })
+        <CustomModal open={isOpen} onOpenChange={(open) => {
+            setIsOpen(open);
+            if (!open) {
+                setSubCategoryId("");
+                setSubCategoryData({
+                    title: "",
+                    image: "",
+                    categoryId: "",
+                })
+            }
         }}>
             <DialogHeader>
                 <DialogTitle asChild>
@@ -145,9 +147,11 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
                 </DialogTitle>
             </DialogHeader>
             <div className="w-full flex flex-col gap-4">
+                <div>
+                    <Label className="text-sm text-muted-foreground">Image (optional)</Label>
                 {
                     subCategoryData.image ? (
-                        <div className="relative w-full h-[250px] border border-dotted mt-4 rounded-lg border-neutral-400 overflow-hidden">
+                        <div className="relative w-full h-[250px] border border-dotted mt-2 rounded-lg border-neutral-400 overflow-hidden">
                             <Image src={subCategoryData.image} alt="catImage" layout="fill" objectFit="cover" />
                             <div className=" absolute top-0 left-0 w-full h-full flex items-end justify-center py-4">
                                 <Button variant={'outline'} onClick={() => {
@@ -155,10 +159,11 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
                                         ...prev,
                                         image: ""
                                     }))
-                                }}>Change Image</Button>
+                                }}>Remove Image</Button>
                             </div>
                         </div>
                     ) : (
+                        <div className="mt-2">
                         <UploadDropzone endpoint={"imageUploader"}
                             onClientUploadComplete={(res) => {
                                 if (res && res.length > 0) {
@@ -173,29 +178,35 @@ export const CreateSubcategoryModal = ({ categories, handelGetSubCategories, sub
                                 toast.error(error.message)
                             }}
                         />
+                        </div>
                     )
                 }
+                </div>
                 <form onSubmit={hanelSubCategory} className="w-full flex flex-col gap-4">
                     <div className="w-full">
                         <Label htmlFor='category'>Select Category</Label>
-                        <Select value={subCategoryData.categoryId} onValueChange={(value) => {
+                        <Select value={subCategoryData.categoryId || undefined} onValueChange={(value) => {
                             setSubCategoryData((prev) => ({
                                 ...prev,
                                 categoryId: value
                             }))
                         }}
-
                         >
                             <SelectTrigger className="w-full" id="category">
                                 <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
-                            <SelectContent>
-                                {
-                                    categories.map((categories) => (
-                                        <SelectItem key={categories._id} value={categories._id}>{categories.title}</SelectItem>
+                            <SelectContent position="popper" className="z-[120]">
+                                {categories.length === 0 ? (
+                                    <div className="px-2 py-3 text-sm text-muted-foreground">
+                                        No categories found. Add a category first.
+                                    </div>
+                                ) : (
+                                    categories.map((category) => (
+                                        <SelectItem key={category._id} value={String(category._id)}>
+                                            {category.title}
+                                        </SelectItem>
                                     ))
-                                }
-
+                                )}
                             </SelectContent>
                         </Select>
 

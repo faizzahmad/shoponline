@@ -22,13 +22,23 @@ export function StickyRevealNavbar({ children }: StickyRevealNavbarProps) {
 
         const measure = () => {
             const inner = el.firstElementChild as HTMLElement | null;
-            setBarHeight((inner ?? el).offsetHeight);
+            const next = (inner ?? el).offsetHeight;
+            setBarHeight((prev) => (prev === next ? prev : next));
         };
         measure();
 
+        // Recheck after images/fonts settle so spacer matches real navbar height
+        const t1 = window.setTimeout(measure, 50);
+        const t2 = window.setTimeout(measure, 300);
+
         const ro = new ResizeObserver(measure);
         ro.observe(el);
-        return () => ro.disconnect();
+        if (el.firstElementChild) ro.observe(el.firstElementChild);
+        return () => {
+            ro.disconnect();
+            window.clearTimeout(t1);
+            window.clearTimeout(t2);
+        };
     }, [children]);
 
     const onScroll = useCallback(() => {
@@ -71,12 +81,14 @@ export function StickyRevealNavbar({ children }: StickyRevealNavbarProps) {
             <div
                 aria-hidden
                 className="w-full shrink-0"
-                style={{ height: barHeight > 0 ? barHeight : 0 }}
+                style={{
+                    height: barHeight > 0 ? barHeight : "5.5rem",
+                }}
             />
             <div
                 ref={innerRef}
                 className={cn(
-                    "fixed left-0 right-0 top-0 z-[100] bg-white/95 shadow-[0_1px_0_rgba(36,77,124,0.1)] transition-transform duration-300 ease-out will-change-transform",
+                    "fixed left-0 right-0 top-0 z-[100] bg-white/95 shadow-[0_1px_0_rgba(33, 33, 33,0.1)] transition-transform duration-300 ease-out will-change-transform",
                     visible
                         ? "translate-y-0"
                         : "-translate-y-full pointer-events-none"

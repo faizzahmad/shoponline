@@ -16,7 +16,7 @@ export async function generateMetadata({
         };
         const name = product.productName?.trim() || "Product";
         const desc = (
-            product.shortDescription?.trim() || `Shop ${name} at Najak Clothing.`
+            product.shortDescription?.trim() || `Shop ${name} at ShopOnline.`
         ).slice(0, 160);
         const firstImage = product.images?.[0];
         return {

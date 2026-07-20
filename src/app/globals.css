@@ -1,8 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +8,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 210 54% 31%;
+    --foreground: 0 0% 13%;
 
     --card: 0 0% 100%;
 
@@ -23,29 +18,29 @@
 
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 210 54% 31%;
+    --primary: 0 0% 13%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 211 40% 43%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 211 42% 95%;
+    --secondary: 45 96% 58%;
+    --secondary-foreground: 0 0% 13%;
+    --muted: 0 0% 98%;
 
-    --muted-foreground: 210 30% 35%;
-    --accent: 211 42% 95%;
-    --accent-foreground: 210 54% 31%;
+    --muted-foreground: 0 0% 35%;
+    --accent: 0 0% 98%;
+    --accent-foreground: 0 0% 13%;
 
     --destructive: 0 84.2% 60.2%;
 
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 25% 85%;
-    --input: 210 25% 85%;
-    --ring: 210 54% 31%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 45 96% 58%;
 
-    --chart-1: 210 54% 31%;
-    --chart-2: 211 40% 43%;
-    --chart-3: 210 45% 24%;
-    --chart-4: 214 33% 56%;
-    --chart-5: 210 60% 70%;
+    --chart-1: 0 0% 13%;
+    --chart-2: 45 96% 58%;
+    --chart-3: 0 0% 20%;
+    --chart-4: 45 80% 48%;
+    --chart-5: 0 0% 70%;
 
     --radius: 0.5rem
   ;
@@ -140,17 +135,21 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    background-image: linear-gradient(180deg, #ffffff 0%, #f3f7fb 100%);
+    @apply bg-background text-foreground font-sans;
+    background-image: linear-gradient(180deg, #ffffff 0%, #FAFAFA 100%);
   }
 }
 
 
+/* Legacy class names — mapped to the 2-font commerce stack */
 .raleway{
-  font-family: "Cinzel", serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
 }
 .exo{
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+.alegreya{
+  font-family: var(--font-display), system-ui, sans-serif;
 }
 
 .signin-bg::before{
@@ -160,7 +159,7 @@
   top: 0; 
   width: 100%;
   height: 100%;
-  background-image: url('https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVjeCbsPQZMtK0PFXrNpAZavgoCbmsyEkG5BMi2w');
+  background-image: url('https://mls10qtzvi.ufs.sh/f/MSZVxsl49d7Nm7mPqB0oAdzP2KRQj3vpBLZ4UGTmSMilk1Yw');
   background-size: cover;
   background-position: center;
   z-index: -1;
@@ -173,24 +172,18 @@
   top: 0; 
   width: 100%;
   height: 100%;
-  background-image: url('https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVje0BeKZUierdMHOnVflJRWGIcpYDjQ5i6uU0PT');
+  background-image: url('https://mls10qtzvi.ufs.sh/f/MSZVxsl49d7N0z2ZdBQafEC47Aq2lpL8QIJOMgxr3jmdneS6');
   background-size: cover;
   background-position: center;
   z-index: -1;
 }
 
-.alegreya{
-  font-family: "EB Garamond", serif;
-}
-
 .overlayimage{
   position: relative;
-  background-image: url('https://images.pexels.com/photos/5709661/pexels-photo-5709661.jpeg?auto=compress&cs=tinysrgb&w=1600');
-  background-size :cover;
-  background-position : center;
+  background-image: url('https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=1600');
+  background-size: cover;
+  background-position: center;
   background-attachment: fixed;
-  background-color: rgba(36, 77, 124, 0.38);
-  background-blend-mode: screen;
 }
 
 .overlayimage::before{
@@ -200,7 +193,11 @@
   top: 0; 
   width: 100%;
   height: 100%;
-  background-color: rgba(22, 45, 74, 0.6);
+  background: linear-gradient(
+    180deg,
+    rgba(33, 33, 33, 0.72) 0%,
+    rgba(18, 18, 18, 0.78) 100%
+  );
 }
 
 /* Stored product descriptions (sanitized HTML) */
@@ -230,7 +227,7 @@
 }
 .rich-long-desc blockquote {
   margin: 0.75rem 0;
-  border-left: 3px solid #244d7c;
+  border-left: 3px solid #212121;
   padding-left: 0.85rem;
   color: rgb(82 82 82);
 }

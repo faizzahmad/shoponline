@@ -3,7 +3,7 @@ import { AccountInfo } from "./_components/AcccountInfo";
 
 export const metadata: Metadata = {
     title: "My account",
-    description: "Manage your Najak Clothing profile and order history.",
+    description: "Manage your ShopOnline profile and order history.",
     robots: { index: false, follow: false },
 };
 

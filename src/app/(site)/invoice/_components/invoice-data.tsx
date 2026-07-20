@@ -165,10 +165,10 @@ pdf.save(`invoice-${username}-${date}.pdf`);
         <div className="shrink-0">
           <Image
             src="/images/web/logo.png"
-            alt="Najak Clothing"
-            width={280}
-            height={112}
-            className="h-14 w-auto sm:h-[4.5rem] md:h-24"
+            alt="ShopOnline"
+            width={220}
+            height={55}
+            className="h-auto w-[180px] sm:w-[200px] md:w-[220px]"
             priority
           />
         </div>
@@ -178,20 +178,20 @@ pdf.save(`invoice-${username}-${date}.pdf`);
           <span className="mt-1 block break-all text-xs text-gray-500 exo sm:text-sm">{orderDetails?._id}</span>
 
           <address className="mt-3 not-italic text-xs leading-relaxed text-gray-600 sm:mt-4 sm:text-sm">
-            Lal bagh purnea city <br />
-            Purnea, Bihar 854301,
+            42 Market Lane, Bengaluru <br />
+            Karnataka, 560001,
             <br />
             India
             <br />
             <a
-              className="mt-2 inline-block text-[#244d7c] underline-offset-2 hover:underline"
-              href="mailto:najakclothing@gmail.com"
+              className="mt-2 inline-block text-[#212121] underline-offset-2 hover:underline"
+              href="mailto:johndoe@shoponline.com"
             >
-              najakclothing@gmail.com
+              johndoe@shoponline.com
             </a>
             <br />
-            <a className="text-[#244d7c] underline-offset-2 hover:underline" href="tel:+919572908188">
-              +91 95729 08188
+            <a className="text-[#212121] underline-offset-2 hover:underline" href="tel:+919876543210">
+              +91 98765 43210
             </a>
           </address>
         </div>
@@ -327,7 +327,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             <div className="flex items-baseline justify-between gap-4 border-b border-gray-100 pb-2.5">
               <dt className="raleway font-medium text-gray-600">Discount</dt>
               <dd>
-              <span className="tabular-nums text-[#244d7c] exo">
+              <span className="tabular-nums text-[#212121] exo">
                 {"\u20B9"} {
                  (orderDetails?.items.reduce((total, item) => total + (item.originalPrice * item.quantity), 0) - orderDetails?.totalAmount ).toFixed(2)
                 }
@@ -384,20 +384,20 @@ pdf.save(`invoice-${username}-${date}.pdf`);
         <p className="mt-1.5 text-sm leading-relaxed text-gray-600">Questions about this invoice? Reach us at:</p>
         <div className="mt-3 space-y-1">
           <p className="text-sm font-medium text-gray-800">
-            <a className="text-[#244d7c] hover:underline" href="mailto:najakclothing@gmail.com">
-              najakclothing@gmail.com
+            <a className="text-[#212121] hover:underline" href="mailto:johndoe@shoponline.com">
+              johndoe@shoponline.com
             </a>
           </p>
           <p className="text-sm font-medium text-gray-800">
-            <a className="text-[#244d7c] hover:underline" href="tel:+919572908188">
-              +91 95729 08188
+            <a className="text-[#212121] hover:underline" href="tel:+919876543210">
+              +91 98765 43210
             </a>
           </p>
         </div>
       </div>
 
       <p className="mt-4 text-center text-xs text-gray-500 sm:mt-5 sm:text-left">
-        {"\u00A9"} 2026 Najak Clothing
+        {"\u00A9"} 2026 ShopOnline
       </p>
     </div>
     

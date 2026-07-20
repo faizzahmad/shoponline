@@ -41,8 +41,8 @@ export async function POST(req: Request) {
     const { title, image, categoryId } = body;
     const normalizedTitle = String(title ?? "").trim();
 
-    if (!normalizedTitle || !image || !categoryId) {
-        return new Response(JSON.stringify({ error: "All fields are required" }), {
+    if (!normalizedTitle || !categoryId) {
+        return new Response(JSON.stringify({ error: "Title and category are required" }), {
             status: 400,
         });
     }
@@ -64,7 +64,10 @@ export async function POST(req: Request) {
                 { status: 409 }
             );
         }
-        category.subCategories.push({ title: normalizedTitle, image });
+        category.subCategories.push({
+            title: normalizedTitle,
+            image: typeof image === "string" ? image : "",
+        });
         await category.save();
         return new Response(JSON.stringify({
             message: "Subcategory created successfully",
@@ -136,8 +139,8 @@ export async function PUT(req: Request) {
     const { id, title, image } = body;
     const normalizedTitle = String(title ?? "").trim();
 
-    if (!id || !normalizedTitle || !image) {
-        return new Response(JSON.stringify({ error: "All fields are required" }), {
+    if (!id || !normalizedTitle) {
+        return new Response(JSON.stringify({ error: "ID and title are required" }), {
             status: 400,
         });
     }
@@ -164,7 +167,12 @@ export async function PUT(req: Request) {
 
         const updated = await Category.findOneAndUpdate(
             { "subCategories._id": id },
-            { $set: { "subCategories.$.title": normalizedTitle, "subCategories.$.image": image } },
+            {
+                $set: {
+                    "subCategories.$.title": normalizedTitle,
+                    "subCategories.$.image": typeof image === "string" ? image : "",
+                },
+            },
             { new: true }
         );
         if (!updated) {

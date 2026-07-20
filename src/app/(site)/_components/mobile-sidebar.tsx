@@ -11,15 +11,22 @@ const MobileSidebar = async() => {
     return ( 
     <div>
         <div className="flex justify-between">
-        <Link href={'/'}>
-         <Image src={'/images/web/logo.png'} alt="Logo" height={90} width={100}></Image>
+        <Link href={'/'} className="shrink-0">
+         <Image
+           src={'/images/web/logo.png'}
+           alt="ShopOnline"
+           height={36}
+           width={130}
+           className="h-auto w-[120px] sm:w-[130px]"
+           priority
+         />
         </Link>
-            <div className="flex gap-4 items-center text-[#244d7c]">
-                                <Link href={'/shop'} className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#426b9a] transition">
+            <div className="flex gap-4 items-center text-[#212121]">
+                                <Link href={'/shop'} className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#FBC02D] transition">
                                     <SearchIcon className="size-5"/>
                                         <span className="text-xs font-semibold">Search</span>
                                 </Link>
-                               <div className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#426b9a] transition">
+                               <div className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#FBC02D] transition">
                                    <CartCount userEmail={externalUser?.primaryEmailAddress?.emailAddress} />
                                </div>
                       

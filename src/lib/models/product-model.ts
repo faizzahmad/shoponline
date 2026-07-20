@@ -4,6 +4,12 @@ const variantAttributeSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, trim: true },
         options: { type: [String], default: [] },
+        /** Storefront UI: image swatches or text cards for this attribute */
+        displayMode: {
+            type: String,
+            enum: ["image", "text"],
+            default: "text",
+        },
     },
     { _id: false }
 );
@@ -126,6 +132,12 @@ const productSchema = new mongoose.Schema({
             min: 1,
         },
         varients : [varientsSchema],
+        /** How options render on product page / modal: image swatches or text cards */
+        variantDisplayMode: {
+            type: String,
+            enum: ["image", "text"],
+            default: "text",
+        },
         variantAttributes: {
             type: [variantAttributeSchema],
             default: [],

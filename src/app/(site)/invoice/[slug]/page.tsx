@@ -3,7 +3,7 @@ import { InvoiceData } from "../_components/invoice-data";
 
 export const metadata: Metadata = {
     title: "Order invoice",
-    description: "Order confirmation and invoice details for your Najak Clothing purchase.",
+    description: "Order confirmation and invoice details for your ShopOnline purchase.",
     robots: { index: false, follow: false },
 };
 

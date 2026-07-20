@@ -10,7 +10,7 @@ import { Loader, Minus, Plus, ShoppingBag, ShoppingBasket } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, type MouseEvent } from "react"
 import { ShareProductMenu } from "@/components/custom/share-product-menu"
 import { toast } from "sonner";
 import { ProductReviewsSection } from "./product-reviews-section";
@@ -34,6 +34,12 @@ type VariantCombination = {
     isDefault?: boolean;
 };
 
+type VariantAttribute = {
+    name: string;
+    options?: string[];
+    displayMode?: "image" | "text";
+};
+
 type ProductInfo = {
     _id: string;
     productName: string;
@@ -49,6 +55,8 @@ type ProductInfo = {
     shortDescription: string;
     longDescription: string;
     varients: Variant[];
+    variantDisplayMode?: "image" | "text";
+    variantAttributes?: VariantAttribute[];
     variantCombinations?: VariantCombination[];
     __v: number;
     createdAt: string;
@@ -66,6 +74,8 @@ export const ProductData = ({ slug }: ProductDataProps) => {
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
     const [loader, setLoader] = useState<boolean>(true);
     const [cartLoader, setCartLoader] = useState<boolean>(false);
+    const [isHeroZoomed, setIsHeroZoomed] = useState(false);
+    const [heroZoomOrigin, setHeroZoomOrigin] = useState({ x: 50, y: 50 });
     const router = useRouter();
     const { isSignedIn, user } = useUser();
     const { setIsChanged, isChanged } = useIsChanged((state) => state);
@@ -165,7 +175,12 @@ export const ProductData = ({ slug }: ProductDataProps) => {
             )?.image;
             options.push({ value: attr.value, image });
         }
-        return { name, options };
+        const meta = (productInfo.variantAttributes ?? []).find(
+            (a) => a.name === name
+        );
+        const displayMode: "image" | "text" =
+            meta?.displayMode === "image" ? "image" : "text";
+        return { name, options, displayMode };
     });
 
     const stock = Number(productInfo?.productStock ?? 0);
@@ -182,6 +197,23 @@ export const ProductData = ({ slug }: ProductDataProps) => {
         () => sanitizeRichText(productInfo?.longDescription ?? ""),
         [productInfo?.longDescription]
     );
+
+    const heroImageSrc = useMemo(() => {
+        return (
+            (selectedImageIndex !== null
+                ? productInfo?.images?.[selectedImageIndex]
+                : undefined) ||
+            selectedVariant?.image ||
+            productInfo?.images?.[0]
+        );
+    }, [selectedImageIndex, selectedVariant?.image, productInfo?.images]);
+
+    const handleHeroMouseMove = (event: MouseEvent<HTMLDivElement>) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 100;
+        const y = ((event.clientY - rect.top) / rect.height) * 100;
+        setHeroZoomOrigin({ x, y });
+    };
 
     const handelAddToCart = async () => {
         if (isSelectedOutOfStock) {
@@ -316,24 +348,35 @@ export const ProductData = ({ slug }: ProductDataProps) => {
             }
             <div className="w-full xl:px-28 lg:px-16 md:px-10 sm:px-8 px-5 md:py-14 py-8 bg-[#f7fafd]">
 
-                <div className="w-full lg:flex gap-8 items-start rounded-2xl border border-[#244d7c]/15 bg-white p-4 md:p-5 shadow-sm">
+                <div className="w-full lg:flex gap-8 items-start rounded-2xl border border-[#212121]/15 bg-white p-4 md:p-5 shadow-sm">
                     <div className="w-full max-w-[560px] shrink-0 lg:sticky lg:top-24 self-start">
                         {
-                            productInfo.images && productInfo.images.length > 0 && (
-                                <div className="relative w-full aspect-square rounded-xl overflow-hidden">
-                                    <Image
-                                        src={
-                                            (selectedImageIndex !== null
-                                                ? productInfo?.images[selectedImageIndex]
-                                                : undefined) ||
-                                            selectedVariant?.image ||
-                                            productInfo?.images?.[0]
-                                        }
-                                        alt="productImage"
-                                        className="object-cover object-center"
-                                        fill
-                                        sizes="(max-width: 1024px) 100vw, 500px"
-                                    />
+                            heroImageSrc && (
+                                <div
+                                    className="relative w-full aspect-square rounded-xl overflow-hidden cursor-zoom-in"
+                                    onMouseEnter={() => setIsHeroZoomed(true)}
+                                    onMouseLeave={() => {
+                                        setIsHeroZoomed(false);
+                                        setHeroZoomOrigin({ x: 50, y: 50 });
+                                    }}
+                                    onMouseMove={handleHeroMouseMove}
+                                >
+                                    <div
+                                        className="absolute inset-0 transition-transform duration-200 ease-out will-change-transform"
+                                        style={{
+                                            transform: isHeroZoomed ? "scale(2)" : "scale(1)",
+                                            transformOrigin: `${heroZoomOrigin.x}% ${heroZoomOrigin.y}%`,
+                                        }}
+                                    >
+                                        <Image
+                                            src={heroImageSrc}
+                                            alt={productInfo.productName || "productImage"}
+                                            className="object-cover object-center"
+                                            fill
+                                            sizes="(max-width: 1024px) 100vw, 500px"
+                                            priority
+                                        />
+                                    </div>
                                 </div>
                             )
                         }
@@ -356,7 +399,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                         onClick={() => setSelectedImageIndex(index)}
                                                         className={`lg:size-[90px] size-[70px] overflow-hidden relative rounded-lg border-2 ${
                                                             selectedImageIndex === index
-                                                                ? "border-[#244d7c]"
+                                                                ? "border-[#212121]"
                                                                 : "border-transparent"
                                                         }`}
                                                     >
@@ -375,12 +418,12 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         </div>
                     </div>
 
-                    <div className="flex-1 mt-5 lg:mt-0 min-w-0 lg:border-l lg:border-[#244d7c]/10 lg:pl-7">
-                        <h6 className="uppercase text-[10px] font-[700] tracking-[0.16em] text-[#426b9a] raleway sm:text-xs sm:tracking-[0.2em]">
+                    <div className="flex-1 mt-5 lg:mt-0 min-w-0 lg:border-l lg:border-[#212121]/10 lg:pl-7">
+                        <h6 className="uppercase text-[10px] font-[700] tracking-[0.16em] text-[#FBC02D] raleway sm:text-xs sm:tracking-[0.2em]">
                             {productInfo.productCategory} / {productInfo.productSubCategory}
                         </h6>
                         <div className="flex mt-4  justify-between items-center">
-                            <h4 className="text-xl font-[700] leading-snug text-[#244d7c] exo sm:text-2xl md:text-4xl">
+                            <h4 className="text-xl font-[700] leading-snug text-[#212121] exo sm:text-2xl md:text-4xl">
 
                                 {productInfo.productName}
                             </h4>
@@ -398,15 +441,15 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                             />
                         </div>
 
-                        <div className="mt-4 rounded-xl bg-[#f4f8fc] p-4 border border-[#244d7c]/10">
+                        <div className="mt-4 rounded-xl bg-[#FAFAFA] p-4 border border-[#212121]/10">
                             <div className="flex items-center gap-3 mt-1">
-                                <p className="text-[#244d7c] font-[700] text-xl exo sm:text-2xl">{"\u20B9"}
+                                <p className="text-[#212121] font-[700] text-xl exo sm:text-2xl">{"\u20B9"}
                                     {activeOriginalPrice}
                                 </p>
                                 <p className="text-neutral-500 font-[400] text-sm exo line-through sm:text-base">{"\u20B9"}
                                     {activeDiscountPrice}
                                 </p>
-                                <p className="text-[#426b9a] font-[600] text-sm raleway">
+                                <p className="text-[#FBC02D] font-[600] text-sm raleway">
                                     {activeDiscountPrice > 0
                                         ? Math.round(
                                               ((activeDiscountPrice - activeOriginalPrice) /
@@ -420,27 +463,26 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                             <p className="text-xs text-neutral-500 mt-2 raleway">Inclusive of all taxes</p>
                         </div>
 
-                        <div className="my-6 border-t border-[#244d7c]/10 pt-5">
+                        <div className="my-6 border-t border-[#212121]/10 pt-5">
                             {hasNewVariants &&
                                 optionsByAttribute.map((group) => (
                                     <div key={group.name} className="mb-3">
-                                <p className="text-sm font-semibold exo mb-2 capitalize text-[#244d7c]">{group.name}</p>
+                                <p className="text-sm font-semibold exo mb-2 capitalize text-[#212121]">{group.name}</p>
                                         <div className="flex flex-wrap gap-2">
                                             {group.options.map((option) => {
                                                 const isSelected = selectedAttributes[group.name] === option.value;
-                                                const isColorAttr =
-                                                    ["color", "colour"].includes(
-                                                        group.name.trim().toLowerCase()
-                                                    );
-                                                if (isColorAttr && option.image) {
+                                                const showAsImage =
+                                                    group.displayMode === "image" &&
+                                                    Boolean(option.image);
+                                                if (showAsImage && option.image) {
                                                     return (
                                                         <button
                                                             key={`${group.name}-${option.value}`}
                                                             type="button"
-                                                            className={`flex flex-col items-center gap-1 rounded-md border p-1 transition ${
+                                                            className={`flex flex-col items-center gap-1 rounded-md border p-1.5 transition ${
                                                                 isSelected
-                                                                    ? "border-[#244d7c] bg-[#eef4fb]"
-                                                                    : "border-neutral-300"
+                                                                    ? "border-[#212121] bg-[#FAFAFA] shadow-sm"
+                                                                    : "border-neutral-300 hover:border-neutral-400"
                                                             }`}
                                                             onClick={() => {
                                                                 setSelectedAttributes((prev) => ({
@@ -450,7 +492,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                                 setSelectedImageIndex(null);
                                                             }}
                                                         >
-                                                            <div className="relative size-16 overflow-hidden rounded">
+                                                            <div className="relative size-14 overflow-hidden rounded sm:size-16">
                                                                 <Image
                                                                     src={option.image}
                                                                     alt={option.value}
@@ -461,7 +503,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                             </div>
                                                             <span
                                                                 className={`text-xs capitalize ${
-                                                                    isSelected ? "text-[#244d7c]" : "text-neutral-700"
+                                                                    isSelected ? "text-[#212121]" : "text-neutral-700"
                                                                 }`}
                                                             >
                                                                 {option.value}
@@ -473,10 +515,10 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                     <button
                                                         key={`${group.name}-${option.value}`}
                                                         type="button"
-                                                        className={`px-3 py-1.5 rounded-full border text-sm ${
+                                                        className={`min-w-[2.75rem] rounded-md border px-3.5 py-2 text-sm capitalize transition ${
                                                             isSelected
-                                                                ? "border-[#244d7c] text-[#244d7c] bg-[#eef4fb]"
-                                                                : "border-neutral-300 text-neutral-700"
+                                                                ? "border-[#212121] bg-[#212121] text-white"
+                                                                : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
                                                         }`}
                                                         onClick={() => {
                                                             setSelectedAttributes((prev) => ({
@@ -495,7 +537,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                 ))}
 
                             {productInfo?.varients?.some((variantGroup) => variantGroup.products.length > 0) && (
-                                <h5 className="text-lg mb-4 exo font-semibold text-[#244d7c]">More Colors / Styles</h5>
+                                <h5 className="text-lg mb-4 exo font-semibold text-[#212121]">More Colors / Styles</h5>
                             )}
                             <div className="w-full flex flex-wrap gap-4">
                                 {productInfo?.varients?.map((variantGroup: { products: any[] }) =>
@@ -503,7 +545,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                         <div key={product.productId} className="flex flex-col items-center">
                                             <Link href={`/product-info/${product.productId}`} target="_blank">
                                                 <div className="w-[60px]">
-                                                    <div className="w-full h-[60px] relative border-2 border-[#244d7c] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
+                                                    <div className="w-full h-[60px] relative border-2 border-[#212121] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
                                                         <Image
                                                             src={product.image}
                                                             alt={product.pname}
@@ -526,7 +568,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
 
 
                         {isSelectedOutOfStock ? (
-                            <p className="mt-4 text-sm font-medium text-[#244d7c] raleway rounded-md border border-[#244d7c]/20 bg-[#eef4fb] px-3 py-2">
+                            <p className="mt-4 text-sm font-medium text-[#212121] raleway rounded-md border border-[#212121]/20 bg-[#FAFAFA] px-3 py-2">
                                 This product is out of stock.
                             </p>
                         ) : null}
@@ -534,16 +576,16 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         <div className="mt-5 flex gap-4 items-center">
 
                             <div className="flex mt-1">
-                                <button className="size-10 flex items-center justify-center bg-white border border-[#244d7c]/20 cursor-pointer text-[#244d7c] rounded-tl rounded-bl"
+                                <button className="size-10 flex items-center justify-center bg-white border border-[#212121]/20 cursor-pointer text-[#212121] rounded-tl rounded-bl"
                                     disabled={selectedQunatity <= 1 || isSelectedOutOfStock}
                                     onClick={() => setSelectedQunatity(selectedQunatity > 1 ? selectedQunatity - 1 : 1)}
                                 >
                                     <Minus className="size-5" />
                                 </button>
-                                <div className="size-10 text-lg flex items-center justify-center bg-white border-y border-[#244d7c]/20 ">
+                                <div className="size-10 text-lg flex items-center justify-center bg-white border-y border-[#212121]/20 ">
                                     {selectedQunatity}
                                 </div>
-                                <button className="size-10 text-sm flex items-center justify-center bg-white border border-[#244d7c]/20 cursor-pointer text-[#244d7c] rounded-tr rounded-br"
+                                <button className="size-10 text-sm flex items-center justify-center bg-white border border-[#212121]/20 cursor-pointer text-[#212121] rounded-tr rounded-br"
                                     disabled={isSelectedOutOfStock}
                                     onClick={() => {
                                         if (selectedQunatity < maxSelectableQty) {
@@ -584,7 +626,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         <div className="mt-4">
                             <Button
                                 disabled={cartLoader || isSelectedOutOfStock}
-                                className="w-full h-[42px] rounded-md raleway uppercase bg-[#c7d9ec] text-[#244d7c] hover:bg-[#b2cce4] "
+                                className="w-full h-[42px] rounded-md raleway uppercase bg-[#E0E0E0] text-[#212121] hover:bg-[#9E9E9E] "
                                 onClick={async () => {
                                     await handelAddToCart();
                                     router.push(`/cart?type=buy-now&productId=${productInfo._id}`);
@@ -602,23 +644,23 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         </div>
 
                         <div className="mt-5 grid grid-cols-3 gap-3">
-                            <div className="rounded-lg border border-[#244d7c]/15 bg-[#f8fbff] p-2 text-center">
-                                <p className="text-xs font-semibold text-[#244d7c]">100% Original</p>
+                            <div className="rounded-lg border border-[#212121]/15 bg-[#FAFAFA] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#212121]">100% Original</p>
                             </div>
-                            <div className="rounded-lg border border-[#244d7c]/15 bg-[#f8fbff] p-2 text-center">
-                                <p className="text-xs font-semibold text-[#244d7c]">Easy Returns</p>
+                            <div className="rounded-lg border border-[#212121]/15 bg-[#FAFAFA] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#212121]">Easy Returns</p>
                             </div>
-                            <div className="rounded-lg border border-[#244d7c]/15 bg-[#f8fbff] p-2 text-center">
-                                <p className="text-xs font-semibold text-[#244d7c]">Fast Delivery</p>
+                            <div className="rounded-lg border border-[#212121]/15 bg-[#FAFAFA] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#212121]">Fast Delivery</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <section className="mt-8 rounded-2xl border border-[#244d7c]/15 bg-white p-5 md:p-7 shadow-sm">
-                    <h5 className="mb-4 text-lg font-semibold text-[#244d7c] raleway sm:text-xl">Product Details</h5>
+                <section className="mt-8 rounded-2xl border border-[#212121]/15 bg-white p-5 md:p-7 shadow-sm">
+                    <h5 className="mb-4 text-lg font-semibold text-[#212121] raleway sm:text-xl">Product Details</h5>
                     <div
-                        className="rich-long-desc max-w-none text-sm leading-relaxed text-neutral-700 md:text-[15px] [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-xl [&_a]:text-[#244d7c] [&_a]:underline"
+                        className="rich-long-desc max-w-none text-sm leading-relaxed text-neutral-700 md:text-[15px] [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-xl [&_a]:text-[#212121] [&_a]:underline"
                         dangerouslySetInnerHTML={{ __html: sanitizedLongDescription }}
                     />
                 </section>

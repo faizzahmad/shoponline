@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
+import { BRAND_NAME } from "./site-config";
 
-export const BRAND_NAME = "Najak Clothing";
+export { BRAND_NAME };
 
 export const BRAND_DESCRIPTION =
-    "Shop men's and women's apparel at Najak Clothing — contemporary everyday style, jeans, t-shirts, ethnic wear and more, shipped across India.";
+    "ShopOnline — your online store for clothes, footwear, furniture, electronics, and everyday essentials. Browse categories, deals, and bestsellers.";
 
 export const BRAND_KEYWORDS = [
-    "Najak Clothing",
-    "najak clothing",
-    "najakclothing",
-    "clothing India",
-    "online apparel",
-    "men's clothing",
-    "women's clothing",
-    "women's fashion",
-    "men's fashion",
-    "buy clothes online India",
+    "ShopOnline",
+    "online shopping",
+    "ecommerce",
+    "clothes",
+    "footwear",
+    "furniture",
+    "electronics",
+    "buy online India",
+    "multi category store",
 ];
 
 /** Canonical site origin for Open Graph, sitemap, and metadataBase (set NEXT_PUBLIC_API_URL in production). */
@@ -23,12 +23,12 @@ export function getSiteUrl(): string {
     const raw =
         process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/$/, "") ||
         (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
-    if (!raw) return "https://www.najakclothing.com";
+    if (!raw) return "https://www.shoponline.com";
     try {
         const url = new URL(raw.startsWith("http") ? raw : `https://${raw}`);
         return url.origin;
     } catch {
-        return "https://www.najakclothing.com";
+        return "https://www.shoponline.com";
     }
 }
 

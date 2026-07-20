@@ -3,17 +3,17 @@ import { getOldestCategories } from "@/actions/category";
 
 export const metadata: Metadata = {
     title: {
-        absolute: "Shop Online — Najak Clothing",
+        absolute: "Shop — ShopOnline",
     },
     description:
-        "Shop Najak Clothing online — browse men's and women's apparel, jeans, t-shirts, ethnic wear and more. Filter by category, sort by new arrivals or bestsellers, and get delivery across India.",
+        "Browse ShopOnline for clothes, footwear, furniture, electronics, and more. Filter by category and sort by new arrivals or bestsellers.",
     alternates: {
         canonical: "/shop",
     },
     openGraph: {
-        title: "Shop Online — Najak Clothing",
+        title: "Shop — ShopOnline",
         description:
-            "Browse men's and women's clothing by category at Najak Clothing. Secure checkout and delivery across India.",
+            "Browse clothes, footwear, furniture, electronics, and more at ShopOnline. Secure checkout across India.",
         url: "/shop",
     },
 };

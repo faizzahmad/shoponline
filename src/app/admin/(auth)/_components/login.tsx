@@ -56,7 +56,14 @@ export const Login = () => {
     return (
         <form onSubmit={handleSubmit} >
             <div className=" mb-10 flex justify-center">
-                <Image src={'/images/web/logo.png'} alt="logo" height={60} width={100} />
+                <Image
+                  src={'/images/web/logo.png'}
+                  alt="ShopOnline"
+                  height={40}
+                  width={150}
+                  className="h-auto w-[140px]"
+                  priority
+                />
             </div>
             <Card className="w-[400px] raleway">
                 <CardHeader>

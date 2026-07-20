@@ -48,6 +48,7 @@ export async function POST(request: Request) {
         varients,
         variantAttributes,
         variantCombinations,
+        variantDisplayMode,
         length,
         breadth,
         height,
@@ -58,6 +59,27 @@ export async function POST(request: Request) {
     if (dimsError) {
         return new Response(JSON.stringify({ error: dimsError }), { status: 400 });
     }
+
+    const normalizeAttributes = (attrs: unknown) => {
+        if (!Array.isArray(attrs)) return [];
+        return attrs
+            .filter((a) => a && typeof a === "object" && typeof (a as { name?: string }).name === "string")
+            .map((a) => {
+                const item = a as {
+                    name: string;
+                    options?: string[];
+                    displayMode?: string;
+                };
+                return {
+                    name: String(item.name).trim(),
+                    options: Array.isArray(item.options)
+                        ? item.options.map(String).map((o) => o.trim()).filter(Boolean)
+                        : [],
+                    displayMode: item.displayMode === "image" ? "image" : "text",
+                };
+            })
+            .filter((a) => a.name && a.options.length > 0);
+    };
 
     try {
         const product = new Product({
@@ -74,7 +96,8 @@ export async function POST(request: Request) {
             shortDescription,
             longDescription,
             varients,
-            variantAttributes: Array.isArray(variantAttributes) ? variantAttributes : [],
+            variantDisplayMode: variantDisplayMode === "image" ? "image" : "text",
+            variantAttributes: normalizeAttributes(variantAttributes),
             variantCombinations: Array.isArray(variantCombinations) ? variantCombinations : [],
             length: Number(length),
             breadth: Number(breadth),
@@ -139,6 +162,7 @@ export async function PUT(request: Request) {
         varients,
         variantAttributes,
         variantCombinations,
+        variantDisplayMode,
         length,
         breadth,
         height,
@@ -155,6 +179,27 @@ export async function PUT(request: Request) {
     if (dimsError) {
         return new Response(JSON.stringify({ error: dimsError }), { status: 400 });
     }
+
+    const normalizeAttributes = (attrs: unknown) => {
+        if (!Array.isArray(attrs)) return [];
+        return attrs
+            .filter((a) => a && typeof a === "object" && typeof (a as { name?: string }).name === "string")
+            .map((a) => {
+                const item = a as {
+                    name: string;
+                    options?: string[];
+                    displayMode?: string;
+                };
+                return {
+                    name: String(item.name).trim(),
+                    options: Array.isArray(item.options)
+                        ? item.options.map(String).map((o) => o.trim()).filter(Boolean)
+                        : [],
+                    displayMode: item.displayMode === "image" ? "image" : "text",
+                };
+            })
+            .filter((a) => a.name && a.options.length > 0);
+    };
 
     try {
         const productIdSlug = String(productName).replace(/\s+/g, "-").toLowerCase();
@@ -175,7 +220,8 @@ export async function PUT(request: Request) {
                     shortDescription,
                     longDescription,
                     varients: varients ?? [],
-                    variantAttributes: variantAttributes ?? [],
+                    variantDisplayMode: variantDisplayMode === "image" ? "image" : "text",
+                    variantAttributes: normalizeAttributes(variantAttributes),
                     variantCombinations: variantCombinations ?? [],
                     length: Number(length),
                     breadth: Number(breadth),

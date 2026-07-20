@@ -25,7 +25,7 @@ interface ProductSliderProps {
 export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) => {
     return (
         <div className="my-8 w-full px-5 sm:my-12 lg:px-10">
-            <h5 className="mb-4 text-lg font-[700] text-[#244d7c] exo sm:mb-5 sm:text-xl md:text-[2rem]">{carouselTitle}</h5>
+            <h5 className="mb-4 text-lg font-[700] text-[#212121] exo sm:mb-5 sm:text-xl md:text-[2rem]">{carouselTitle}</h5>
             <div className="w-full">
                 <Carousel>
                     <CarouselContent>
@@ -53,7 +53,7 @@ export const ProductSlider = ({ carouselTitle, products }: ProductSliderProps) =
                                         : "/shop?sortBy=top-selling"
                                 }
                             >
-                                <div className="flex h-full w-full items-center justify-center gap-2 rounded-xl border border-[#244d7c]/20 bg-[#eaf0f7] p-3 text-base font-semibold text-[#244d7c] shadow-sm transition hover:bg-[#dbe7f4] raleway sm:p-4 sm:text-2xl">
+                                <div className="flex h-full w-full items-center justify-center gap-2 rounded-xl border border-[#212121]/20 bg-[#FAFAFA] p-3 text-base font-semibold text-[#212121] shadow-sm transition hover:bg-[#dbe7f4] raleway sm:p-4 sm:text-2xl">
                                     View All
                                     <ArrowRight />
                                 </div>

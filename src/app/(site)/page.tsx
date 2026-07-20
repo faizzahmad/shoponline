@@ -5,12 +5,14 @@ import { CategoriesSlider } from "./_components/categories-slider";
 import { OfferBanner } from "./_components/offer-banner";
 import { ProductSlider } from "./_components/product-slider";
 import { SocialLinks } from "./_components/social-links";
+import { ShopHighlights } from "./_components/shop-highlights";
 import { getLatestCategories } from "@/actions/category";
 import { getNewProducts, getTopSellingProducts } from "@/actions/product";
 import { ProductInfoModal } from "./shop/_components/product-info-modal";
 import Link from "next/link";
 import Image from "next/image";
 import { getActiveCoupons } from "@/actions/coupon";
+import { getBanners } from "@/actions/banner";
 
 type SubCategory = {
     _id: string;
@@ -20,10 +22,10 @@ type SubCategory = {
 
 export const metadata: Metadata = {
     title: {
-        absolute: "Najak Clothing — Men's & Women's Fashion Online",
+        absolute: "ShopOnline — Clothes, Footwear, Furniture & Electronics",
     },
     description:
-        "Discover new arrivals, categories, offers, and bestsellers at Najak Clothing — contemporary men's and women's apparel shipped across India.",
+        "Shop clothes, footwear, furniture, electronics, and more at ShopOnline. Browse categories, offers, and bestsellers.",
     alternates: {
         canonical: "/",
     },
@@ -45,33 +47,60 @@ export default async function Home() {
     const bestSeller = await getTopSellingProducts(10);
     const featuredCategories = categoriesData.slice(4, 8);
     const coupons = await getActiveCoupons(3);
+    const [topBanners, bottomBanners] = await Promise.all([
+        getBanners("top"),
+        getBanners("bottom"),
+    ]);
+
+    const carouselSlides =
+        topBanners.length > 0
+            ? topBanners.map((banner) => ({
+                  img: banner.image,
+                  mobileImg: banner.mobileImage || undefined,
+                  urlLink: banner.link || "/shop",
+                  title: banner.title || "ShopOnline",
+                  subtitle: banner.subtitle || undefined,
+                  ctaLabel: banner.ctaLabel || "Shop now",
+              }))
+            : demoBanners;
+
+    const offerBanner = bottomBanners[0]
+        ? {
+              image: bottomBanners[0].image,
+              mobileImage: bottomBanners[0].mobileImage || undefined,
+              title: bottomBanners[0].title || "Explore our marketplace",
+              subtitle: bottomBanners[0].subtitle,
+              link: bottomBanners[0].link || "/shop",
+              ctaLabel: bottomBanners[0].ctaLabel || "Shop now",
+          }
+        : null;
 
     return (
         <div className="w-full pb-10">
             <ProductInfoModal />
-            <CustomCarousel data={demoBanners} />
+            <CustomCarousel data={carouselSlides} />
             <section className="lg:px-10 px-5 py-6 sm:py-10 bg-white animate-soft-fade-up">
                 <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-center">
                     <div>
-                        <p className="uppercase text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] text-[#426b9a] font-semibold">
-                            New season collection
+                        <p className="uppercase text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] text-[#FBC02D] font-semibold">
+                            Everything in one store
                         </p>
-                        <h1 className="mt-2 sm:mt-3 text-xl font-bold leading-snug raleway text-[#244d7c] sm:text-2xl md:text-4xl lg:text-5xl sm:leading-tight">
-                            Redefine your everyday style with pieces built for comfort and confidence.
+                        <h1 className="mt-2 sm:mt-3 text-xl font-bold leading-snug raleway text-[#212121] sm:text-2xl md:text-4xl lg:text-5xl sm:leading-tight">
+                            Shop clothes, footwear, furniture, electronics, and more in one place.
                         </h1>
-                        <p className="mt-3 sm:mt-4 text-sm leading-relaxed text-[#426b9a] max-w-xl sm:text-base">
-                            Discover fashion essentials, statement layers, and modern fits crafted to keep your wardrobe versatile from workdays to weekends.
+                        <p className="mt-3 sm:mt-4 text-sm leading-relaxed text-[#FBC02D] max-w-xl sm:text-base">
+                            From fashion and home to gadgets and everyday essentials — ShopOnline brings every category together for a smoother shopping experience.
                         </p>
                         <div className="mt-4 sm:mt-6 flex flex-wrap gap-2 sm:gap-4">
                             <Link
                                 href="/shop?sortBy=new"
-                                className="rounded-full bg-[#244d7c] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#426b9a] sm:px-6 sm:py-3 sm:text-sm"
+                                className="rounded-full bg-[#212121] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#FBC02D] hover:text-[#212121] sm:px-6 sm:py-3 sm:text-sm"
                             >
                                 Shop new arrivals
                             </Link>
                             <Link
                                 href="/shop?sortBy=top-selling"
-                                className="rounded-full border border-[#244d7c]/40 px-4 py-2 text-xs font-semibold text-[#244d7c] transition hover:bg-[#eef4fb] sm:px-6 sm:py-3 sm:text-sm"
+                                className="rounded-full border border-[#212121]/40 px-4 py-2 text-xs font-semibold text-[#212121] transition hover:bg-[#FAFAFA] sm:px-6 sm:py-3 sm:text-sm"
                             >
                                 Best sellers
                             </Link>
@@ -85,7 +114,7 @@ export default async function Home() {
                                 className="group relative h-32 rounded-xl overflow-hidden sm:h-40 sm:rounded-2xl"
                             >
                                 <Image src={item.img} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#244d7c]/85 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/85 to-transparent" />
                                 <span className="absolute bottom-2 left-2 right-2 text-[11px] font-semibold leading-tight text-white sm:bottom-3 sm:left-3 sm:right-auto sm:text-sm">
                                     {item.name}
                                 </span>
@@ -95,19 +124,19 @@ export default async function Home() {
                 </div>
             </section>
             <CategoriesSlider categories={categoriesData} />
-            <OfferBanner />
+            <OfferBanner banner={offerBanner} />
             <ProductSlider carouselTitle="New Arrivals" products={newArrivals} />
             <ProductSlider carouselTitle="Best Sellers" products={bestSeller} />
             {coupons.length > 0 ? (
                 <section className="lg:px-10 px-5 py-6 sm:py-8">
-                    <div className="relative overflow-hidden rounded-xl border border-[#244d7c]/15 sm:rounded-2xl">
+                    <div className="relative overflow-hidden rounded-xl border border-[#212121]/15 sm:rounded-2xl">
                         <Image
                             src="https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVje546PtK7AKDedf8SWaILuTo5vtwB7qJNOcRki"
                             alt="coupon background"
                             fill
                             className="object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#244d7c]/92 via-[#244d7c]/78 to-[#426b9a]/70" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#212121]/92 via-[#212121]/78 to-[#FBC02D]/70" />
                         <div className="relative p-4 sm:p-5 md:p-7">
                             <div className="mb-4 flex items-end justify-between sm:mb-5">
                                 <div>
@@ -145,22 +174,7 @@ export default async function Home() {
                     </div>
                 </section>
             ) : null}
-            <section className="lg:px-10 px-5 py-8 sm:py-12">
-                <div className="grid gap-3 md:grid-cols-3 md:gap-4">
-                    <div className="animate-soft-fade-up rounded-xl bg-[#244d7c] p-4 text-white sm:rounded-2xl sm:p-6">
-                        <h3 className="text-lg font-semibold raleway sm:text-xl">Premium fabrics</h3>
-                        <p className="mt-2 text-sm text-white/85 sm:text-base">Soft, durable materials selected for daily wear and long-lasting comfort.</p>
-                    </div>
-                    <div className="animate-soft-fade-up-delay rounded-xl bg-[#426b9a] p-4 text-white sm:rounded-2xl sm:p-6">
-                        <h3 className="text-lg font-semibold raleway sm:text-xl">Fast shipping</h3>
-                        <p className="mt-2 text-sm text-white/85 sm:text-base">Quick order dispatch so your style upgrades arrive right on time.</p>
-                    </div>
-                    <div className="animate-slow-float rounded-xl border border-[#244d7c]/20 bg-white p-4 sm:rounded-2xl sm:p-6">
-                        <h3 className="text-lg font-semibold raleway text-[#244d7c] sm:text-xl">Easy returns</h3>
-                        <p className="mt-2 text-sm text-[#426b9a] sm:text-base">Shop with confidence thanks to hassle-free returns and support.</p>
-                    </div>
-                </div>
-            </section>
+            <ShopHighlights />
             <SocialLinks />
         </div>
     );

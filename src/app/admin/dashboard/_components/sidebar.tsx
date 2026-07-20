@@ -74,7 +74,14 @@ export const Sidebar = () => {
     return (
         <>
           <div className="mb-10">
-              <Image src={'/images/web/logo.png'} alt="logo" height={60} width={100} />
+              <Image
+                src={'/images/web/logo.png'}
+                alt="ShopOnline"
+                height={36}
+                width={140}
+                className="h-auto w-[130px]"
+                priority
+              />
           </div>
         <ul className="w-full flex flex-col gap-2">
             {sidebarItems.map((item) => (

@@ -51,15 +51,15 @@ export const CartCount = ({ userEmail }: CartCountProps) => {
   return (
     <Link
       href={"/cart"}
-      className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#426b9a] transition text-[#244d7c]"
+      className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#FBC02D] transition text-[#212121]"
     >
       <div className="relative">
         <ShoppingCart className="size-5" />
         {userEmail && loader && (
-          <Skeleton className="absolute -top-3 -right-[3px] h-4 w-4 rounded-full bg-[#244d7c]/30" />
+          <Skeleton className="absolute -top-3 -right-[3px] h-4 w-4 rounded-full bg-[#212121]/30" />
         )}
         {(!userEmail || !loader) && displayCount > 0 && (
-          <div className="absolute -top-3 -right-[3px] flex h-4 min-w-4 items-center justify-center rounded-full bg-[#244d7c] px-1 text-[10px] font-semibold text-white">
+          <div className="absolute -top-3 -right-[3px] flex h-4 min-w-4 items-center justify-center rounded-full bg-[#212121] px-1 text-[10px] font-semibold text-white">
             {displayCount > 99 ? "99+" : displayCount}
           </div>
         )}

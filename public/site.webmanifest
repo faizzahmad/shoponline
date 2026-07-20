@@ -1,7 +1,7 @@
 {
-  "name": "Najak Clothing",
-  "short_name": "Najak",
-  "description": "Men's and women's apparel — contemporary everyday style, shipped across India.",
+  "name": "ShopOnline",
+  "short_name": "ShopOnline",
+  "description": "Shop clothes, footwear, furniture, electronics, and more online.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -14,8 +14,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#244d7c",
+  "theme_color": "#212121",
   "background_color": "#ffffff",
-  "display": "standalone",
-  "start_url": "/"
+  "display": "standalone"
 }

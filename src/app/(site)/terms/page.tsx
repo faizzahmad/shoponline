@@ -4,14 +4,14 @@ import { SiteContentShell } from "../_components/site-content-shell";
 export const metadata: Metadata = {
   title: "Terms and conditions",
   description:
-    "Terms and conditions for shopping apparel and accessories at Najak Clothing (najakclothing.com).",
+    "Terms and conditions for shopping at ShopOnline (shoponline.com).",
 };
 
 export default function TermsPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-2xl font-bold text-[#244d7c] border-b-4 border-[#244d7c] pb-3 inline-block sm:text-3xl md:text-4xl">
+        <h1 className="raleway text-2xl font-bold text-[#212121] border-b-4 border-[#212121] pb-3 inline-block sm:text-3xl md:text-4xl">
           Terms and conditions
         </h1>
         <p className="mt-4 exo text-sm text-neutral-500">
@@ -26,10 +26,10 @@ export default function TermsPage() {
           </h2>
           <p>
             These Terms and Conditions govern your use of the website and online
-            store operated by <strong className="font-semibold text-neutral-900">The Najak</strong> at{" "}
-            <strong className="font-semibold text-neutral-900">najakclothing.com</strong>{" "}
+            store operated by <strong className="font-semibold text-neutral-900">ShopOnline</strong> at{" "}
+            <strong className="font-semibold text-neutral-900">shoponline.com</strong>{" "}
             (together, the “Services”). By browsing, creating an account, or placing
-            an order for clothing and related products, you agree to these terms. If
+            an order for products across our catalog, you agree to these terms. If
             you do not agree, please do not use the Services.
           </p>
         </section>
@@ -51,7 +51,8 @@ export default function TermsPage() {
             3. Products, images & pricing
           </h2>
           <p>
-            We sell apparel and fashion accessories as described on each product
+            We sell products across categories such as clothes, footwear, furniture,
+            electronics, and more, as described on each product
             page. We aim for accurate titles, descriptions, size information, and
             photography. Colours and textures may vary slightly due to lighting,
             screen settings, or manufacturing batches. Measurements and fits are
@@ -85,7 +86,7 @@ export default function TermsPage() {
             where local law says otherwise. Full details are in our{" "}
             <a
               href="/policies#shipping-policy"
-              className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
             >
               Shipping policy
             </a>
@@ -98,11 +99,11 @@ export default function TermsPage() {
             6. Returns, exchanges & refunds
           </h2>
           <p>
-            Our rules for returns, exchanges, and refunds for clothing and
+            Our rules for returns, exchanges, and refunds for products and
             accessories are set out in our{" "}
             <a
               href="/policies#return-refund-policy"
-              className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
             >
               Return & refund policy
             </a>
@@ -116,8 +117,8 @@ export default function TermsPage() {
             7. Intellectual property
           </h2>
           <p>
-            All content on this site—including The Najak name and branding, text,
-            graphics, product images, and layout—is owned by The Najak or its
+            All content on this site—including ShopOnline name and branding, text,
+            graphics, product images, and layout—is owned by ShopOnline or its
             licensors and is protected by copyright and other intellectual property
             laws. You may not copy, scrape, resell, or reuse our content for
             commercial purposes without written permission.
@@ -129,7 +130,7 @@ export default function TermsPage() {
             8. Limitation of liability
           </h2>
           <p>
-            To the maximum extent permitted by applicable law, The Najak is not
+            To the maximum extent permitted by applicable law, ShopOnline is not
             liable for indirect or consequential loss (including loss of profit or
             goodwill) arising from your use of the Services. Our total liability for
             any claim relating to a specific order is limited to the amount you
@@ -158,22 +159,22 @@ export default function TermsPage() {
             consumer protections where you live. For questions about these terms
             or your order, contact{" "}
             <a
-              href="mailto:najakclothing@gmail.com"
-              className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              href="mailto:johndoe@shoponline.com"
+              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
             >
-              najakclothing@gmail.com
+              johndoe@shoponline.com
             </a>{" "}
             or{" "}
             <a
-              href="tel:+919572908188"
-              className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              href="tel:+919876543210"
+              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
             >
-              +91 95729 08188
+              +91 98765 43210
             </a>
             . You can also see our{" "}
             <a
               href="/policies#contact"
-              className="text-[#244d7c] underline underline-offset-2 hover:text-[#426b9a]"
+              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
             >
               Policies — Contact
             </a>{" "}

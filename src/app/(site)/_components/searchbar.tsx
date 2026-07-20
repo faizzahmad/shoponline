@@ -91,18 +91,18 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
 
     const isPage = variant === "page";
 
-    /** Typed query: Cinzel (.raleway). Placeholder: Cormorant Garamond (.exo) for softer hint text. */
+    /** Typed query: Inter (.raleway). Placeholder: Plus Jakarta Sans (.exo). */
     const searchInputClassName = cn(
         "min-w-0 flex-1 border-none bg-transparent px-0 text-sm shadow-none focus-visible:ring-0 md:text-base",
         "raleway",
-        "placeholder:font-['Cormorant_Garamond',serif] placeholder:font-normal placeholder:tracking-wide placeholder:text-neutral-500",
+        "placeholder:font-['DM_Sans',sans-serif] placeholder:font-normal placeholder:tracking-wide placeholder:text-neutral-500",
         "md:placeholder:text-base"
     );
 
     const resultsPanel = (
         <div
             className={cn(
-                "w-full min-w-0 overflow-x-hidden rounded-xl border border-[#244d7c]/12 bg-white shadow-lg",
+                "w-full min-w-0 overflow-x-hidden rounded-xl border border-[#212121]/12 bg-white shadow-lg",
                 isPage
                     ? "max-h-[min(calc(100dvh-11rem),36rem)] overflow-y-auto sm:max-h-[min(calc(100dvh-10rem),40rem)]"
                     : "max-h-[min(70dvh,24rem)] overflow-y-auto sm:max-h-[min(75dvh,26rem)] md:max-h-[400px]"
@@ -134,10 +134,10 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                                         {product.shortDescription}
                                     </p>
                                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                                        <span className="exo text-sm font-semibold text-[#244d7c] sm:text-base">
+                                        <span className="exo text-sm font-semibold text-[#212121] sm:text-base">
                                             {"\u20B9"} {product.originalPrice}
                                         </span>
-                                        <span className="inline-flex shrink-0 items-center text-xs font-medium text-[#244d7c] sm:text-sm">
+                                        <span className="inline-flex shrink-0 items-center text-xs font-medium text-[#212121] sm:text-sm">
                                             View{" "}
                                             <ChevronRight className="ms-0.5 inline size-3.5" aria-hidden />
                                         </span>
@@ -149,7 +149,7 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                     <Button
                         variant="cart"
                         type="button"
-                        className="h-12 w-full shrink-0 rounded-none rounded-b-xl border-t border-[#244d7c]/10"
+                        className="h-12 w-full shrink-0 rounded-none rounded-b-xl border-t border-[#212121]/10"
                         onClick={() => {
                             router.push("/shop?search=" + encodeURIComponent(search));
                             setShow(false);
@@ -206,19 +206,19 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                 "relative w-full min-w-0 max-w-full",
                 isPage
                     ? "flex flex-col gap-2 sm:gap-3"
-                    : "flex h-11 items-center rounded-full border border-[#244d7c]/15 bg-white shadow-sm sm:h-12 md:h-12 xl:w-[500px]"
+                    : "flex h-11 items-center rounded-full border border-[#212121]/15 bg-white shadow-sm sm:h-12 md:h-12 xl:w-[500px]"
             )}
         >
             {isPage ? (
-                <div className="flex h-11 w-full min-w-0 shrink-0 items-center rounded-full border border-[#244d7c]/15 bg-white px-0 shadow-sm sm:h-12 md:h-12">
+                <div className="flex h-11 w-full min-w-0 shrink-0 items-center rounded-full border border-[#212121]/15 bg-white px-0 shadow-sm sm:h-12 md:h-12">
                     <Button type="button" variant="icon" className="shrink-0 bg-transparent">
-                        <SearchIcon className="size-5 text-[#244d7c]" aria-hidden />
+                        <SearchIcon className="size-5 text-[#212121]" aria-hidden />
                     </Button>
                     <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className={searchInputClassName}
-                        placeholder="Search shirts, jeans, ethnic wear…"
+                        placeholder="Search clothes, electronics, furniture…"
                         autoComplete="off"
                         autoCorrect="off"
                         spellCheck={false}
@@ -227,13 +227,13 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
             ) : (
                 <>
                     <Button type="button" variant="icon" className="shrink-0 bg-transparent">
-                        <SearchIcon className="size-5 text-[#244d7c]" aria-hidden />
+                        <SearchIcon className="size-5 text-[#212121]" aria-hidden />
                     </Button>
                     <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className={searchInputClassName}
-                        placeholder="Search shirts, jeans, ethnic wear…"
+                        placeholder="Search clothes, electronics, furniture…"
                         autoComplete="off"
                         autoCorrect="off"
                         spellCheck={false}

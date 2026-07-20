@@ -21,7 +21,7 @@ export const RedirectLink = ({ href, text }: RedirectLinkProps) => {
   if (!redirectUrl) return null; // Prevent premature rendering on server
 
   return (
-    <Link href={redirectUrl} className="underline text-[#426b9a]">
+    <Link href={redirectUrl} className="underline text-[#FBC02D]">
       {text}
     </Link>
   );

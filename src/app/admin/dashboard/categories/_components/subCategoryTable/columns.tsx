@@ -50,6 +50,10 @@ export const SubCategorycolumns: ColumnDef<SubCategory>[] = [
         cell: ({ row }) => {
             const image = row.getValue("image") as string;
 
+            if (!image) {
+                return <span className="pl-2 text-xs text-muted-foreground">No image</span>;
+            }
+
             return <div className="relative size-10 rounded overflow-hidden">
                 <Image src={image} alt="categoryImage" layout="fill" objectFit="cover" />
             </div>

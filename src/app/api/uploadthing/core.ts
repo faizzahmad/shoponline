@@ -24,6 +24,17 @@ export const ourFileRouter = {
     };
   }),
 
+  /** Product gallery — select multiple images in one upload */
+  productImages: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 8,
+    },
+  }).onUploadComplete(async ({ file }) => ({
+    fileUrl: file.url,
+    fileKey: file.key,
+  })),
+
   reviewImages: f({
     image: {
       maxFileSize: "4MB",

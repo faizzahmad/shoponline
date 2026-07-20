@@ -1,51 +1,69 @@
 "use client";
-import { useQueryState, parseAsBoolean, parseAsString } from 'nuqs';
+import { useQueryState, parseAsBoolean, parseAsString } from "nuqs";
+
+export type BannerFormValues = {
+  type: "top" | "bottom";
+  image: string;
+  mobileImage: string;
+  link: string;
+  title: string;
+  subtitle: string;
+  ctaLabel: string;
+};
+
+export const emptyBannerForm = (): BannerFormValues => ({
+  type: "top",
+  image: "",
+  mobileImage: "",
+  link: "/shop",
+  title: "",
+  subtitle: "",
+  ctaLabel: "Shop now",
+});
 
 export const useBannerAdmin = () => {
-   
-const [editModal, setEditModal] = useQueryState(
-  'descriptionPage',
-  parseAsBoolean.withDefault(false)
-)
+  const [editModal, setEditModal] = useQueryState(
+    "bannerModal",
+    parseAsBoolean.withDefault(false)
+  );
 
-const [bannerId, setBannerId] = useQueryState(
-    'banner-id',
-   parseAsString.withDefault('').withOptions({ clearOnDefault: true })
-    )
+  const [bannerId, setBannerId] = useQueryState(
+    "banner-id",
+    parseAsString.withDefault("").withOptions({ clearOnDefault: true })
+  );
 
-    const [bannerImage,setBannerImage] = useQueryState(
-    'banner-image',
-    parseAsString.withDefault('').withOptions({ clearOnDefault: true })
-)
+  const [deleteId, setDeleteId] = useQueryState(
+    "banner-delete-id",
+    parseAsString.withDefault("").withOptions({ clearOnDefault: true })
+  );
 
-const [bannerlink,setBannerLink] = useQueryState(
-    'banner-link',
-    parseAsString.withDefault('').withOptions({ clearOnDefault: true })
-)
+  const openCreateModal = () => {
+    setBannerId("");
+    setEditModal(true);
+  };
 
-const openEditModal = (id: string, image : string, bannerlink : string) => {
+  const openEditModal = (id: string) => {
     setBannerId(id);
     setEditModal(true);
-    setBannerImage(image);
-    setBannerLink(bannerlink);
-}
+  };
 
-const closeEditModal = () => {
+  const closeEditModal = () => {
     setEditModal(false);
-    setBannerId('');
-    setBannerImage('');
-    setBannerLink('');
-}
+    setBannerId("");
+  };
 
-    return {
-       openEditModal,
-       closeEditModal,
-       bannerId,
-       editModal,
-       setBannerImage,
-       setBannerLink,
-         bannerImage,
-            bannerlink,
+  const openDeleteAlert = (id: string) => setDeleteId(id);
+  const closeDeleteAlert = () => setDeleteId("");
 
-    };
+  return {
+    editModal,
+    bannerId,
+    deleteId,
+    openCreateModal,
+    openEditModal,
+    closeEditModal,
+    openDeleteAlert,
+    closeDeleteAlert,
+    setEditModal,
+  };
 };
