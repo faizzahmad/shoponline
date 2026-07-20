@@ -100,7 +100,9 @@ function BannerImageField({
               onClientUploadComplete={(res) => {
                 if (res && res.length > 0) onUploaded(res[0].ufsUrl);
               }}
-              onUploadError={(error: Error) => toast.error(error.message)}
+              onUploadError={(error) => {
+                toast.error(error.message);
+              }}
               appearance={{
                 button:
                   "bg-[#212121] text-white text-sm px-4 h-8 ut-ready:bg-[#212121] ut-uploading:bg-[#212121]/80 after:bg-[#212121]",
