@@ -148,7 +148,7 @@ export const ShopFiltersPanel = ({
           {hasProductFilters ? (
             <button
               type="button"
-              className="text-xs text-[#212121] underline underline-offset-2 raleway"
+              className="text-xs text-[#1A1A1A] underline underline-offset-2 raleway"
               onClick={clearProductFilters}
             >
               Clear all
@@ -157,9 +157,9 @@ export const ShopFiltersPanel = ({
         </div>
       ) : null}
 
-      <div className="space-y-6 border-t border-[#212121]/10 pt-4 first:border-t-0 first:pt-0">
+      <div className="space-y-6 border-t border-[#1A1A1A]/10 pt-4 first:border-t-0 first:pt-0">
         <div>
-          <p className="mb-3 text-sm font-semibold text-[#212121] raleway">Price</p>
+          <p className="mb-3 text-sm font-semibold text-[#1A1A1A] raleway">Price</p>
           {loadingMeta && !meta ? (
             <p className="text-xs text-muted-foreground">Loading price range…</p>
           ) : hasPriceRange ? (
@@ -175,7 +175,7 @@ export const ShopFiltersPanel = ({
                   setDraftMin(String(lo));
                   setDraftMax(String(hi));
                 }}
-                className="py-2 [&_[role=slider]]:border-[#212121] [&_[role=slider]]:bg-white [&_.bg-primary]:bg-[#212121]"
+                className="py-2 [&_[role=slider]]:border-[#1A1A1A] [&_[role=slider]]:bg-white [&_.bg-primary]:bg-[#1A1A1A]"
               />
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -211,7 +211,7 @@ export const ShopFiltersPanel = ({
                 <Button
                   type="button"
                   size="sm"
-                  className="flex-1 bg-[#212121] hover:bg-[#FBC02D]"
+                  className="flex-1 bg-[#1A1A1A] hover:bg-[#B8956A]"
                   onClick={applyPriceFilter}
                 >
                   Apply price
@@ -233,8 +233,8 @@ export const ShopFiltersPanel = ({
         </div>
 
         {meta?.attributes && meta.attributes.length > 0 ? (
-          <div className="space-y-5 border-t border-[#212121]/10 pt-4">
-            <p className="text-sm font-semibold text-[#212121] raleway">Variants</p>
+          <div className="space-y-5 border-t border-[#1A1A1A]/10 pt-4">
+            <p className="text-sm font-semibold text-[#1A1A1A] raleway">Variants</p>
             {meta.attributes.map((attr) => (
               <div key={attr.name}>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-600">
@@ -252,7 +252,7 @@ export const ShopFiltersPanel = ({
                         onCheckedChange={(checked) =>
                           toggleVariantFilter(attr.name, option.value, Boolean(checked))
                         }
-                        className="data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
+                        className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
                       />
                       <span className="flex flex-1 items-center justify-between gap-2 text-sm">
                         <span className="capitalize">{option.value}</span>
@@ -267,13 +267,13 @@ export const ShopFiltersPanel = ({
             ))}
           </div>
         ) : !loadingMeta ? (
-          <p className="text-xs text-muted-foreground border-t border-[#212121]/10 pt-4">
+          <p className="text-xs text-muted-foreground border-t border-[#1A1A1A]/10 pt-4">
             No variant options for the current selection.
           </p>
         ) : null}
 
         <div>
-          <p className="mb-3 text-sm font-semibold text-[#212121] raleway">Availability</p>
+          <p className="mb-3 text-sm font-semibold text-[#1A1A1A] raleway">Availability</p>
           <label className="flex cursor-pointer items-start gap-3">
             <Checkbox
               id="shop-in-stock"
@@ -282,7 +282,7 @@ export const ShopFiltersPanel = ({
                 setInStock(Boolean(checked));
                 setPage(1);
               }}
-              className="mt-0.5 data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
+              className="mt-0.5 data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
             />
             <span className="space-y-0.5">
               <span className="block text-sm font-medium">In stock only</span>
@@ -296,7 +296,7 @@ export const ShopFiltersPanel = ({
         </div>
 
         <div>
-          <p className="mb-3 text-sm font-semibold text-[#212121] raleway">Offers</p>
+          <p className="mb-3 text-sm font-semibold text-[#1A1A1A] raleway">Offers</p>
           <label className="flex cursor-pointer items-start gap-3">
             <Checkbox
               id="shop-on-sale"
@@ -305,7 +305,7 @@ export const ShopFiltersPanel = ({
                 setOnSale(Boolean(checked));
                 setPage(1);
               }}
-              className="mt-0.5 data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
+              className="mt-0.5 data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
             />
             <span className="space-y-0.5">
               <span className="block text-sm font-medium">On sale</span>
@@ -319,7 +319,7 @@ export const ShopFiltersPanel = ({
         </div>
 
         {meta ? (
-          <p className="text-xs text-muted-foreground border-t border-[#212121]/10 pt-3">
+          <p className="text-xs text-muted-foreground border-t border-[#1A1A1A]/10 pt-3">
             Showing {meta.filteredProducts} of {meta.totalProducts} products
           </p>
         ) : null}

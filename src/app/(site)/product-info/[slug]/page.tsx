@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getProductBySlug } from "@/actions/product";
+import { NOINDEX_METADATA } from "@/lib/site-metadata";
 import { ProductData } from "../_components/product-data";
 
 export async function generateMetadata({
@@ -20,6 +21,7 @@ export async function generateMetadata({
         ).slice(0, 160);
         const firstImage = product.images?.[0];
         return {
+            ...NOINDEX_METADATA,
             title: name,
             description: desc,
             openGraph: {
@@ -36,8 +38,8 @@ export async function generateMetadata({
         };
     } catch {
         return {
+            ...NOINDEX_METADATA,
             title: "Product",
-            robots: { index: false, follow: true },
         };
     }
 }

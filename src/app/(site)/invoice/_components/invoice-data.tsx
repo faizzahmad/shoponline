@@ -1,5 +1,6 @@
 "use client";
 import { FixedLoader } from "@/components/custom/fixed-loader";
+import { BrandLogo } from "@/components/custom/brand-logo";
 import { Button } from "@/components/ui/button";
 import { useIsChanged } from "@/store/use-ischnaged";
 import { format } from "date-fns";
@@ -163,14 +164,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
       {/* Grid */}
       <div className="flex flex-col gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="shrink-0">
-          <Image
-            src="/images/web/logo.png"
-            alt="ShopOnline"
-            width={220}
-            height={55}
-            className="h-auto w-[180px] sm:w-[200px] md:w-[220px]"
-            priority
-          />
+          <BrandLogo width={220} className="h-auto w-[180px] sm:w-[200px] md:w-[220px]" />
         </div>
 
         <div className="min-w-0 sm:text-end">
@@ -184,13 +178,13 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             India
             <br />
             <a
-              className="mt-2 inline-block text-[#212121] underline-offset-2 hover:underline"
+              className="mt-2 inline-block text-[#1A1A1A] underline-offset-2 hover:underline"
               href="mailto:johndoe@shoponline.com"
             >
               johndoe@shoponline.com
             </a>
             <br />
-            <a className="text-[#212121] underline-offset-2 hover:underline" href="tel:+919876543210">
+            <a className="text-[#1A1A1A] underline-offset-2 hover:underline" href="tel:+919876543210">
               +91 98765 43210
             </a>
           </address>
@@ -327,7 +321,7 @@ pdf.save(`invoice-${username}-${date}.pdf`);
             <div className="flex items-baseline justify-between gap-4 border-b border-gray-100 pb-2.5">
               <dt className="raleway font-medium text-gray-600">Discount</dt>
               <dd>
-              <span className="tabular-nums text-[#212121] exo">
+              <span className="tabular-nums text-[#1A1A1A] exo">
                 {"\u20B9"} {
                  (orderDetails?.items.reduce((total, item) => total + (item.originalPrice * item.quantity), 0) - orderDetails?.totalAmount ).toFixed(2)
                 }
@@ -384,12 +378,12 @@ pdf.save(`invoice-${username}-${date}.pdf`);
         <p className="mt-1.5 text-sm leading-relaxed text-gray-600">Questions about this invoice? Reach us at:</p>
         <div className="mt-3 space-y-1">
           <p className="text-sm font-medium text-gray-800">
-            <a className="text-[#212121] hover:underline" href="mailto:johndoe@shoponline.com">
+            <a className="text-[#1A1A1A] hover:underline" href="mailto:johndoe@shoponline.com">
               johndoe@shoponline.com
             </a>
           </p>
           <p className="text-sm font-medium text-gray-800">
-            <a className="text-[#212121] hover:underline" href="tel:+919876543210">
+            <a className="text-[#1A1A1A] hover:underline" href="tel:+919876543210">
               +91 98765 43210
             </a>
           </p>

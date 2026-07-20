@@ -33,7 +33,7 @@ export const ShopFilterSheet = ({
                         {hasProductFilters ? (
                             <button
                                 type="button"
-                                className="shrink-0 text-xs text-[#212121] underline underline-offset-2 raleway"
+                                className="shrink-0 text-xs text-[#1A1A1A] underline underline-offset-2 raleway"
                                 onClick={clearProductFilters}
                             >
                                 Clear all
@@ -47,7 +47,7 @@ export const ShopFilterSheet = ({
                 <div className="shrink-0 border-t p-4">
                     <Button
                         type="button"
-                        className="w-full bg-[#212121] hover:bg-[#FBC02D]"
+                        className="w-full bg-[#1A1A1A] hover:bg-[#B8956A]"
                         onClick={() => onOpenChange(false)}
                     >
                         Done

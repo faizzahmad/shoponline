@@ -17,7 +17,7 @@ const socials = [
 ] as const;
 
 const shellClass =
-    "inline-flex size-10 items-center justify-center rounded-full border border-white/35 text-white/90 transition duration-200 hover:border-[#FBC02D] hover:bg-[#FBC02D]/10 hover:text-[#FBC02D] sm:size-11";
+    "inline-flex size-10 items-center justify-center rounded-full border border-white/35 text-white/90 transition duration-200 hover:border-[#B8956A] hover:bg-[#B8956A]/10 hover:text-[#B8956A] sm:size-11";
 
 export const SocialLinks = () => {
     return (

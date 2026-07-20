@@ -18,10 +18,11 @@ export const SOCIAL_FACEBOOK_URL = "";
 export const SOCIAL_YOUTUBE_URL = "";
 export const SOCIAL_X_URL = "";
 
-/** Charcoal + amber */
+/** Premium marketplace theme */
 export const THEME = {
-  primary: "#212121",
-  secondary: "#FBC02D",
-  muted: "#FAFAFA",
-  mutedAlt: "#EEEEEE",
+  primary: "#1A1A1A",
+  secondary: "#B8956A",
+  accent: "#D4BC94",
+  muted: "#FAFAF9",
+  mutedAlt: "#F5F5F4",
 } as const;

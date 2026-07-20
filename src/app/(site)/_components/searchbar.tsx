@@ -89,6 +89,13 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
     }, [search]);
     const router = useRouter();
 
+    const submitSearch = () => {
+        const q = search.trim();
+        if (q.length < 2) return;
+        router.push("/shop?search=" + encodeURIComponent(q));
+        setShow(false);
+    };
+
     const isPage = variant === "page";
 
     /** Typed query: Inter (.raleway). Placeholder: Plus Jakarta Sans (.exo). */
@@ -102,7 +109,7 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
     const resultsPanel = (
         <div
             className={cn(
-                "w-full min-w-0 overflow-x-hidden rounded-xl border border-[#212121]/12 bg-white shadow-lg",
+                "w-full min-w-0 overflow-x-hidden rounded-xl border border-[#1A1A1A]/12 bg-white shadow-lg",
                 isPage
                     ? "max-h-[min(calc(100dvh-11rem),36rem)] overflow-y-auto sm:max-h-[min(calc(100dvh-10rem),40rem)]"
                     : "max-h-[min(70dvh,24rem)] overflow-y-auto sm:max-h-[min(75dvh,26rem)] md:max-h-[400px]"
@@ -134,10 +141,10 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                                         {product.shortDescription}
                                     </p>
                                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                                        <span className="exo text-sm font-semibold text-[#212121] sm:text-base">
+                                        <span className="exo text-sm font-semibold text-[#1A1A1A] sm:text-base">
                                             {"\u20B9"} {product.originalPrice}
                                         </span>
-                                        <span className="inline-flex shrink-0 items-center text-xs font-medium text-[#212121] sm:text-sm">
+                                        <span className="inline-flex shrink-0 items-center text-xs font-medium text-[#1A1A1A] sm:text-sm">
                                             View{" "}
                                             <ChevronRight className="ms-0.5 inline size-3.5" aria-hidden />
                                         </span>
@@ -149,7 +156,7 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                     <Button
                         variant="cart"
                         type="button"
-                        className="h-12 w-full shrink-0 rounded-none rounded-b-xl border-t border-[#212121]/10"
+                        className="h-12 w-full shrink-0 rounded-none rounded-b-xl border-t border-[#1A1A1A]/10"
                         onClick={() => {
                             router.push("/shop?search=" + encodeURIComponent(search));
                             setShow(false);
@@ -206,32 +213,55 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                 "relative w-full min-w-0 max-w-full",
                 isPage
                     ? "flex flex-col gap-2 sm:gap-3"
-                    : "flex h-11 items-center rounded-full border border-[#212121]/15 bg-white shadow-sm sm:h-12 md:h-12 xl:w-[500px]"
+                    : "flex h-11 items-center rounded-full border border-[#1A1A1A]/15 bg-white shadow-sm sm:h-12 md:h-12 xl:w-[500px]"
             )}
         >
             {isPage ? (
-                <div className="flex h-11 w-full min-w-0 shrink-0 items-center rounded-full border border-[#212121]/15 bg-white px-0 shadow-sm sm:h-12 md:h-12">
-                    <Button type="button" variant="icon" className="shrink-0 bg-transparent">
-                        <SearchIcon className="size-5 text-[#212121]" aria-hidden />
+                <div className="flex h-11 w-full min-w-0 shrink-0 items-center rounded-full border border-[#1A1A1A]/15 bg-white px-0 shadow-sm sm:h-12 md:h-12">
+                    <Button
+                        type="button"
+                        variant="icon"
+                        className="shrink-0 bg-transparent"
+                        onClick={submitSearch}
+                    >
+                        <SearchIcon className="size-5 text-[#1A1A1A]" aria-hidden />
                     </Button>
                     <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                submitSearch();
+                            }
+                        }}
                         className={searchInputClassName}
                         placeholder="Search clothes, electronics, furniture…"
                         autoComplete="off"
                         autoCorrect="off"
                         spellCheck={false}
+                        autoFocus
                     />
                 </div>
             ) : (
                 <>
-                    <Button type="button" variant="icon" className="shrink-0 bg-transparent">
-                        <SearchIcon className="size-5 text-[#212121]" aria-hidden />
+                    <Button
+                        type="button"
+                        variant="icon"
+                        className="shrink-0 bg-transparent"
+                        onClick={submitSearch}
+                    >
+                        <SearchIcon className="size-5 text-[#1A1A1A]" aria-hidden />
                     </Button>
                     <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                submitSearch();
+                            }
+                        }}
                         className={searchInputClassName}
                         placeholder="Search clothes, electronics, furniture…"
                         autoComplete="off"
@@ -245,7 +275,9 @@ export const SearchBar = ({ variant = "navbar" }: SearchBarProps) => {
                 <div
                     className={cn(
                         "min-w-0",
-                        isPage ? "w-full shrink-0" : "absolute left-0 right-0 top-full z-[120] mt-2 w-full xl:z-[130]"
+                        isPage
+                            ? "w-full shrink-0"
+                            : "absolute left-0 right-0 top-full z-[130] mt-2 w-full"
                     )}
                 >
                     {resultsPanel}

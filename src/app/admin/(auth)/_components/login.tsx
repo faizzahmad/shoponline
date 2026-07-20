@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fetchData } from "@/utils/apiCall";
 import { Loader } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { BrandLogo } from "@/components/custom/brand-logo";
 
 interface LoginRespose {
  message: string;
@@ -56,14 +56,7 @@ export const Login = () => {
     return (
         <form onSubmit={handleSubmit} >
             <div className=" mb-10 flex justify-center">
-                <Image
-                  src={'/images/web/logo.png'}
-                  alt="ShopOnline"
-                  height={40}
-                  width={150}
-                  className="h-auto w-[140px]"
-                  priority
-                />
+                <BrandLogo width={150} className="w-[140px]" />
             </div>
             <Card className="w-[400px] raleway">
                 <CardHeader>

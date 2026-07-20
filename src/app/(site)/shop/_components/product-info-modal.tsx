@@ -227,7 +227,7 @@ export const ProductInfoModal = () => {
                                                         onClick={() => setSelectedImageIndex(index)}
                                                         className={`lg:size-[100px] size-[70px] overflow-hidden relative rounded-xl cursor-pointer border-2 ${
                                                             seletedImageIndex === index
-                                                                ? "border-[#212121]"
+                                                                ? "border-[#1A1A1A]"
                                                                 : "border-transparent"
                                                         }`}
                                                     >
@@ -265,11 +265,11 @@ export const ProductInfoModal = () => {
                                         triggerVariant="outline"
                                     />
                                 </div>
-                                <h5 className="mt-3 flex gap-3 text-base font-semibold text-[#212121] sm:gap-4 sm:text-lg lg:text-xl">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
+                                <h5 className="mt-3 flex gap-3 text-base font-semibold text-[#1A1A1A] sm:gap-4 sm:text-lg lg:text-xl">{"\u20B9"} {activeOriginalPrice}  <span className="line-through text-muted-foreground !font-[300]">{"\u20B9"} {activeDiscountPrice}</span></h5>
                                 <p className=" text-sm text-green-600 mb-4 exo mt-2">inclusive of all taxes</p>
 
                                 {isSelectedOutOfStock ? (
-                                    <p className="text-sm font-medium text-[#212121] raleway rounded-md border border-[#212121]/20 bg-[#FAFAFA] px-3 py-2 mb-2">
+                                    <p className="text-sm font-medium text-[#1A1A1A] raleway rounded-md border border-[#1A1A1A]/20 bg-[#FAFAF9] px-3 py-2 mb-2">
                                         This product is out of stock.
                                     </p>
                                 ) : null}
@@ -290,7 +290,7 @@ export const ProductInfoModal = () => {
                                                                 type="button"
                                                                 className={`flex flex-col items-center gap-1 rounded-md border p-1.5 transition ${
                                                                     isSelected
-                                                                        ? "border-[#212121] bg-[#FAFAFA] shadow-sm"
+                                                                        ? "border-[#1A1A1A] bg-[#FAFAF9] shadow-sm"
                                                                         : "border-neutral-300 hover:border-neutral-400"
                                                                 }`}
                                                                 onClick={() => {
@@ -312,7 +312,7 @@ export const ProductInfoModal = () => {
                                                                 </div>
                                                                 <span
                                                                     className={`text-xs capitalize ${
-                                                                        isSelected ? "text-[#212121]" : "text-neutral-700"
+                                                                        isSelected ? "text-[#1A1A1A]" : "text-neutral-700"
                                                                     }`}
                                                                 >
                                                                     {option.value}
@@ -326,7 +326,7 @@ export const ProductInfoModal = () => {
                                                             type="button"
                                                             className={`min-w-[2.75rem] rounded-md border px-3.5 py-2 text-sm capitalize transition ${
                                                                 isSelected
-                                                                    ? "border-[#212121] bg-[#212121] text-white"
+                                                                    ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
                                                                     : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
                                                             }`}
                                                             onClick={() => {
@@ -380,7 +380,7 @@ export const ProductInfoModal = () => {
                                                 <div key={product.productId} className="flex flex-col items-center">
                                                     <Link href={`/product-info/${product.productId}`} target="_blank">
                                                         <div className="w-[60px]">
-                                                            <div className="w-full h-[60px] relative border-2 border-[#212121] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
+                                                            <div className="w-full h-[60px] relative border-2 border-[#1A1A1A] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
                                                                 <Image
                                                                     src={product.image}
                                                                     alt={product.pname}

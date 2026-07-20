@@ -18,6 +18,13 @@ export default withUt(
 			mid : "850px",
 		},
   		colors: {
+			brand: {
+				DEFAULT: '#B8956A',
+				dark: '#1A1A1A',
+				hover: '#A68458',
+				accent: '#D4BC94',
+				surface: '#FAFAF9',
+			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

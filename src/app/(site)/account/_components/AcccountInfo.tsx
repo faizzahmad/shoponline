@@ -21,7 +21,7 @@ return (
       <div className="w-full flex justify-between">
         <div>
             <h1 className="text-lg font-bold raleway sm:text-xl md:text-2xl lg:text-3xl">Account Information</h1>
-            <p className="text-[#212121] exo sm:text-xs text-[10px] font-[600] mt-2">Note : 
+            <p className="text-[#1A1A1A] exo sm:text-xs text-[10px] font-[600] mt-2">Note : 
                 To change your name or email, use the user menu (top right) and open &quot;Manage account&quot; in Clerk.
             </p>
         </div>
@@ -59,7 +59,7 @@ return (
               </div>
               <div>
                 <Link href={`/invoice/${order._id}`} target="_blank">
-                <Button variant={'link'} className="raleway text-lg text-[#212121] md:px-0">
+                <Button variant={'link'} className="raleway text-lg text-[#1A1A1A] md:px-0">
                     View Invoice
                 </Button>
                 </Link>

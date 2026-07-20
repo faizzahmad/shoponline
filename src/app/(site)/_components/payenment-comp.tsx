@@ -105,7 +105,7 @@ export const PaymentComponent = ({
                     }
                 },
                 theme: {
-                    color: "#212121",
+                    color: "#1A1A1A",
                 },
                 modal: {
                     ondismiss: () => {

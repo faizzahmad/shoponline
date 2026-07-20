@@ -1,11 +1,11 @@
 "use client";
 import { cn } from "@/lib/utils"
 import { Backpack, BadgePercent, Home, Images, Loader2, Package, Power, SquareStack, TruckElectric, Users } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+import { BrandLogo } from "@/components/custom/brand-logo"
 
 export const Sidebar = () => {
     const pathname = usePathname();
@@ -74,14 +74,7 @@ export const Sidebar = () => {
     return (
         <>
           <div className="mb-10">
-              <Image
-                src={'/images/web/logo.png'}
-                alt="ShopOnline"
-                height={36}
-                width={140}
-                className="h-auto w-[130px]"
-                priority
-              />
+              <BrandLogo width={140} className="w-[130px]" />
           </div>
         <ul className="w-full flex flex-col gap-2">
             {sidebarItems.map((item) => (

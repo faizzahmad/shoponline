@@ -37,30 +37,30 @@ const highlights = [
 const cardStyles = {
     dark: {
         shell:
-            "bg-[#212121] text-white border-[#212121] shadow-[0_18px_40px_-12px_rgba(33,33,33,0.45)]",
+            "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-[0_18px_40px_-12px_rgba(26,26,26,0.35)]",
         step: "text-white/20",
-        iconWrap: "bg-[#FBC02D] text-[#212121]",
+        iconWrap: "bg-[#B8956A] text-[#1A1A1A]",
         body: "text-white/80",
-        cta: "text-[#FBC02D] group-hover:text-white",
-        glow: "from-[#FBC02D]/20 via-transparent to-transparent",
+        cta: "text-[#B8956A] group-hover:text-white",
+        glow: "from-[#B8956A]/20 via-transparent to-transparent",
     },
     accent: {
         shell:
-            "bg-[#FBC02D] text-[#212121] border-[#FBC02D] shadow-[0_18px_40px_-12px_rgba(251,192,45,0.55)]",
-        step: "text-[#212121]/25",
-        iconWrap: "bg-[#212121] text-[#FBC02D]",
-        body: "text-[#212121]/75",
-        cta: "text-[#212121] group-hover:text-[#212121]/70",
+            "bg-[#D4BC94] text-[#1A1A1A] border-[#D4BC94] shadow-[0_18px_40px_-12px_rgba(184,149,106,0.35)]",
+        step: "text-[#1A1A1A]/25",
+        iconWrap: "bg-[#1A1A1A] text-[#D4BC94]",
+        body: "text-[#1A1A1A]/75",
+        cta: "text-[#1A1A1A] group-hover:text-[#B8956A]",
         glow: "from-white/30 via-transparent to-transparent",
     },
     light: {
         shell:
-            "bg-white text-[#212121] border-[#212121]/12 shadow-[0_14px_36px_-14px_rgba(33,33,33,0.18)]",
-        step: "text-[#212121]/10",
-        iconWrap: "bg-[#212121]/5 text-[#212121] ring-1 ring-[#212121]/10",
+            "bg-white text-[#1A1A1A] border-[#1A1A1A]/12 shadow-[0_14px_36px_-14px_rgba(26,26,26,0.12)]",
+        step: "text-[#1A1A1A]/10",
+        iconWrap: "bg-[#1A1A1A]/5 text-[#1A1A1A] ring-1 ring-[#1A1A1A]/10",
         body: "text-neutral-600",
-        cta: "text-[#212121] group-hover:text-[#FBC02D]",
-        glow: "from-[#FBC02D]/15 via-transparent to-transparent",
+        cta: "text-[#1A1A1A] group-hover:text-[#B8956A]",
+        glow: "from-[#B8956A]/15 via-transparent to-transparent",
     },
 };
 
@@ -73,12 +73,12 @@ export const ShopHighlights = () => {
             />
             <div className="relative w-full">
                 <div className="mb-8 w-full sm:mb-10">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#FBC02D] exo sm:text-xs">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#B8956A] exo sm:text-xs">
                         Why ShopOnline
                     </p>
-                    <h2 className="mt-2 text-2xl font-bold leading-tight text-[#212121] exo sm:text-3xl md:text-4xl">
+                    <h2 className="mt-2 text-2xl font-bold leading-tight text-[#1A1A1A] exo sm:text-3xl md:text-4xl">
                         Everything you need,{" "}
-                        <span className="text-[#FBC02D]">one smooth experience</span>
+                        <span className="text-[#B8956A]">one smooth experience</span>
                     </h2>
                     <p className="mt-3 text-sm leading-relaxed text-neutral-600 raleway sm:text-base">
                         From discovery to delivery — built for shoppers who want variety,

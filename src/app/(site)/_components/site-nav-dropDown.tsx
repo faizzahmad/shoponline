@@ -23,12 +23,12 @@ export const SiteNavDropDown: React.FC<SiteNavDropDownProps> = ({
                 {subCategories.map((sub) => (
                     <li key={sub._id}>
                         <Link
-                            className="group/row flex items-start gap-2 px-4 py-2.5 text-left text-sm leading-snug text-neutral-800 transition hover:bg-[#FAFAFA] hover:text-[#212121]"
+                            className="group/row flex items-start gap-2 px-4 py-2.5 text-left text-sm leading-snug text-neutral-800 transition hover:bg-[#FAFAF9] hover:text-[#1A1A1A]"
                             href={`/shop?category=${category_id}&subcategory=${sub._id}`}
                         >
                             <span className="min-w-0 flex-1">{sub.title}</span>
                             <ChevronRight
-                                className="mt-0.5 size-4 shrink-0 text-[#FBC02D] transition group-hover/row:text-[#212121] group-hover/row:opacity-100 opacity-80"
+                                className="mt-0.5 size-4 shrink-0 text-[#B8956A] transition group-hover/row:text-[#1A1A1A] group-hover/row:opacity-100 opacity-80"
                                 aria-hidden
                             />
                         </Link>

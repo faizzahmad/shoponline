@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import Image from 'next/image';
 import { NOINDEX_METADATA } from "@/lib/site-metadata";
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
+import {SignInPage} from '@/app/(auth)/_components/sign-in-page';
+import { RedirectLink } from '../../_components/redirect-link';
+import { BrandLogo } from '@/components/custom/brand-logo';
 
 export const metadata: Metadata = {
     title: "Sign in",
     description: "Sign in to your ShopOnline account to track orders and check out faster.",
     ...NOINDEX_METADATA,
 };
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
-import {SignInPage} from '@/app/(auth)/_components/sign-in-page';
-import { RedirectLink } from '../../_components/redirect-link';
+
 const Signin = async() => {
   const { userId } = await auth();
   
@@ -23,28 +24,14 @@ const Signin = async() => {
         <div className="w-full h-screen flex items-center justify-center exo">
             <div className=" h-full lg:w-[60%] mid:w-[50%] relative signin-bg hidden mid:block">
                 <Link href='/' className='absolute left-5 top-5 bg-white rounded-[4px] p-2'>
-                <Image
-                  src={'/images/web/logo.png'}
-                  alt="ShopOnline"
-                  height={48}
-                  width={180}
-                  className="h-auto w-[160px] md:w-[180px]"
-                  priority
-                />
+                <BrandLogo width={160} className="w-[140px] mid:w-[160px]" />
                 </Link>
             </div> 
 
             <div className="w-full lg:w-[40%] mid:w-[50%] p-5 flex flex-col gap-10 h-full items-center justify-center overflow-y-auto">
                 <div className=' flex flex-col gap-4 items-center'>
                      <Link href='/' className='mid:hidden block bg-white rounded-[4px] p-2'>
-                <Image
-                  src={'/images/web/logo.png'}
-                  alt="ShopOnline"
-                  height={36}
-                  width={140}
-                  className="h-auto w-[130px]"
-                  priority
-                />
+                <BrandLogo width={140} className="w-[130px]" />
                 </Link>
                     <h2 className='text-xl font-bold sm:text-2xl mid:text-[2.5rem]'>Sign In</h2>
                     <p className='px-6 text-center text-xs raleway mid:px-10 mid:text-sm sm:text-sm'>Welcome back, busy bee! Log in now to continue your

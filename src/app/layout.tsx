@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${plusJakarta.variable} font-sans antialiased`}>
-        <NextTopLoader color="#212121" />
+        <NextTopLoader color="#B8956A" />
         <ClerkProvider appearance={{ layout: { unsafe_disableDevelopmentModeWarnings: true } }}>
           <NuqsAdapter>
             <Toaster/>

@@ -1,9 +1,9 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import {SignInPage} from '@/app/(auth)/_components/sign-in-page';
 import { RedirectLink } from '@/components/custom/redirect-link';
+import { BrandLogo } from '@/components/custom/brand-logo';
 const Signin = async() => {
   const { userId } = await auth();
   
@@ -22,14 +22,7 @@ const Signin = async() => {
             <div className="w-full lg:w-[40%] mid:w-[50%] p-5 flex flex-col gap-10 h-full items-center justify-center overflow-y-auto">
                 <div className=' flex flex-col gap-4 items-center'>
                      <Link href='/' className='py-2 px-4 bg-white rounded-lg shadow mid:hidden block'>
-                <Image
-                  src={'/images/web/logo.png'}
-                  alt="ShopOnline"
-                  height={32}
-                  width={120}
-                  className="h-auto w-[120px]"
-                  priority
-                />
+                <BrandLogo width={120} className="w-[120px]" />
                 </Link>
                     <h2 className='text-xl font-bold mid:text-[2.5rem] sm:text-2xl'>Sign In</h2>
                     <p className='px-6 text-center text-xs raleway mid:px-10 mid:text-sm sm:text-sm'>Welcome back, busy bee! Log in now to continue your

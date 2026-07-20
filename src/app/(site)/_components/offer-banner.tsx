@@ -46,7 +46,7 @@ export const OfferBanner = ({ banner }: OfferBannerProps) => {
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105 md:hidden"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#212121]/85 via-[#FBC02D]/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A]/85 via-[#B8956A]/55 to-transparent" />
         <div className="absolute inset-0 z-10 flex flex-col justify-center px-4 text-white sm:px-6 md:px-10">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] sm:text-xs sm:tracking-[0.3em] md:text-sm">
             Limited time

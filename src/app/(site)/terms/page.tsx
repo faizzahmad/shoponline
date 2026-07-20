@@ -11,7 +11,7 @@ export default function TermsPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-2xl font-bold text-[#212121] border-b-4 border-[#212121] pb-3 inline-block sm:text-3xl md:text-4xl">
+        <h1 className="raleway text-2xl font-bold text-[#1A1A1A] border-b-4 border-[#1A1A1A] pb-3 inline-block sm:text-3xl md:text-4xl">
           Terms and conditions
         </h1>
         <p className="mt-4 exo text-sm text-neutral-500">
@@ -86,7 +86,7 @@ export default function TermsPage() {
             where local law says otherwise. Full details are in our{" "}
             <a
               href="/policies#shipping-policy"
-              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
+              className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
             >
               Shipping policy
             </a>
@@ -103,7 +103,7 @@ export default function TermsPage() {
             accessories are set out in our{" "}
             <a
               href="/policies#return-refund-policy"
-              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
+              className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
             >
               Return & refund policy
             </a>
@@ -160,21 +160,21 @@ export default function TermsPage() {
             or your order, contact{" "}
             <a
               href="mailto:johndoe@shoponline.com"
-              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
+              className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
             >
               johndoe@shoponline.com
             </a>{" "}
             or{" "}
             <a
               href="tel:+919876543210"
-              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
+              className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
             >
               +91 98765 43210
             </a>
             . You can also see our{" "}
             <a
               href="/policies#contact"
-              className="text-[#212121] underline underline-offset-2 hover:text-[#FBC02D]"
+              className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
             >
               Policies — Contact
             </a>{" "}

@@ -1,5 +1,4 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
     "/sign-in(.*)",
@@ -31,15 +30,6 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
-    const { pathname } = request.nextUrl;
-
-    // Keep the crawlable search entry point consolidated on the shop catalog.
-    if (pathname === "/search" || pathname.startsWith("/search/")) {
-        const shopUrl = request.nextUrl.clone();
-        shopUrl.pathname = "/shop";
-        return NextResponse.redirect(shopUrl, 308);
-    }
-
     if (!isPublicRoute(request)) {
         await auth.protect();
     }

@@ -272,7 +272,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                                                 : chip.kind
                                         }
                                         type="button"
-                                        className="max-w-[11rem] shrink-0 rounded px-2 py-1 text-left text-xs text-white raleway sm:max-w-[14rem] sm:px-3 sm:py-1.5 sm:text-sm bg-[#212121] flex items-center gap-2"
+                                        className="max-w-[11rem] shrink-0 rounded px-2 py-1 text-left text-xs text-white raleway sm:max-w-[14rem] sm:px-3 sm:py-1.5 sm:text-sm bg-[#1A1A1A] flex items-center gap-2"
                                         onClick={() => dismissFilterChip(chip)}
                                     >
                                         <span className="min-w-0 flex-1 truncate">{chip.label}</span>
@@ -285,7 +285,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                     <div className="w-full flex flex-wrap items-center gap-2">
                         {
                             search && (
-                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-[#212121] text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
+                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-[#1A1A1A] text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
                                     setSearch('');
                                     setPage(1);
 
@@ -309,7 +309,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                                 <Filter className="size-4 shrink-0" />
                                 Filter
                                 {activeFilterCount > 0 ? (
-                                    <span className="rounded-full bg-[#212121] px-1.5 py-0.5 text-[10px] font-medium text-white">
+                                    <span className="rounded-full bg-[#1A1A1A] px-1.5 py-0.5 text-[10px] font-medium text-white">
                                         {activeFilterCount}
                                     </span>
                                 ) : null}
@@ -395,7 +395,7 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
 
 const ProductCardSkeleton = () => {
     return (
-        <div className="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4 shadow-sm rounded-2xl bg-white border border-[#212121]/15">
+        <div className="w-full min-w-0 max-w-[260px] mx-auto p-3 min-[377px]:max-w-full min-[377px]:mx-0 min-[377px]:p-4 shadow-sm rounded-2xl bg-white border border-[#1A1A1A]/15">
             <div className="w-full aspect-[3/4] min-[377px]:aspect-[4/5] rounded-xl overflow-hidden">
                 <Skeleton className='w-full h-full' />
             </div>

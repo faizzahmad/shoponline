@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         icon : "bg-transparent text-muted-foreground",
-        cart : "bg-[#212121] text-white shadow-sm hover:bg-[#FBC02D] hover:text-[#212121] rounded-full transition md:text-[1rem] text-sm",
+        cart : "bg-brand-dark text-white shadow-sm hover:bg-brand hover:text-white rounded-full transition md:text-[1rem] text-sm",
       
       },
       size: {

@@ -54,7 +54,7 @@ export const CategoryFilterList = ({
                     )}
                 >
                     <div
-                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#212121] raleway"
+                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#1A1A1A] raleway"
                         onClick={() => {
                             setExpandedCategoryIds((prev) =>
                                 prev.includes(items.id)
@@ -84,7 +84,7 @@ export const CategoryFilterList = ({
                     >
                         <div className="flex items-center gap-4">
                             <Checkbox
-                                className="data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
+                                className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
                                 onCheckedChange={(checked) => {
                                     const subCategoryIds =
                                         items.subCategories?.map((sub) => sub.id) ||
@@ -125,7 +125,7 @@ export const CategoryFilterList = ({
                             >
                                 <Checkbox
                                     id={subItems.id}
-                                    className="data-[state=checked]:border-[#212121] data-[state=checked]:bg-[#212121]"
+                                    className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
                                     checked={subcategory.includes(subItems.id)}
                                     onCheckedChange={(checked) => {
                                         if (checked) {

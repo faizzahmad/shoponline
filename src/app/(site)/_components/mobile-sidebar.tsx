@@ -1,39 +1,32 @@
-
-import { SearchIcon } from "lucide-react";
-import Image from "next/image";
-import { CartCount } from "./cart-count";
-import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
+import { SearchIcon } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
+import { CartCount } from "./cart-count";
+import { BrandLogo } from "@/components/custom/brand-logo";
 
-
-const MobileSidebar = async() => {
- const externalUser = await currentUser();
-    return ( 
-    <div>
-        <div className="flex justify-between items-center">
-        <Link href={'/'} className="shrink-0">
-         <Image
-           src={'/images/web/logo.png'}
-           alt="ShopOnline"
-           height={36}
-           width={130}
-           className="h-auto w-[120px] sm:w-[130px]"
-           priority
-         />
-        </Link>
-            <div className="flex gap-4 items-center text-[#212121]">
-                                <Link href={'/shop'} className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#FBC02D] transition">
-                                    <SearchIcon className="size-5"/>
-                                        <span className="text-xs font-semibold">Search</span>
-                                </Link>
-                               <div className="flex flex-col gap-1 cursor-pointer items-center justify-center hover:text-[#FBC02D] transition">
-                                   <CartCount userEmail={externalUser?.primaryEmailAddress?.emailAddress} />
-                               </div>
-                      
+const MobileSidebar = async () => {
+    const externalUser = await currentUser();
+    return (
+        <div>
+            <div className="flex items-center justify-between">
+                <Link href="/" className="shrink-0">
+                    <BrandLogo width={130} className="w-[120px] sm:w-[130px]" />
+                </Link>
+                <div className="flex items-center gap-4 text-[#1A1A1A]">
+                    <Link
+                        href="/search"
+                        className="flex cursor-pointer flex-col items-center justify-center gap-1 transition hover:text-[#B8956A]"
+                    >
+                        <SearchIcon className="size-5" />
+                        <span className="text-xs font-semibold">Search</span>
+                    </Link>
+                    <div className="flex cursor-pointer flex-col items-center justify-center gap-1 transition hover:text-[#B8956A]">
+                        <CartCount userEmail={externalUser?.primaryEmailAddress?.emailAddress} />
+                    </div>
+                </div>
             </div>
-      </div>
-    </div>
-     );
+        </div>
+    );
 };
- 
+
 export default MobileSidebar;
