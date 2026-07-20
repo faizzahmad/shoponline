@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       "images.pexels.com",
+      "picsum.photos",
       "firebasestorage.googleapis.com",
       "mls10qtzvi.ufs.sh",
       "3903pqvnfg.ufs.sh",

@@ -1,0 +1,5 @@
+ {totalProducts > 0 ? (
+                                    <p className="text-xs text-neutral-600 exo sm:text-sm">
+                                        {totalProducts} product{totalProducts === 1 ? "" : "s"}
+                                    </p>
+                                ) : null}

@@ -13,11 +13,12 @@ import { useLoader } from "@/store/use-loader";
 import { useEffect, useMemo, useState } from "react";
 import { useCategoryDropdown } from "./hooks/use-category-dropdown";
 import { fetchData } from "@/utils/apiCall";
-import { Filter, ShoppingCart, X } from "lucide-react";
+import { Filter, LayoutGrid, ShoppingCart, X } from "lucide-react";
 import { Waypoint } from 'react-waypoint';
 import { ProductInfoModal } from "./product-info-modal";
 import { useSearch } from "../../_components/hooks/use-search";
 import { ShopFilterSheet } from "./shop-filter-sheet";
+import { ShopCategorySheet } from "./shop-category-sheet";
 import { Button } from "@/components/ui/button";
 import type { CategoryFilterItem } from "./category-filter-list";
 
@@ -111,18 +112,19 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
     const [resetFilter, setResetFilter] = useState(false);
     const [totalProducts, setTotalProducts] = useState(0);
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+    const [categorySheetOpen, setCategorySheetOpen] = useState(false);
  
     const { search, setSearch } = useSearch();
 
+    const activeCategoryCount = category.length + subcategory.length;
+
     const activeFilterCount = useMemo(() => {
-        let count = category.length + subcategory.length + variantFilterEntries.length;
+        let count = variantFilterEntries.length;
         if (minPrice != null || maxPrice != null) count += 1;
         if (inStock) count += 1;
         if (onSale) count += 1;
         return count;
     }, [
-        category.length,
-        subcategory.length,
         variantFilterEntries.length,
         minPrice,
         maxPrice,
@@ -254,11 +256,16 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                 open={filterSheetOpen}
                 onOpenChange={setFilterSheetOpen}
             />
+            <ShopCategorySheet
+                categories={categories}
+                open={categorySheetOpen}
+                onOpenChange={setCategorySheetOpen}
+            />
             <div className="h-auto w-full">
                 <div className="w-full">
                     {mobileFilterChips.length > 0 ? (
                         <div
-                            className="mt-2 mb-3"
+                            className="mt-2 mb-3 md:hidden"
                             aria-label="Active filters"
                         >
                             <div className="-mx-1 flex flex-nowrap gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -282,52 +289,75 @@ export const ShopPage = ({ categories }: ShopPageProps) => {
                             </div>
                         </div>
                     ) : null}
-                    <div className="w-full flex flex-wrap items-center gap-2">
-                        {
-                            search && (
-                                <div className="sm:px-4 px-2 py-1 sm:py-2 bg-[#1A1A1A] text-white raleway sm:text-sm text-xs flex items-center gap-2 rounded cursor-pointer" onClick={() => {
-                                    setSearch('');
-                                    setPage(1);
-
-                                }}>
-                                    {search} <X className="size-4" />
-                                </div>
-                            )
-                        }
-                        {totalProducts > 0 ? (
-                            <p className="text-xs text-neutral-600 exo sm:text-sm">
-                                {totalProducts} product{totalProducts === 1 ? "" : "s"}
-                            </p>
-                        ) : null}
-                        <div className="ms-auto flex items-center gap-2 text-neutral-800 exo">
+                    <div className="w-full space-y-2">
+                        {(search || totalProducts > 0) && (
+                            <div className="flex flex-wrap items-center gap-2">
+                                {search ? (
+                                    <div
+                                        className="flex cursor-pointer items-center gap-2 rounded bg-[#1A1A1A] px-2 py-1 text-xs text-white raleway sm:px-4 sm:py-2 sm:text-sm"
+                                        onClick={() => {
+                                            setSearch("");
+                                            setPage(1);
+                                        }}
+                                    >
+                                        {search} <X className="size-4" />
+                                    </div>
+                                ) : null}
+                                {/* {totalProducts > 0 ? (
+                                    <p className="text-xs text-neutral-600 exo sm:text-sm">
+                                        {totalProducts} product{totalProducts === 1 ? "" : "s"}
+                                    </p>
+                                ) : null} */}
+                            </div>
+                        )}
+                        <div className="grid w-full min-w-0 grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-1.5 sm:flex sm:justify-end sm:gap-2">
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="h-9 gap-2 border-gray-500 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
+                                aria-label="Categories"
+                                className="relative h-9 shrink-0 gap-1 border-gray-500 px-2.5 text-xs md:hidden sm:h-10 sm:gap-2 sm:px-3 sm:text-sm"
+                                onClick={() => setCategorySheetOpen(true)}
+                            >
+                                <LayoutGrid className="size-4 shrink-0" />
+                                <span className="hidden min-[420px]:inline">Categories</span>
+                                {activeCategoryCount > 0 ? (
+                                    <span className="rounded-full bg-[#1A1A1A] px-1 py-0.5 text-[10px] font-medium leading-none text-white min-[420px]:px-1.5">
+                                        {activeCategoryCount}
+                                    </span>
+                                ) : null}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                aria-label="Filter products"
+                                className="relative h-9 shrink-0 gap-1 border-gray-500 px-2.5 text-xs sm:h-10 sm:gap-2 sm:px-3 sm:text-sm"
                                 onClick={() => setFilterSheetOpen(true)}
                             >
                                 <Filter className="size-4 shrink-0" />
-                                Filter
+                                <span className="hidden min-[420px]:inline">Filter</span>
                                 {activeFilterCount > 0 ? (
-                                    <span className="rounded-full bg-[#1A1A1A] px-1.5 py-0.5 text-[10px] font-medium text-white">
+                                    <span className="rounded-full bg-[#1A1A1A] px-1 py-0.5 text-[10px] font-medium leading-none text-white min-[420px]:px-1.5">
                                         {activeFilterCount}
                                     </span>
                                 ) : null}
                             </Button>
-                            <Select value={sortBy} onValueChange={(value) => {
-                                setPage(1);
-                                setSortBy(value)
-                            }}>
-                                <SelectTrigger className="h-9 focus:ring-0 border-gray-500 w-44 text-xs sm:h-10 sm:w-56 sm:text-base">
-                                    <SelectValue placeholder="Sort by : Recommended" />
+                            <Select
+                                value={sortBy}
+                                onValueChange={(value) => {
+                                    setPage(1);
+                                    setSortBy(value);
+                                }}
+                            >
+                                <SelectTrigger className="h-9 min-w-0 w-full truncate border-gray-500 px-2 text-[11px] focus:ring-0 sm:h-10 sm:w-44 sm:px-3 sm:text-xs md:text-sm lg:w-56">
+                                    <SelectValue placeholder="Recommended" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="recommended">Sort by : Recommended</SelectItem>
-                                    {
-                                        sortItems.map((item) => (
-                                            <SelectItem key={item.value} value={item.value}>Sort by : {item.name}</SelectItem>
-                                        ))
-                                    }
+                                    <SelectItem value="recommended">Recommended</SelectItem>
+                                    {sortItems.map((item) => (
+                                        <SelectItem key={item.value} value={item.value}>
+                                            {item.name}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopOnline — Premium E-Commerce Platform for Growing Brands</title>
+  <meta name="description" content="Launch a professional online store with ShopOnline. See how we built Najak Clothing — a full-featured fashion e-commerce store with admin dashboard, payments, and shipping." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --dark: #1a1a1a;
+      --gold: #b8956a;
+      --gold-light: #d4bc94;
+      --surface: #fafaf9;
+      --muted: #737373;
+      --border: rgba(26, 26, 26, 0.1);
+      --white: #ffffff;
+      --shadow: 0 24px 60px rgba(26, 26, 26, 0.08);
+      --radius: 16px;
+      --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+      --font-body: "Inter", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      color: var(--dark);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1140px, calc(100% - 2.5rem));
+      margin-inline: auto;
+    }
+
+    /* Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      gap: 1rem;
+    }
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--gold); }
+    .nav-links {
+      display: none;
+      gap: 2rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: #404040;
+    }
+    .nav-links a:hover { color: var(--dark); }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      background: var(--dark);
+      color: var(--white);
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--dark); transform: translateY(-1px); }
+
+    /* Hero */
+    .hero {
+      padding: 4.5rem 0 3rem;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(184, 149, 106, 0.18), transparent),
+        linear-gradient(180deg, var(--surface) 0%, var(--white) 100%);
+    }
+    .hero-grid {
+      display: grid;
+      gap: 3rem;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #525252;
+      margin-bottom: 1.25rem;
+    }
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.25rem, 5vw, 3.75rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 14ch;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    .hero-lead {
+      margin-top: 1.25rem;
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 52ch;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.875rem;
+      margin-top: 2rem;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.5rem;
+      background: var(--dark);
+      color: var(--white);
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold); color: var(--dark); transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.5rem;
+      background: var(--white);
+      color: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+    .hero-visual {
+      position: relative;
+    }
+    .browser-frame {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      background: var(--white);
+    }
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.75rem 1rem;
+      background: #f5f5f4;
+      border-bottom: 1px solid var(--border);
+    }
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d4d4d4;
+    }
+    .browser-dot:nth-child(1) { background: #fca5a5; }
+    .browser-dot:nth-child(2) { background: #fcd34d; }
+    .browser-dot:nth-child(3) { background: #86efac; }
+    .browser-url {
+      flex: 1;
+      margin-left: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      background: var(--white);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #737373;
+    }
+    .browser-frame img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top;
+    }
+    .floating-card {
+      position: absolute;
+      bottom: -1rem;
+      left: -1rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.875rem 1rem;
+      box-shadow: 0 12px 32px rgba(26, 26, 26, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 240px;
+    }
+    .floating-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      display: grid;
+      place-items: center;
+      font-size: 1.125rem;
+    }
+    .floating-card strong {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 700;
+    }
+    .floating-card span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Sections */
+    section { padding: 5rem 0; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      max-width: 20ch;
+    }
+    .section-desc {
+      margin-top: 1rem;
+      color: var(--muted);
+      max-width: 58ch;
+      font-size: 1.0625rem;
+    }
+
+    /* Logos / trust */
+    .trust {
+      padding: 2.5rem 0;
+      border-block: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .trust-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem 3rem;
+    }
+    .trust-item {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.9375rem;
+      color: #a3a3a3;
+    }
+    .trust-item.active { color: var(--dark); }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+    .feature-card {
+      padding: 1.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(184, 149, 106, 0.4);
+      box-shadow: 0 8px 30px rgba(26, 26, 26, 0.05);
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      font-size: 0.9375rem;
+      color: var(--muted);
+    }
+
+    /* Case study */
+    .case-study {
+      background: var(--dark);
+      color: var(--white);
+    }
+    .case-study .section-label { color: var(--gold-light); }
+    .case-study .section-desc { color: #a3a3a3; }
+    .case-grid {
+      display: grid;
+      gap: 2.5rem;
+      margin-top: 3rem;
+      align-items: center;
+    }
+    .case-content h3 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .case-content p {
+      color: #a3a3a3;
+      margin-bottom: 1.25rem;
+    }
+    .case-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .case-metric {
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .case-metric strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-light);
+    }
+    .case-metric span {
+      font-size: 0.8125rem;
+      color: #737373;
+    }
+    .case-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .case-tag {
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(184, 149, 106, 0.15);
+      color: var(--gold-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .case-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gold-light);
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+    .case-link:hover { color: var(--white); }
+    .case-visual {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+    }
+    .case-visual img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    /* Stack */
+    .stack-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    .stack-pill {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: var(--surface);
+    }
+
+    /* Process */
+    .process-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .process-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      font-size: 0.9375rem;
+    }
+    .process-step h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .process-step p {
+      font-size: 0.9375rem;
+      color: var(--muted);
+    }
+
+    /* Pricing / CTA */
+    .cta-section {
+      background: linear-gradient(135deg, var(--surface) 0%, #f5f0e8 100%);
+    }
+    .cta-box {
+      text-align: center;
+      padding: 3.5rem 2rem;
+      border-radius: calc(var(--radius) + 8px);
+      background: var(--white);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .cta-box h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      max-width: 20ch;
+      margin-inline: auto;
+    }
+    .cta-box p {
+      margin: 1rem auto 2rem;
+      color: var(--muted);
+      max-width: 46ch;
+    }
+    .cta-contact {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 2.5rem;
+      margin-top: 2rem;
+      font-size: 0.9375rem;
+    }
+    .cta-contact a {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    .cta-contact a:hover { color: var(--gold); }
+
+    /* Footer */
+    footer {
+      padding: 2rem 0;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .nav-links { display: flex; }
+      .hero-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .case-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .process-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="#" class="logo">Shop<span>Online</span></a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#case-study">Case Study</a>
+        <a href="#process">Process</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a href="#contact" class="nav-cta">Get a Demo →</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Production-ready e-commerce platform
+        </div>
+        <h1>Launch your store with <em>premium</em> e-commerce</h1>
+        <p class="hero-lead">
+          ShopOnline is a full-stack online marketplace platform — storefront, admin dashboard, payments, shipping, and everything you need to sell at scale. Already powering real brands like Najak Clothing.
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">Book a Free Demo →</a>
+          <a href="https://najakclothing.com/" target="_blank" rel="noopener noreferrer" class="btn-secondary">View Live Client Site ↗</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Customizable for your brand</div>
+          </div>
+          <div>
+            <div class="stat-value">Mobile</div>
+            <div class="stat-label">Responsive on every device</div>
+          </div>
+          <div>
+            <div class="stat-value">Secure</div>
+            <div class="stat-label">Payments &amp; checkout built-in</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="browser-dot"></span>
+            <span class="browser-dot"></span>
+            <span class="browser-dot"></span>
+            <span class="browser-url">najakclothing.com</span>
+          </div>
+          <img
+            src="https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            alt="Najak Clothing fashion e-commerce storefront preview"
+          />
+        </div>
+        <div class="floating-card">
+          <div class="floating-card-icon">✓</div>
+          <div>
+            <strong>Live client project</strong>
+            <span>Najak Clothing — fashion store</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <div class="trust">
+    <div class="container trust-inner">
+      <span class="trust-item active">Najak Clothing</span>
+      <span class="trust-item">Razorpay Payments</span>
+      <span class="trust-item">Shiprocket Shipping</span>
+      <span class="trust-item">Next.js Platform</span>
+      <span class="trust-item">Admin Dashboard</span>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="container">
+      <p class="section-label">Platform Features</p>
+      <h2 class="section-title">Everything you need to run a modern online store</h2>
+      <p class="section-desc">
+        From product catalog to checkout and order fulfilment — ShopOnline gives your business a complete, professional e-commerce stack without starting from scratch.
+      </p>
+      <div class="features-grid">
+        <article class="feature-card">
+          <div class="feature-icon">🛍️</div>
+          <h3>Beautiful Storefront</h3>
+          <p>Premium homepage, category browsing, product pages, search, filters, and mobile-first design that converts visitors into buyers.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>Product &amp; Variant Management</h3>
+          <p>Multi-image products, size/color variants, stock tracking, and dynamic filters — perfect for fashion, grocery, electronics, and more.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>Admin Dashboard</h3>
+          <p>Manage products, categories, banners, coupons, orders, and users from a clean, powerful admin panel built for daily operations.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">💳</div>
+          <h3>Secure Checkout</h3>
+          <p>Integrated Razorpay payments, cart management, guest checkout, and order confirmation — ready for the Indian market.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">🚚</div>
+          <h3>Shipping Integration</h3>
+          <p>Shiprocket-ready with product dimensions and weight fields for seamless logistics and delivery management.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Marketing Tools</h3>
+          <p>Coupons, bestseller sections, new arrivals, promotional banners, and SEO-friendly pages to grow your brand online.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Study -->
+  <section id="case-study" class="case-study">
+    <div class="container">
+      <p class="section-label">Client Success Story</p>
+      <h2 class="section-title" style="color: #fff;">Built for Najak Clothing</h2>
+      <p class="section-desc">
+        We deployed ShopOnline for <a href="https://najakclothing.com/" target="_blank" rel="noopener noreferrer" style="color: var(--gold-light);">Najak Clothing</a> — a men's &amp; women's fashion brand selling t-shirts, jeans, ethnic wear, trousers, and more across India.
+      </p>
+      <div class="case-grid">
+        <div class="case-content">
+          <div class="case-tags">
+            <span class="case-tag">Fashion E-Commerce</span>
+            <span class="case-tag">Multi-Category</span>
+            <span class="case-tag">Variant Products</span>
+            <span class="case-tag">Mobile Commerce</span>
+          </div>
+          <h3>A full fashion marketplace — live and selling</h3>
+          <p>
+            Najak Clothing needed a professional online store to showcase their catalog, handle size and fit variants, accept online payments, and deliver a premium shopping experience on mobile and desktop.
+          </p>
+          <p>
+            We delivered a complete solution: category-rich navigation (Men's T-Shirts, Women's Jeans, Ethnic Wear, and more), product quick-buy flows, coupon support, and a brand-aligned design that reflects their everyday style positioning.
+          </p>
+          <div class="case-metrics">
+            <div class="case-metric">
+              <strong>9+</strong>
+              <span>Product categories live</span>
+            </div>
+            <div class="case-metric">
+              <strong>Full</strong>
+              <span>Admin &amp; storefront stack</span>
+            </div>
+            <div class="case-metric">
+              <strong>Live</strong>
+              <span>Production deployment</span>
+            </div>
+            <div class="case-metric">
+              <strong>India</strong>
+              <span>Payments &amp; shipping ready</span>
+            </div>
+          </div>
+          <a href="https://najakclothing.com/" target="_blank" rel="noopener noreferrer" class="case-link">
+            Visit najakclothing.com ↗
+          </a>
+        </div>
+        <div class="case-visual">
+          <img
+            src="https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            alt="Fashion e-commerce products — Najak Clothing case study"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech stack -->
+  <section>
+    <div class="container">
+      <p class="section-label">Technology</p>
+      <h2 class="section-title">Modern, scalable, and maintainable</h2>
+      <p class="section-desc">
+        Built with industry-standard tools so your store is fast, secure, and easy to extend as your business grows.
+      </p>
+      <div class="stack-grid">
+        <span class="stack-pill">Next.js</span>
+        <span class="stack-pill">React</span>
+        <span class="stack-pill">TypeScript</span>
+        <span class="stack-pill">MongoDB</span>
+        <span class="stack-pill">Tailwind CSS</span>
+        <span class="stack-pill">Razorpay</span>
+        <span class="stack-pill">Shiprocket</span>
+        <span class="stack-pill">Clerk Auth</span>
+        <span class="stack-pill">UploadThing</span>
+        <span class="stack-pill">Responsive UI</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section id="process" style="background: var(--surface);">
+    <div class="container">
+      <p class="section-label">How It Works</p>
+      <h2 class="section-title">From demo to live store in weeks</h2>
+      <p class="section-desc">
+        We handle setup, customization, and launch so you can focus on products and customers.
+      </p>
+      <div class="process-grid">
+        <div class="process-step">
+          <div class="step-num">1</div>
+          <div>
+            <h3>Discovery &amp; Demo</h3>
+            <p>We walk you through the platform, understand your catalog, brand, and business goals.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">2</div>
+          <div>
+            <h3>Brand Customization</h3>
+            <p>Your logo, colors, categories, banners, and content — tailored to your identity like Najak Clothing.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">3</div>
+          <div>
+            <h3>Product Setup</h3>
+            <p>We configure categories, variants, shipping rules, coupons, and payment gateways.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">4</div>
+          <div>
+            <h3>Launch &amp; Support</h3>
+            <p>Go live with training on the admin dashboard and ongoing support for your team.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contact" class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Ready to launch your online store?</h2>
+        <p>
+          Join brands like Najak Clothing who trust ShopOnline to power their e-commerce. Book a free demo and see the platform in action.
+        </p>
+        <a href="mailto:johndoe@shoponline.com?subject=ShopOnline%20Demo%20Request" class="btn-primary">Request a Free Demo →</a>
+        <div class="cta-contact">
+          <a href="mailto:johndoe@shoponline.com">johndoe@shoponline.com</a>
+          <a href="tel:+919876543210">+91 98765 43210</a>
+          <a href="https://najakclothing.com/" target="_blank" rel="noopener noreferrer">See live client: najakclothing.com ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <span>© 2026 ShopOnline. Premium E-Commerce Platform.</span>
+      <span>Client showcase: <a href="https://najakclothing.com/" target="_blank" rel="noopener noreferrer" style="color: var(--gold); font-weight: 600;">Najak Clothing</a></span>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -26,7 +26,7 @@ export const CategoryFilterList = ({
     categories,
     className,
 }: CategoryFilterListProps) => {
-    const { category, subcategory, setSubcategory, setPage } = useCategoryDropdown();
+    const { category, subcategory, setCategory, setSubcategory, setPage } = useCategoryDropdown();
     const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>(
         [],
     );
@@ -45,13 +45,37 @@ export const CategoryFilterList = ({
                 className,
             )}
         >
-            {categories.map((items) => (
+            {categories.map((items) => {
+                const hasSubs = (items.subCategories?.length ?? 0) > 0;
+                const isExpanded = expandedCategoryIds.includes(items.id);
+
+                if (!hasSubs) {
+                    return (
+                        <div key={items.id} className="flex items-center gap-4">
+                            <Checkbox
+                                id={`cat-${items.id}`}
+                                className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
+                                checked={category.includes(items.id)}
+                                onCheckedChange={(checked) => {
+                                    if (checked) {
+                                        setCategory([...category, items.id]);
+                                    } else {
+                                        setCategory(category.filter((id) => id !== items.id));
+                                    }
+                                    setPage(1);
+                                }}
+                            />
+                            <label htmlFor={`cat-${items.id}`} className="capitalize raleway">
+                                {items.name}
+                            </label>
+                        </div>
+                    );
+                }
+
+                return (
                 <div
                     key={items.id}
-                    className={cn(
-                        "block",
-                        !items.subCategories?.length && "hidden",
-                    )}
+                    className="block"
                 >
                     <div
                         className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#1A1A1A] raleway"
@@ -67,7 +91,7 @@ export const CategoryFilterList = ({
                         <ChevronDown
                             className={cn(
                                 "size-5 transition",
-                                expandedCategoryIds.includes(items.id)
+                                isExpanded
                                     ? "rotate-180"
                                     : "rotate-0",
                             )}
@@ -77,7 +101,7 @@ export const CategoryFilterList = ({
                     <div
                         className={cn(
                             "mt-4",
-                            expandedCategoryIds.includes(items.id)
+                            isExpanded
                                 ? "flex flex-col gap-2"
                                 : "hidden",
                         )}
@@ -153,7 +177,8 @@ export const CategoryFilterList = ({
                         ))}
                     </div>
                 </div>
-            ))}
+                );
+            })}
         </div>
     );
 };

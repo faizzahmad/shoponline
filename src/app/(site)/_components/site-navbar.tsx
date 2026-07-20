@@ -6,7 +6,6 @@ import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@clerk/nextjs/server";
 import { getLatestCategories } from "@/actions/category";
 import MobileSidebar from "./mobile-sidebar";
-import { MobileNavbarSearch } from "./mobile-navbar-search";
 import { SearchBar } from "./searchbar";
 import { CartCount } from "./cart-count";
 import { UserButtonComp } from "./user-button-comp";
@@ -97,7 +96,6 @@ export const SiteNavbar = async () => {
                 </div>
                 <div className="lg:hidden">
                     <MobileSidebar />
-                    <MobileNavbarSearch />
                 </div>
             </nav>
             <div className="relative z-0 hidden h-9 w-full items-center justify-center gap-5 bg-[#1A1A1A] text-[1rem] font-[500] text-white raleway lg:flex xl:z-[100] xl:gap-8 xl:text-base">
