@@ -4,7 +4,6 @@ import { BrandLogo } from "@/components/custom/brand-logo";
 import { Button } from "@/components/ui/button";
 import { useIsChanged } from "@/store/use-ischnaged";
 import { format } from "date-fns";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { TfiShoppingCartFull } from "react-icons/tfi";
