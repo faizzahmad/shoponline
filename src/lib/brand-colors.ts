@@ -1,14 +1,14 @@
 /**
- * Refined premium marketplace palette
- * Warm ink, champagne gold, soft ivory surfaces
+ * Classic navy marketplace palette
+ * Inspired by traditional fashion brands (deep ink navy, cool ivory surfaces)
  */
 export const BRAND_COLORS = {
-  dark: "#1A1A1A",
-  gold: "#B8956A",
-  goldLight: "#D4BC94",
-  goldHover: "#A68458",
-  surface: "#FAFAF9",
-  muted: "#F5F5F4",
-  border: "#E7E5E4",
+  dark: "#0F2744",
+  gold: "#1B3F66",
+  goldLight: "#4A6FA5",
+  goldHover: "#163556",
+  surface: "#F6F7F9",
+  muted: "#EEF1F5",
+  border: "#D5DCE6",
   white: "#FFFFFF",
 } as const;

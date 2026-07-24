@@ -19,11 +19,11 @@ export default withUt(
 		},
   		colors: {
 			brand: {
-				DEFAULT: '#B8956A',
-				dark: '#1A1A1A',
-				hover: '#A68458',
-				accent: '#D4BC94',
-				surface: '#FAFAF9',
+				DEFAULT: '#1B3F66',
+				dark: '#0F2744',
+				hover: '#163556',
+				accent: '#4A6FA5',
+				surface: '#F6F7F9',
 			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

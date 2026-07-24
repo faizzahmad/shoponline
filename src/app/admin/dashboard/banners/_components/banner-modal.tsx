@@ -91,7 +91,7 @@ function BannerImageField({
       ) : (
         <div className="space-y-2">
           <div className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-slate-50 px-4 py-5 text-center">
-            <div className="flex size-9 items-center justify-center rounded-full bg-[#1A1A1A]/10 text-[#1A1A1A]">
+            <div className="flex size-9 items-center justify-center rounded-full bg-[#0F2744]/10 text-[#0F2744]">
               <ImagePlus className="size-4" />
             </div>
             <p className="text-sm font-medium text-neutral-800">Upload image</p>
@@ -105,7 +105,7 @@ function BannerImageField({
               }}
               appearance={{
                 button:
-                  "bg-[#1A1A1A] text-white text-sm px-4 h-8 ut-ready:bg-[#1A1A1A] ut-uploading:bg-[#1A1A1A]/80 after:bg-[#1A1A1A]",
+                  "bg-[#0F2744] text-white text-sm px-4 h-8 ut-ready:bg-[#0F2744] ut-uploading:bg-[#0F2744]/80 after:bg-[#0F2744]",
                 allowedContent: "hidden",
               }}
             />

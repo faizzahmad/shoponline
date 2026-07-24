@@ -38,7 +38,7 @@ export function BottomNavigationClient({ isSignedIn }: BottomNavigationClientPro
             aria-label="Primary mobile navigation"
         >
             <div
-                className="pointer-events-auto mx-3 flex max-w-md items-stretch justify-between gap-1 rounded-2xl border border-[#1A1A1A]/14 bg-white/90 px-1 py-1 shadow-[0_2px_16px_rgba(26, 26, 26,0.12)] backdrop-blur-sm"
+                className="pointer-events-auto mx-3 flex max-w-md items-stretch justify-between gap-1 rounded-2xl border border-[#0F2744]/14 bg-white/90 px-1 py-1 shadow-[0_2px_16px_rgba(15, 39, 68,0.12)] backdrop-blur-sm"
                 style={{
                     marginBottom: "max(0.5rem, env(safe-area-inset-bottom))",
                 }}
@@ -58,20 +58,20 @@ export function BottomNavigationClient({ isSignedIn }: BottomNavigationClientPro
                             className={cn(
                                 "relative flex min-h-[44px] min-w-[44px] flex-1 items-center justify-center rounded-xl transition-colors duration-150",
                                 active
-                                    ? "text-[#1A1A1A]"
+                                    ? "text-[#0F2744]"
                                     : "text-neutral-400 active:text-neutral-600"
                             )}
                         >
                             {active ? (
                                 <span
-                                    className="absolute inset-x-2 inset-y-1 rounded-lg bg-[#1A1A1A]/10"
+                                    className="absolute inset-x-2 inset-y-1 rounded-lg bg-[#0F2744]/10"
                                     aria-hidden
                                 />
                             ) : null}
                             <Icon
                                 className={cn(
                                     "relative z-[1] size-[21px]",
-                                    active ? "text-[#1A1A1A]" : "text-neutral-400"
+                                    active ? "text-[#0F2744]" : "text-neutral-400"
                                 )}
                                 strokeWidth={active ? 2.25 : 2}
                                 aria-hidden

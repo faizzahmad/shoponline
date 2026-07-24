@@ -73,7 +73,7 @@ export default function AboutPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-2xl font-bold text-[#1A1A1A] border-b-4 border-[#1A1A1A] pb-3 inline-block sm:text-3xl md:text-4xl">
+        <h1 className="raleway text-2xl font-bold text-[#0F2744] border-b-4 border-[#0F2744] pb-3 inline-block sm:text-3xl md:text-4xl">
           About us
         </h1>
       </header>
@@ -101,7 +101,7 @@ export default function AboutPage() {
       <section className="mt-14 md:mt-16" aria-labelledby="reviews-heading">
         <h2
           id="reviews-heading"
-          className="raleway text-lg font-bold text-[#1A1A1A] border-b-4 border-[#1A1A1A] pb-3 inline-block sm:text-2xl md:text-3xl"
+          className="raleway text-lg font-bold text-[#0F2744] border-b-4 border-[#0F2744] pb-3 inline-block sm:text-2xl md:text-3xl"
         >
           Reviews
         </h2>
@@ -112,7 +112,7 @@ export default function AboutPage() {
         <ul className="mt-8 grid gap-5 sm:grid-cols-2">
           {DUMMY_REVIEWS.map((review) => (
             <li key={`${review.name}-${review.date}`}>
-              <Card className="h-full border-[#1A1A1A]/20/80 bg-white/90 shadow-sm transition hover:shadow-md">
+              <Card className="h-full border-[#0F2744]/20/80 bg-white/90 shadow-sm transition hover:shadow-md">
                 <CardHeader className="space-y-2 pb-2">
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="raleway text-base font-semibold text-neutral-900 sm:text-lg">

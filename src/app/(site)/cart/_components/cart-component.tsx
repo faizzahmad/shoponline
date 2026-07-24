@@ -809,7 +809,7 @@ export const CartComponent = () => {
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    className="mt-2 border-[#1A1A1A]/20 text-[#1A1A1A] hover:bg-[#FAFAF9]"
+                                                    className="mt-2 border-[#0F2744]/20 text-[#0F2744] hover:bg-[#F6F7F9]"
                                                     disabled={loading}
                                                     onClick={() => removeCartLineById(w.productId!, w.variantId)}
                                                 >
@@ -870,7 +870,7 @@ export const CartComponent = () => {
             {
                 cartdata.length <= 0 && loading === false && (
                     <div className={cn("w-full px-10 py-5 bg-white border-b shadow-sm h-screen flex items-center justify-center flex-col gap-3")}>
-                        <ShoppingBag className="size-12 text-[#1A1A1A]" />
+                        <ShoppingBag className="size-12 text-[#0F2744]" />
                         <h5 className="text-base font-[600] raleway sm:text-lg md:text-2xl">Your Cart is Empty</h5>
                         <p className="md:text-base text-sm text-neutral-500 raleway">Please add some products to your cart to proceed.</p>
                         <Link href={'/shop'}>
@@ -887,16 +887,16 @@ export const CartComponent = () => {
                 <div className="w-full lg:w-[38%] xl:max-w-md order-2 space-y-5 min-w-0">
 
                     {isGuest ? (
-                        <Card className="border-[#1A1A1A]/20/80 bg-[#FAFAF9]/50 shadow-sm overflow-hidden raleway">
+                        <Card className="border-[#0F2744]/20/80 bg-[#F6F7F9]/50 shadow-sm overflow-hidden raleway">
                             <CardContent className="p-4 sm:p-5 flex flex-col gap-2">
-                                <p className="text-sm font-medium text-[#1A1A1A]">
+                                <p className="text-sm font-medium text-[#0F2744]">
                                     You&apos;re shopping as a guest
                                 </p>
                                 <p className="text-xs text-neutral-700">
                                     You can place this order without creating an account.{" "}
                                     <button
                                         type="button"
-                                        className="underline underline-offset-2 hover:text-[#1A1A1A]"
+                                        className="underline underline-offset-2 hover:text-[#0F2744]"
                                         onClick={() => {
                                             const fullPathWithQuery =
                                                 window.location.pathname + window.location.search;
@@ -914,7 +914,7 @@ export const CartComponent = () => {
                     ) : null}
 
                     {isGuest ? (
-                        <Card className="border-[#1A1A1A]/15/90 bg-white shadow-sm overflow-hidden raleway">
+                        <Card className="border-[#0F2744]/15/90 bg-white shadow-sm overflow-hidden raleway">
                             <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                                 <CardTitle className="text-base font-semibold">Your contact details</CardTitle>
                                 <CardDescription className="text-xs">
@@ -967,7 +967,7 @@ export const CartComponent = () => {
                     ) : null}
 
                     {!isGuest ? (
-                        <Card className="border-[#1A1A1A]/15/90 bg-white shadow-sm overflow-hidden raleway">
+                        <Card className="border-[#0F2744]/15/90 bg-white shadow-sm overflow-hidden raleway">
                             <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                                 <CardTitle className="text-base font-semibold">Contact for delivery</CardTitle>
                                 <CardDescription className="text-xs">
@@ -997,7 +997,7 @@ export const CartComponent = () => {
                         </Card>
                     ) : null}
 
-                    <Card className="border-[#1A1A1A]/15/90 bg-white shadow-sm overflow-hidden raleway">
+                    <Card className="border-[#0F2744]/15/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                             <CardTitle className="text-base font-semibold">Payment method</CardTitle>
                             <CardDescription className="text-xs">
@@ -1014,7 +1014,7 @@ export const CartComponent = () => {
                                             paymentMode: checked ? "onlinePayment" : "cod",
                                         });
                                     }}
-                                    className="data-[state=checked]:bg-[#1A1A1A] data-[state=checked]:border-[#1A1A1A] mt-0.5"
+                                    className="data-[state=checked]:bg-[#0F2744] data-[state=checked]:border-[#0F2744] mt-0.5"
                                     checked={orderData.paymentMode === "onlinePayment"}
                                 />
                                 <Label htmlFor="onlinePayment" className="text-sm font-normal leading-snug cursor-pointer">
@@ -1030,7 +1030,7 @@ export const CartComponent = () => {
                                             paymentMode: checked ? "cod" : "onlinePayment",
                                         });
                                     }}
-                                    className="data-[state=checked]:bg-[#1A1A1A] data-[state=checked]:border-[#1A1A1A] mt-0.5"
+                                    className="data-[state=checked]:bg-[#0F2744] data-[state=checked]:border-[#0F2744] mt-0.5"
                                     checked={orderData.paymentMode === "cod"}
                                 />
                                 <Label htmlFor="cod" className="text-sm font-normal leading-snug cursor-pointer">
@@ -1040,7 +1040,7 @@ export const CartComponent = () => {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-[#1A1A1A]/15/90 bg-white shadow-sm overflow-hidden raleway">
+                    <Card className="border-[#0F2744]/15/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2">
                             <CardTitle className="text-base font-semibold">Promo code</CardTitle>
                             <CardDescription className="text-xs">Have a coupon? Apply it here.</CardDescription>
@@ -1065,11 +1065,11 @@ export const CartComponent = () => {
                                         </Button>
                                     </div>
                                     {couponError ? (
-                                        <p className="text-xs text-[#1A1A1A] exo">{couponError}</p>
+                                        <p className="text-xs text-[#0F2744] exo">{couponError}</p>
                                     ) : null}
                                 </div>
                             ) : (
-                                <div className="bg-[#1A1A1A] text-white exo p-4 rounded-lg relative">
+                                <div className="bg-[#0F2744] text-white exo p-4 rounded-lg relative">
                                     <h5 className="font-[500] text-sm">Coupon applied</h5>
                                     <p className="mt-2 text-xs raleway pr-6">
                                         {couponCode} is applied — {discountPercentage}% off your order.
@@ -1096,10 +1096,10 @@ export const CartComponent = () => {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-[#1A1A1A]/15/90 bg-white shadow-sm overflow-hidden raleway">
+                    <Card className="border-[#0F2744]/15/90 bg-white shadow-sm overflow-hidden raleway">
                         <CardHeader className="p-4 sm:p-5 pb-2 space-y-1">
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                <MapPin className="size-4 text-[#1A1A1A] shrink-0" aria-hidden />
+                                <MapPin className="size-4 text-[#0F2744] shrink-0" aria-hidden />
                                 Delivery details
                             </CardTitle>
                             <CardDescription className="text-xs">
@@ -1185,7 +1185,7 @@ export const CartComponent = () => {
                         <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
                             <div className="space-y-3 text-sm">
                                 {hasCheckoutBlocker ? (
-                                    <p className="text-xs text-[#1A1A1A] bg-[#FAFAF9] border border-[#1A1A1A]/20 rounded-md px-3 py-2 raleway">
+                                    <p className="text-xs text-[#0F2744] bg-[#F6F7F9] border border-[#0F2744]/20 rounded-md px-3 py-2 raleway">
                                         Remove out-of-stock products from your cart before you can check
                                         out.
                                     </p>
@@ -1204,7 +1204,7 @@ export const CartComponent = () => {
                                 </div>
                                 <div className="flex justify-between gap-4 pt-3 border-t border-dashed border-neutral-300 text-base">
                                     <span className="font-semibold">Subtotal</span>
-                                    <span className="exo font-semibold text-[#1A1A1A] tabular-nums">{"\u20B9"} {subtotal}</span>
+                                    <span className="exo font-semibold text-[#0F2744] tabular-nums">{"\u20B9"} {subtotal}</span>
                                 </div>
                             </div>
                             <div className="w-full pt-1">
@@ -1258,7 +1258,7 @@ export const CartComponent = () => {
                                     <div
                                         className={cn(
                                             "w-full sm:flex gap-3 border-b last:border-b-0 rounded-lg p-2 -mx-2",
-                                            isOutOfStock && "border border-[#1A1A1A]/20 bg-[#FAFAF9]/60"
+                                            isOutOfStock && "border border-[#0F2744]/20 bg-[#F6F7F9]/60"
                                         )}
                                         key={`${item.productId}-${item.variantId ?? ""}`}
                                     >
@@ -1273,7 +1273,7 @@ export const CartComponent = () => {
                                         </div>
                                         <div className="flex-1 p-2 min-w-0">
                                             {isOutOfStock ? (
-                                                <p className="text-xs font-medium text-[#1A1A1A] raleway mb-1">
+                                                <p className="text-xs font-medium text-[#0F2744] raleway mb-1">
                                                     This item is out of stock. Remove it to continue
                                                     checkout.
                                                 </p>
@@ -1294,7 +1294,7 @@ export const CartComponent = () => {
                                                 </div>
                                             )}
                                             <div className="flex items-center gap-3 mt-2 flex-wrap">
-                                                <p className="text-[#1A1A1A] font-[600] text-sm exo">{"\u20B9"} {
+                                                <p className="text-[#0F2744] font-[600] text-sm exo">{"\u20B9"} {
                                                     item.originalPrice * item.quantity
                                                 }</p>
                                                 <p className="text-neutral-500 font-[300] text-xs exo line-through">{"\u20B9"}
@@ -1302,7 +1302,7 @@ export const CartComponent = () => {
                                                         item.discountPrice * item.quantity
                                                     }
                                                 </p>
-                                                <p className="text text-[#B8956A] font-[300] text-xs raleway">
+                                                <p className="text text-[#1B3F66] font-[300] text-xs raleway">
                                                     {
                                                         Math.round(((item.discountPrice - item.originalPrice) / item.discountPrice) * 100)
                                                     }
@@ -1311,7 +1311,7 @@ export const CartComponent = () => {
                                             <div className="flex flex-wrap items-center gap-3 mt-1 text-sm raleway">
  
                                                 {isOutOfStock ? (
-                                                    <span className="text-sm text-[#1A1A1A] font-medium">
+                                                    <span className="text-sm text-[#0F2744] font-medium">
                                                         Out of stock
                                                     </span>
                                                 ) : (
@@ -1390,7 +1390,7 @@ export const CartComponent = () => {
                                                 </div> */}
                                                 <Button variant={'link'} disabled={loading || 
                                                     buyNowproductId === item.productId
-                                                } className="text-[#1A1A1A] font-[500] text-sm exo ms-auto" onClick={() => {
+                                                } className="text-[#0F2744] font-[500] text-sm exo ms-auto" onClick={() => {
                                                     {
                                                         setIsOpenAlert(true);
                                                         setProductIdToDelete({

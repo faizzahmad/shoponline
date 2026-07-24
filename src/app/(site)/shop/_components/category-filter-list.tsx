@@ -54,7 +54,7 @@ export const CategoryFilterList = ({
                         <div key={items.id} className="flex items-center gap-4">
                             <Checkbox
                                 id={`cat-${items.id}`}
-                                className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
+                                className="data-[state=checked]:border-[#0F2744] data-[state=checked]:bg-[#0F2744]"
                                 checked={category.includes(items.id)}
                                 onCheckedChange={(checked) => {
                                     if (checked) {
@@ -78,7 +78,7 @@ export const CategoryFilterList = ({
                     className="block"
                 >
                     <div
-                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#1A1A1A] raleway"
+                        className="flex w-full cursor-pointer items-center gap-5 font-[300] text-neutral-700 transition hover:text-[#0F2744] raleway"
                         onClick={() => {
                             setExpandedCategoryIds((prev) =>
                                 prev.includes(items.id)
@@ -108,7 +108,7 @@ export const CategoryFilterList = ({
                     >
                         <div className="flex items-center gap-4">
                             <Checkbox
-                                className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
+                                className="data-[state=checked]:border-[#0F2744] data-[state=checked]:bg-[#0F2744]"
                                 onCheckedChange={(checked) => {
                                     const subCategoryIds =
                                         items.subCategories?.map((sub) => sub.id) ||
@@ -149,7 +149,7 @@ export const CategoryFilterList = ({
                             >
                                 <Checkbox
                                     id={subItems.id}
-                                    className="data-[state=checked]:border-[#1A1A1A] data-[state=checked]:bg-[#1A1A1A]"
+                                    className="data-[state=checked]:border-[#0F2744] data-[state=checked]:bg-[#0F2744]"
                                     checked={subcategory.includes(subItems.id)}
                                     onCheckedChange={(checked) => {
                                         if (checked) {

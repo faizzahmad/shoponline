@@ -89,7 +89,7 @@ export function RelatedProductsSlider({
         <section className="mt-14 border-t border-neutral-200 pt-10">
             <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#1A1A1A]">Similar picks</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#0F2744]">Similar picks</p>
                     <h2 className="text-lg font-bold tracking-tight text-neutral-900 exo sm:text-2xl">You may also like</h2>
                     <p className="mt-1 text-sm text-neutral-600 raleway">
                         More from the same category and subcategory.
@@ -97,7 +97,7 @@ export function RelatedProductsSlider({
                 </div>
                 <Link
                     href={`/shop?category=${encodeURIComponent(categoryId)}`}
-                    className="text-sm font-semibold text-[#1A1A1A] hover:text-[#B8956A]"
+                    className="text-sm font-semibold text-[#0F2744] hover:text-[#1B3F66]"
                 >
                     View category
                     <ArrowRight className="ml-1 inline h-4 w-4" />

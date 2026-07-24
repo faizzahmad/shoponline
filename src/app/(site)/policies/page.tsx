@@ -11,7 +11,7 @@ export default function PoliciesPage() {
   return (
     <SiteContentShell>
       <header>
-        <h1 className="raleway text-2xl font-bold text-[#1A1A1A] border-b-4 border-[#1A1A1A] pb-3 inline-block sm:text-3xl md:text-4xl">
+        <h1 className="raleway text-2xl font-bold text-[#0F2744] border-b-4 border-[#0F2744] pb-3 inline-block sm:text-3xl md:text-4xl">
           Store policies
         </h1>
         <p className="mt-4 exo text-sm text-neutral-500">
@@ -22,7 +22,7 @@ export default function PoliciesPage() {
 
       <div className="mt-8 exo text-neutral-700 leading-relaxed space-y-10 text-sm sm:mt-10 sm:space-y-14 sm:text-[0.95rem] md:text-base">
         <section id="return-refund-policy" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#1A1A1A] border-b-2 border-[#1A1A1A]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#0F2744] border-b-2 border-[#0F2744]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Return & refund policy
           </h2>
           <div className="space-y-4">
@@ -63,14 +63,14 @@ export default function PoliciesPage() {
               To start a return or exchange, email{" "}
               <a
                 href="mailto:johndoe@shoponline.com"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 johndoe@shoponline.com
               </a>{" "}
               or call{" "}
               <a
                 href="tel:+919876543210"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 +91 98765 43210
               </a>{" "}
@@ -84,7 +84,7 @@ export default function PoliciesPage() {
         </section>
 
         <section id="privacy-policy" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#1A1A1A] border-b-2 border-[#1A1A1A]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#0F2744] border-b-2 border-[#0F2744]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Privacy policy
           </h2>
           <p className="mb-4 text-sm text-neutral-500">
@@ -130,14 +130,14 @@ export default function PoliciesPage() {
               opt out of non-essential marketing where offered, or email{" "}
               <a
                 href="mailto:johndoe@shoponline.com"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 johndoe@shoponline.com
               </a>{" "}
               or call{" "}
               <a
                 href="tel:+919876543210"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 +91 98765 43210
               </a>{" "}
@@ -153,7 +153,7 @@ export default function PoliciesPage() {
         </section>
 
         <section id="shipping-policy" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#1A1A1A] border-b-2 border-[#1A1A1A]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#0F2744] border-b-2 border-[#0F2744]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Shipping policy
           </h2>
           <div className="space-y-4">
@@ -189,14 +189,14 @@ export default function PoliciesPage() {
               or an item is missing, email{" "}
               <a
                 href="mailto:johndoe@shoponline.com"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 johndoe@shoponline.com
               </a>{" "}
               or call{" "}
               <a
                 href="tel:+919876543210"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 +91 98765 43210
               </a>{" "}
@@ -207,7 +207,7 @@ export default function PoliciesPage() {
         </section>
 
         <section id="contact" className="scroll-mt-24">
-          <h2 className="raleway text-lg font-bold text-[#1A1A1A] border-b-2 border-[#1A1A1A]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
+          <h2 className="raleway text-lg font-bold text-[#0F2744] border-b-2 border-[#0F2744]/20 pb-2 mb-4 sm:text-2xl sm:mb-6 md:text-3xl">
             Contact
           </h2>
           <div className="space-y-2">
@@ -223,7 +223,7 @@ export default function PoliciesPage() {
               <strong className="font-semibold text-neutral-900">Email:</strong>{" "}
               <a
                 href="mailto:johndoe@shoponline.com"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 johndoe@shoponline.com
               </a>
@@ -232,7 +232,7 @@ export default function PoliciesPage() {
               <strong className="font-semibold text-neutral-900">Phone:</strong>{" "}
               <a
                 href="tel:+919876543210"
-                className="text-[#1A1A1A] underline underline-offset-2 hover:text-[#B8956A]"
+                className="text-[#0F2744] underline underline-offset-2 hover:text-[#1B3F66]"
               >
                 +91 98765 43210
               </a>

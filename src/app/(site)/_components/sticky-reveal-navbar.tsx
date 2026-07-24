@@ -88,7 +88,7 @@ export function StickyRevealNavbar({ children }: StickyRevealNavbarProps) {
             <div
                 ref={innerRef}
                 className={cn(
-                    "fixed left-0 right-0 top-0 z-[100] bg-white/95 shadow-[0_1px_0_rgba(26, 26, 26,0.1)] transition-transform duration-300 ease-out will-change-transform",
+                    "fixed left-0 right-0 top-0 z-[100] bg-white/95 shadow-[0_1px_0_rgba(15, 39, 68,0.1)] transition-transform duration-300 ease-out will-change-transform",
                     visible
                         ? "translate-y-0"
                         : "-translate-y-full pointer-events-none"

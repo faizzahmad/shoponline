@@ -348,7 +348,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
             }
             <div className="w-full xl:px-28 lg:px-16 md:px-10 sm:px-8 px-5 md:py-14 py-8 bg-[#f7fafd]">
 
-                <div className="w-full lg:flex gap-8 items-start rounded-2xl border border-[#1A1A1A]/15 bg-white p-4 md:p-5 shadow-sm">
+                <div className="w-full lg:flex gap-8 items-start rounded-2xl border border-[#0F2744]/15 bg-white p-4 md:p-5 shadow-sm">
                     <div className="w-full max-w-[560px] shrink-0 lg:sticky lg:top-24 self-start">
                         {
                             heroImageSrc && (
@@ -399,7 +399,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                         onClick={() => setSelectedImageIndex(index)}
                                                         className={`lg:size-[90px] size-[70px] overflow-hidden relative rounded-lg border-2 ${
                                                             selectedImageIndex === index
-                                                                ? "border-[#1A1A1A]"
+                                                                ? "border-[#0F2744]"
                                                                 : "border-transparent"
                                                         }`}
                                                     >
@@ -418,12 +418,12 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         </div>
                     </div>
 
-                    <div className="flex-1 mt-5 lg:mt-0 min-w-0 lg:border-l lg:border-[#1A1A1A]/10 lg:pl-7">
-                        <h6 className="uppercase text-[10px] font-[700] tracking-[0.16em] text-[#B8956A] raleway sm:text-xs sm:tracking-[0.2em]">
+                    <div className="flex-1 mt-5 lg:mt-0 min-w-0 lg:border-l lg:border-[#0F2744]/10 lg:pl-7">
+                        <h6 className="uppercase text-[10px] font-[700] tracking-[0.16em] text-[#1B3F66] raleway sm:text-xs sm:tracking-[0.2em]">
                             {productInfo.productCategory} / {productInfo.productSubCategory}
                         </h6>
                         <div className="flex mt-4  justify-between items-center">
-                            <h4 className="text-xl font-[700] leading-snug text-[#1A1A1A] exo sm:text-2xl md:text-4xl">
+                            <h4 className="text-xl font-[700] leading-snug text-[#0F2744] exo sm:text-2xl md:text-4xl">
 
                                 {productInfo.productName}
                             </h4>
@@ -441,15 +441,15 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                             />
                         </div>
 
-                        <div className="mt-4 rounded-xl bg-[#FAFAF9] p-4 border border-[#1A1A1A]/10">
+                        <div className="mt-4 rounded-xl bg-[#F6F7F9] p-4 border border-[#0F2744]/10">
                             <div className="flex items-center gap-3 mt-1">
-                                <p className="text-[#1A1A1A] font-[700] text-xl exo sm:text-2xl">{"\u20B9"}
+                                <p className="text-[#0F2744] font-[700] text-xl exo sm:text-2xl">{"\u20B9"}
                                     {activeOriginalPrice}
                                 </p>
                                 <p className="text-neutral-500 font-[400] text-sm exo line-through sm:text-base">{"\u20B9"}
                                     {activeDiscountPrice}
                                 </p>
-                                <p className="text-[#B8956A] font-[600] text-sm raleway">
+                                <p className="text-[#1B3F66] font-[600] text-sm raleway">
                                     {activeDiscountPrice > 0
                                         ? Math.round(
                                               ((activeDiscountPrice - activeOriginalPrice) /
@@ -463,11 +463,11 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                             <p className="text-xs text-neutral-500 mt-2 raleway">Inclusive of all taxes</p>
                         </div>
 
-                        <div className="my-6 border-t border-[#1A1A1A]/10 pt-5">
+                        <div className="my-6 border-t border-[#0F2744]/10 pt-5">
                             {hasNewVariants &&
                                 optionsByAttribute.map((group) => (
                                     <div key={group.name} className="mb-3">
-                                <p className="text-sm font-semibold exo mb-2 capitalize text-[#1A1A1A]">{group.name}</p>
+                                <p className="text-sm font-semibold exo mb-2 capitalize text-[#0F2744]">{group.name}</p>
                                         <div className="flex flex-wrap gap-2">
                                             {group.options.map((option) => {
                                                 const isSelected = selectedAttributes[group.name] === option.value;
@@ -481,7 +481,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                             type="button"
                                                             className={`flex flex-col items-center gap-1 rounded-md border p-1.5 transition ${
                                                                 isSelected
-                                                                    ? "border-[#1A1A1A] bg-[#FAFAF9] shadow-sm"
+                                                                    ? "border-[#0F2744] bg-[#F6F7F9] shadow-sm"
                                                                     : "border-neutral-300 hover:border-neutral-400"
                                                             }`}
                                                             onClick={() => {
@@ -503,7 +503,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                             </div>
                                                             <span
                                                                 className={`text-xs capitalize ${
-                                                                    isSelected ? "text-[#1A1A1A]" : "text-neutral-700"
+                                                                    isSelected ? "text-[#0F2744]" : "text-neutral-700"
                                                                 }`}
                                                             >
                                                                 {option.value}
@@ -517,7 +517,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                                         type="button"
                                                         className={`min-w-[2.75rem] rounded-md border px-3.5 py-2 text-sm capitalize transition ${
                                                             isSelected
-                                                                ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
+                                                                ? "border-[#0F2744] bg-[#0F2744] text-white"
                                                                 : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
                                                         }`}
                                                         onClick={() => {
@@ -537,7 +537,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                 ))}
 
                             {productInfo?.varients?.some((variantGroup) => variantGroup.products.length > 0) && (
-                                <h5 className="text-lg mb-4 exo font-semibold text-[#1A1A1A]">More Colors / Styles</h5>
+                                <h5 className="text-lg mb-4 exo font-semibold text-[#0F2744]">More Colors / Styles</h5>
                             )}
                             <div className="w-full flex flex-wrap gap-4">
                                 {productInfo?.varients?.map((variantGroup: { products: any[] }) =>
@@ -545,7 +545,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                                         <div key={product.productId} className="flex flex-col items-center">
                                             <Link href={`/product-info/${product.productId}`} target="_blank">
                                                 <div className="w-[60px]">
-                                                    <div className="w-full h-[60px] relative border-2 border-[#1A1A1A] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
+                                                    <div className="w-full h-[60px] relative border-2 border-[#0F2744] rounded-sm border-opacity-0 lg:hover:border-opacity-[100%] transition">
                                                         <Image
                                                             src={product.image}
                                                             alt={product.pname}
@@ -568,7 +568,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
 
 
                         {isSelectedOutOfStock ? (
-                            <p className="mt-4 text-sm font-medium text-[#1A1A1A] raleway rounded-md border border-[#1A1A1A]/20 bg-[#FAFAF9] px-3 py-2">
+                            <p className="mt-4 text-sm font-medium text-[#0F2744] raleway rounded-md border border-[#0F2744]/20 bg-[#F6F7F9] px-3 py-2">
                                 This product is out of stock.
                             </p>
                         ) : null}
@@ -576,16 +576,16 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         <div className="mt-5 flex gap-4 items-center">
 
                             <div className="flex mt-1">
-                                <button className="size-10 flex items-center justify-center bg-white border border-[#1A1A1A]/20 cursor-pointer text-[#1A1A1A] rounded-tl rounded-bl"
+                                <button className="size-10 flex items-center justify-center bg-white border border-[#0F2744]/20 cursor-pointer text-[#0F2744] rounded-tl rounded-bl"
                                     disabled={selectedQunatity <= 1 || isSelectedOutOfStock}
                                     onClick={() => setSelectedQunatity(selectedQunatity > 1 ? selectedQunatity - 1 : 1)}
                                 >
                                     <Minus className="size-5" />
                                 </button>
-                                <div className="size-10 text-lg flex items-center justify-center bg-white border-y border-[#1A1A1A]/20 ">
+                                <div className="size-10 text-lg flex items-center justify-center bg-white border-y border-[#0F2744]/20 ">
                                     {selectedQunatity}
                                 </div>
-                                <button className="size-10 text-sm flex items-center justify-center bg-white border border-[#1A1A1A]/20 cursor-pointer text-[#1A1A1A] rounded-tr rounded-br"
+                                <button className="size-10 text-sm flex items-center justify-center bg-white border border-[#0F2744]/20 cursor-pointer text-[#0F2744] rounded-tr rounded-br"
                                     disabled={isSelectedOutOfStock}
                                     onClick={() => {
                                         if (selectedQunatity < maxSelectableQty) {
@@ -626,7 +626,7 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         <div className="mt-4">
                             <Button
                                 disabled={cartLoader || isSelectedOutOfStock}
-                                className="w-full h-[42px] rounded-md raleway uppercase bg-[#E0E0E0] text-[#1A1A1A] hover:bg-[#9E9E9E] "
+                                className="w-full h-[42px] rounded-md raleway uppercase bg-[#E0E0E0] text-[#0F2744] hover:bg-[#9E9E9E] "
                                 onClick={async () => {
                                     await handelAddToCart();
                                     router.push(`/cart?type=buy-now&productId=${productInfo._id}`);
@@ -644,23 +644,23 @@ export const ProductData = ({ slug }: ProductDataProps) => {
                         </div>
 
                         <div className="mt-5 grid grid-cols-3 gap-3">
-                            <div className="rounded-lg border border-[#1A1A1A]/15 bg-[#FAFAF9] p-2 text-center">
-                                <p className="text-xs font-semibold text-[#1A1A1A]">100% Original</p>
+                            <div className="rounded-lg border border-[#0F2744]/15 bg-[#F6F7F9] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#0F2744]">100% Original</p>
                             </div>
-                            <div className="rounded-lg border border-[#1A1A1A]/15 bg-[#FAFAF9] p-2 text-center">
-                                <p className="text-xs font-semibold text-[#1A1A1A]">Easy Returns</p>
+                            <div className="rounded-lg border border-[#0F2744]/15 bg-[#F6F7F9] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#0F2744]">Easy Returns</p>
                             </div>
-                            <div className="rounded-lg border border-[#1A1A1A]/15 bg-[#FAFAF9] p-2 text-center">
-                                <p className="text-xs font-semibold text-[#1A1A1A]">Fast Delivery</p>
+                            <div className="rounded-lg border border-[#0F2744]/15 bg-[#F6F7F9] p-2 text-center">
+                                <p className="text-xs font-semibold text-[#0F2744]">Fast Delivery</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <section className="mt-8 rounded-2xl border border-[#1A1A1A]/15 bg-white p-5 md:p-7 shadow-sm">
-                    <h5 className="mb-4 text-lg font-semibold text-[#1A1A1A] raleway sm:text-xl">Product Details</h5>
+                <section className="mt-8 rounded-2xl border border-[#0F2744]/15 bg-white p-5 md:p-7 shadow-sm">
+                    <h5 className="mb-4 text-lg font-semibold text-[#0F2744] raleway sm:text-xl">Product Details</h5>
                     <div
-                        className="rich-long-desc max-w-none text-sm leading-relaxed text-neutral-700 md:text-[15px] [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-xl [&_a]:text-[#1A1A1A] [&_a]:underline"
+                        className="rich-long-desc max-w-none text-sm leading-relaxed text-neutral-700 md:text-[15px] [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-xl [&_a]:text-[#0F2744] [&_a]:underline"
                         dangerouslySetInnerHTML={{ __html: sanitizedLongDescription }}
                     />
                 </section>

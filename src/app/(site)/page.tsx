@@ -82,10 +82,10 @@ export default async function Home() {
             <section className="lg:px-10 px-5 py-6 sm:py-10 bg-white animate-soft-fade-up">
                 <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-center">
                     <div>
-                        <p className="uppercase text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] text-[#B8956A] font-semibold">
+                        <p className="uppercase text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] text-[#1B3F66] font-semibold">
                             Everything in one store
                         </p>
-                        <h1 className="mt-2 sm:mt-3 text-xl font-bold leading-snug raleway text-[#1A1A1A] sm:text-2xl md:text-4xl lg:text-5xl sm:leading-tight">
+                        <h1 className="mt-2 sm:mt-3 text-xl font-bold leading-snug raleway text-[#0F2744] sm:text-2xl md:text-4xl lg:text-5xl sm:leading-tight">
                             Shop clothes, footwear, furniture, electronics, and more in one place.
                         </h1>
                         <p className="mt-3 sm:mt-4 text-sm leading-relaxed text-neutral-600 max-w-xl sm:text-base">
@@ -94,13 +94,13 @@ export default async function Home() {
                         <div className="mt-4 sm:mt-6 flex flex-wrap gap-2 sm:gap-4">
                             <Link
                                 href="/shop?sortBy=new"
-                                className="rounded-full bg-[#1A1A1A] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#B8956A] hover:text-[#1A1A1A] sm:px-6 sm:py-3 sm:text-sm"
+                                className="rounded-full bg-[#0F2744] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#1B3F66] sm:px-6 sm:py-3 sm:text-sm"
                             >
                                 Shop new arrivals
                             </Link>
                             <Link
                                 href="/shop?sortBy=top-selling"
-                                className="rounded-full border border-[#1A1A1A]/40 px-4 py-2 text-xs font-semibold text-[#1A1A1A] transition hover:bg-[#FAFAF9] sm:px-6 sm:py-3 sm:text-sm"
+                                className="rounded-full border border-[#0F2744]/40 px-4 py-2 text-xs font-semibold text-[#0F2744] transition hover:bg-[#F6F7F9] sm:px-6 sm:py-3 sm:text-sm"
                             >
                                 Best sellers
                             </Link>
@@ -114,7 +114,7 @@ export default async function Home() {
                                 className="group relative h-32 rounded-xl overflow-hidden sm:h-40 sm:rounded-2xl"
                             >
                                 <Image src={item.img} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/85 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0F2744]/85 to-transparent" />
                                 <span className="absolute bottom-2 left-2 right-2 text-[11px] font-semibold leading-tight text-white sm:bottom-3 sm:left-3 sm:right-auto sm:text-sm">
                                     {item.name}
                                 </span>
@@ -129,14 +129,14 @@ export default async function Home() {
             <ProductSlider carouselTitle="Best Sellers" products={bestSeller} />
             {coupons.length > 0 ? (
                 <section className="lg:px-10 px-5 py-6 sm:py-8">
-                    <div className="relative overflow-hidden rounded-xl border border-[#1A1A1A]/15 sm:rounded-2xl">
+                    <div className="relative overflow-hidden rounded-xl border border-[#0F2744]/15 sm:rounded-2xl">
                         <Image
                             src="https://az0ocw5ei9.ufs.sh/f/aoRrknTvWVje546PtK7AKDedf8SWaILuTo5vtwB7qJNOcRki"
                             alt="coupon background"
                             fill
                             className="object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A]/92 via-[#1A1A1A]/78 to-[#D4BC94]/60" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#0F2744]/92 via-[#0F2744]/78 to-[#4A6FA5]/60" />
                         <div className="relative p-4 sm:p-5 md:p-7">
                             <div className="mb-4 flex items-end justify-between sm:mb-5">
                                 <div>

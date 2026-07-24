@@ -699,7 +699,7 @@ export const ProductDescription = () => {
                                             dropTargetIndex === index &&
                                                 dragImageIndex !== null &&
                                                 dragImageIndex !== index &&
-                                                "ring-2 ring-[#1A1A1A]",
+                                                "ring-2 ring-[#0F2744]",
                                         )}
                                         key={`${image}-${index}`}
                                     >
@@ -719,7 +719,7 @@ export const ProductDescription = () => {
                                             <button
                                                 type="button"
                                                 title="Remove image"
-                                                className="p-1 bg-[#1A1A1A] text-white rounded-full hover:bg-[#B8956A]"
+                                                className="p-1 bg-[#0F2744] text-white rounded-full hover:bg-[#1B3F66]"
                                                 onClick={(ev) => {
                                                     ev.preventDefault();
                                                     ev.stopPropagation();
@@ -899,7 +899,7 @@ export const ProductDescription = () => {
                     <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
                         <div>
                             <h5 className="flex items-center gap-2 text-2xl font-semibold">
-                                <Layers className="size-5 text-[#1A1A1A]" aria-hidden />
+                                <Layers className="size-5 text-[#0F2744]" aria-hidden />
                                 Product Variants
                             </h5>
                             <p className="mt-1 text-sm text-muted-foreground">
@@ -908,7 +908,7 @@ export const ProductDescription = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             {variantRows.length > 0 ? (
-                                <span className="rounded-full border border-[#1A1A1A]/15 bg-[#FAFAF9] px-3 py-1 text-xs font-medium text-[#1A1A1A]">
+                                <span className="rounded-full border border-[#0F2744]/15 bg-[#F6F7F9] px-3 py-1 text-xs font-medium text-[#0F2744]">
                                     {variantRows.length} combination{variantRows.length === 1 ? "" : "s"}
                                 </span>
                             ) : null}
@@ -929,7 +929,7 @@ export const ProductDescription = () => {
                         {attrEditors.map((editor, editorIdx) => (
                             <div
                                 key={editor.id}
-                                className="rounded-xl border border-[#1A1A1A]/10 bg-[#FAFAF9] p-4"
+                                className="rounded-xl border border-[#0F2744]/10 bg-[#F6F7F9] p-4"
                             >
                                 <div className="mb-3 flex items-center justify-between gap-2">
                                     <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
@@ -993,7 +993,7 @@ export const ProductDescription = () => {
                                 </div>
                                 <label
                                     htmlFor={`show-image-${editor.id}`}
-                                    className="mt-3 flex cursor-pointer items-start gap-3 rounded-lg border border-[#1A1A1A]/10 bg-white px-3 py-2.5"
+                                    className="mt-3 flex cursor-pointer items-start gap-3 rounded-lg border border-[#0F2744]/10 bg-white px-3 py-2.5"
                                 >
                                     <Checkbox
                                         id={`show-image-${editor.id}`}
@@ -1010,7 +1010,7 @@ export const ProductDescription = () => {
                                         className="mt-0.5"
                                     />
                                     <span className="space-y-0.5">
-                                        <span className="block text-sm font-semibold text-[#1A1A1A]">
+                                        <span className="block text-sm font-semibold text-[#0F2744]">
                                             Show as image
                                         </span>
                                         <span className="block text-xs text-muted-foreground">
@@ -1025,7 +1025,7 @@ export const ProductDescription = () => {
                     </div>
 
                     {variantRows.length > 0 ? (
-                        <div className="overflow-hidden rounded-xl border border-[#1A1A1A]/10">
+                        <div className="overflow-hidden rounded-xl border border-[#0F2744]/10">
                             <div className="max-h-[420px] overflow-y-auto divide-y">
                                 {variantRows.map((row, idx) => (
                                     <div
@@ -1162,7 +1162,7 @@ export const ProductDescription = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-xl border border-dashed border-neutral-300 bg-[#FAFAF9] px-4 py-10 text-center">
+                        <div className="rounded-xl border border-dashed border-neutral-300 bg-[#F6F7F9] px-4 py-10 text-center">
                             <Layers className="mx-auto mb-2 size-8 text-neutral-400" aria-hidden />
                             <p className="text-sm font-medium text-neutral-700">No variants yet</p>
                             <p className="mt-1 text-xs text-muted-foreground">

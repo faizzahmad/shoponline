@@ -26,13 +26,13 @@ export const SiteNavbar = async () => {
   
     return (
         <header>
-            <nav className="relative bg-white/90 backdrop-blur-md py-2 xl:z-[120] xl:px-10 px-5 raleway lg:border-b border-b-[4px] border-[#1A1A1A]/30">
+            <nav className="relative bg-white/90 backdrop-blur-md py-2 xl:z-[120] xl:px-10 px-5 raleway lg:border-b border-b-[4px] border-[#0F2744]/30">
                 <div className="hidden lg:flex items-center justify-between">
                     <div className="flex xl:gap-16 gap-6 items-center">
                         <Link href={'/'} className="shrink-0">
                             <BrandLogo width={140} className="w-[130px] xl:w-[140px]" />
                         </Link>
-                        <ul className="xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-[#1A1A1A] hidden">
+                        <ul className="xl:flex xl:gap-x-10 gap-5 font-semibold uppercase text-[#0F2744] hidden">
                             <li>
                                 <Link href={'/shop'}>Shop</Link>
                             </li>
@@ -44,7 +44,7 @@ export const SiteNavbar = async () => {
                         <SearchBar />
                     </div>
 
-                    <div className=" flex gap-3 text-[#1A1A1A] text-[1rem]">
+                    <div className=" flex gap-3 text-[#0F2744] text-[1rem]">
 
                     </div>
 
@@ -57,7 +57,7 @@ export const SiteNavbar = async () => {
 
                                       <UserButtonComp/>
                                         <div>
-                                            <Link href={'/account'} className="flex items-center hover:text-[#B8956A] transition">
+                                            <Link href={'/account'} className="flex items-center hover:text-[#1B3F66] transition">
                                                 Account Page
 
                                             </Link>
@@ -68,7 +68,7 @@ export const SiteNavbar = async () => {
                                 ) : (
                                     <ul className="flex gap-3">
                                         <li>
-                                            <Link href={'/sign-in'} className="flex items-center hover:text-[#B8956A] transition">
+                                            <Link href={'/sign-in'} className="flex items-center hover:text-[#1B3F66] transition">
 
                                                 <span className=" font-semibold">Sign-in</span>
                                             </Link>
@@ -81,7 +81,7 @@ export const SiteNavbar = async () => {
                                         </li>
                                         <li>
 
-                                            <Link href={'/sign-up'} className="flex items-center gap-2 hover:text-[#B8956A] transition">
+                                            <Link href={'/sign-up'} className="flex items-center gap-2 hover:text-[#1B3F66] transition">
                                                 <UserPlus className="size-5" />
                                                 <span className=" font-semibold">Create an account</span>
                                             </Link>
@@ -98,7 +98,7 @@ export const SiteNavbar = async () => {
                     <MobileSidebar />
                 </div>
             </nav>
-            <div className="relative z-0 hidden h-9 w-full items-center justify-center gap-5 bg-[#1A1A1A] text-[1rem] font-[500] text-white raleway lg:flex xl:z-[100] xl:gap-8 xl:text-base">
+            <div className="relative z-0 hidden h-9 w-full items-center justify-center gap-5 bg-[#0F2744] text-[1rem] font-[500] text-white raleway lg:flex xl:z-[100] xl:gap-8 xl:text-base">
 
                 {
                     categories.map((category) => (

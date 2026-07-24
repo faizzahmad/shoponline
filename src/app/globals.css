@@ -16,36 +16,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Premium ink + champagne gold */
-    --primary: 0 0% 10%;
+    /* Classic deep navy — one-color fashion theme */
+    --primary: 213 64% 16%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 32 35% 57%;
+    --secondary: 211 58% 25%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 60 9% 98%;
-    --muted-foreground: 25 6% 45%;
+    --muted: 220 14% 97%;
+    --muted-foreground: 215 16% 40%;
 
-    --accent: 32 30% 94%;
-    --accent-foreground: 32 35% 40%;
+    --accent: 214 30% 94%;
+    --accent-foreground: 213 64% 22%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 20 6% 90%;
-    --input: 20 6% 90%;
-    --ring: 32 35% 57%;
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 211 58% 25%;
 
-    --brand-dark: 0 0% 10%;
-    --brand-primary: 32 35% 57%;
-    --brand-accent: 38 45% 70%;
-    --brand-surface: 60 9% 98%;
+    --brand-dark: 213 64% 16%;
+    --brand-primary: 211 58% 25%;
+    --brand-accent: 214 38% 47%;
+    --brand-surface: 220 14% 97%;
 
-    --chart-1: 0 0% 10%;
-    --chart-2: 32 35% 57%;
-    --chart-3: 25 6% 45%;
-    --chart-4: 38 45% 70%;
-    --chart-5: 20 6% 75%;
+    --chart-1: 213 64% 16%;
+    --chart-2: 211 58% 25%;
+    --chart-3: 215 16% 40%;
+    --chart-4: 214 38% 47%;
+    --chart-5: 214 20% 75%;
 
     --radius: 0.5rem;
 
@@ -140,7 +140,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    background-image: linear-gradient(180deg, #ffffff 0%, #FAFAF9 100%);
+    background-image: linear-gradient(180deg, #ffffff 0%, #F6F7F9 100%);
   }
 }
 
@@ -199,8 +199,8 @@
   height: 100%;
   background: linear-gradient(
     180deg,
-    rgba(26, 26, 26, 0.75) 0%,
-    rgba(15, 15, 15, 0.82) 100%
+    rgba(15, 39, 68, 0.78) 0%,
+    rgba(11, 28, 50, 0.88) 100%
   );
 }
 
@@ -231,7 +231,7 @@
 }
 .rich-long-desc blockquote {
   margin: 0.75rem 0;
-  border-left: 3px solid #B8956A;
+  border-left: 3px solid #0F2744;
   padding-left: 0.85rem;
   color: rgb(82 82 82);
 }

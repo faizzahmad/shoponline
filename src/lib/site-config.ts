@@ -18,11 +18,11 @@ export const SOCIAL_FACEBOOK_URL = "";
 export const SOCIAL_YOUTUBE_URL = "";
 export const SOCIAL_X_URL = "";
 
-/** Premium marketplace theme */
+/** Classic navy marketplace theme — one primary color family */
 export const THEME = {
-  primary: "#1A1A1A",
-  secondary: "#B8956A",
-  accent: "#D4BC94",
-  muted: "#FAFAF9",
-  mutedAlt: "#F5F5F4",
+  primary: "#0F2744",
+  secondary: "#1B3F66",
+  accent: "#4A6FA5",
+  muted: "#F6F7F9",
+  mutedAlt: "#EEF1F5",
 } as const;

@@ -56,7 +56,7 @@ function StarPicker({
                     <button
                         key={n}
                         type="button"
-                        className="p-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]"
+                        className="p-0.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F2744]"
                         onMouseEnter={() => setHover(n)}
                         onMouseLeave={() => setHover(0)}
                         onClick={() => onChange(n)}
@@ -183,7 +183,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
             {isLoaded && isSignedIn && (
                 <form
                     onSubmit={handleSubmit}
-                    className="mb-10 rounded-2xl border border-neutral-200 bg-[#FAFAF9]/40 p-5 sm:p-6"
+                    className="mb-10 rounded-2xl border border-neutral-200 bg-[#F6F7F9]/40 p-5 sm:p-6"
                 >
                     <h3 className="text-base font-semibold text-neutral-900 raleway sm:text-lg">
                         {myReview ? "Update your review" : "Write a review"}
@@ -246,7 +246,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
                         <Button
                             type="submit"
                             disabled={submitting}
-                            className="bg-[#1A1A1A] hover:bg-[#B8956A]"
+                            className="bg-[#0F2744] hover:bg-[#1B3F66]"
                         >
                             {submitting ? (
                                 <>
@@ -266,7 +266,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
             {isLoaded && !isSignedIn && (
                 <div className="mb-10 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center">
                     <p className="text-neutral-700 raleway">
-                        <Link href="/sign-in" className="font-semibold text-[#1A1A1A] underline">
+                        <Link href="/sign-in" className="font-semibold text-[#0F2744] underline">
                             Sign in
                         </Link>{" "}
                         to leave a review with photos and a star rating.
@@ -290,7 +290,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
                             key={r._id}
                             className={cn(
                                 "rounded-xl border border-neutral-200 bg-white p-5 shadow-sm",
-                                user?.id === r.authorUserId && "ring-2 ring-[#1A1A1A]/15"
+                                user?.id === r.authorUserId && "ring-2 ring-[#0F2744]/15"
                             )}
                         >
                             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -306,7 +306,7 @@ export function ProductReviewsSection({ productId }: { productId: string }) {
                                     </div>
                                 </div>
                                 {user?.id === r.authorUserId && (
-                                    <span className="rounded-full bg-[#FAFAF9] px-2 py-0.5 text-xs font-medium text-[#1A1A1A]">
+                                    <span className="rounded-full bg-[#F6F7F9] px-2 py-0.5 text-xs font-medium text-[#0F2744]">
                                         Your review
                                     </span>
                                 )}

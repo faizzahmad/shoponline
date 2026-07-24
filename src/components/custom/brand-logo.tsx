@@ -25,11 +25,11 @@ export function BrandLogo({ className, width = 140 }: BrandLogoProps) {
       <path
         d="M28 30v-7c0-5.5 4.5-10 10-10s10 4.5 10 10v7"
         fill="none"
-        stroke={BRAND_COLORS.gold}
+        stroke={BRAND_COLORS.goldLight}
         strokeWidth="3.5"
         strokeLinecap="round"
       />
-      <rect x="26" y="42" width="18" height="3.5" rx="1.5" fill={BRAND_COLORS.gold} />
+      <rect x="26" y="42" width="18" height="3.5" rx="1.5" fill={BRAND_COLORS.goldLight} />
       <text
         x="80"
         y="50"
